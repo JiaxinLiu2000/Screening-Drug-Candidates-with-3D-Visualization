@@ -42,18 +42,23 @@ def main() -> int:
         paths.SPLITS / "scaffolds.csv", index=False
     )
 
-    print("\n--- split sizes ---")
+    print("\n--- split sizes and scaffold leakage ---")
     rows = []
+    test_sets: dict[str, dict[int, set[str]]] = {"random": {}, "scaffold": {}}
     for kind in ("random", "scaffold"):
         for seed in paths.SEEDS:
             frame = splitlib.split_frame(clean, kind, seed, scaffolds)
             out = paths.SPLITS / f"{kind}_split_seed{seed}.csv"
             frame.to_csv(out, index=False)
             counts = frame["subset"].value_counts()
-            leak = 0
-            if kind == "scaffold":
-                per_scaffold = frame.groupby("scaffold_smiles")["subset"].nunique()
-                leak = int((per_scaffold > 1).sum())
+            # Computed for BOTH splits: a nonzero count for the random split is
+            # the expected leakage the scaffold split is designed to remove.
+            per_scaffold = frame.groupby("scaffold_smiles")["subset"].nunique()
+            leak = int((per_scaffold > 1).sum())
+            molecules_in_leaking = int(
+                frame[frame["scaffold_smiles"].isin(per_scaffold[per_scaffold > 1].index)].shape[0]
+            )
+            test_sets[kind][seed] = set(frame.loc[frame["subset"] == "test", "inchikey"])
             rows.append(
                 {
                     "split": kind,
@@ -62,13 +67,42 @@ def main() -> int:
                     "valid": int(counts.get("valid", 0)),
                     "test": int(counts.get("test", 0)),
                     "scaffold_groups_spanning_subsets": leak,
+                    "molecules_in_spanning_groups": molecules_in_leaking,
                 }
             )
     sizes = pd.DataFrame(rows)
     print(sizes.to_string(index=False))
 
-    if (sizes["scaffold_groups_spanning_subsets"] != 0).any():
+    scaffold_leak = sizes.loc[sizes["split"] == "scaffold", "scaffold_groups_spanning_subsets"]
+    if (scaffold_leak != 0).any():
         print("FAILED: a scaffold group was split across subsets")
+        return 1
+    random_leak = sizes.loc[sizes["split"] == "random", "scaffold_groups_spanning_subsets"]
+    if (random_leak == 0).all():
+        print("FAILED: random split reports zero scaffold leakage - the check is not working")
+        return 1
+
+    print("\n--- test-set overlap between seeds (Jaccard, same split) ---")
+    overlap_rows = []
+    for kind in ("random", "scaffold"):
+        for i, a in enumerate(paths.SEEDS):
+            for b in paths.SEEDS[i + 1 :]:
+                sa, sb = test_sets[kind][a], test_sets[kind][b]
+                overlap_rows.append(
+                    {
+                        "split": kind,
+                        "seed_a": a,
+                        "seed_b": b,
+                        "n_shared_test": len(sa & sb),
+                        "jaccard": round(len(sa & sb) / len(sa | sb), 4),
+                    }
+                )
+    overlaps = pd.DataFrame(overlap_rows)
+    print(overlaps.groupby("split")[["n_shared_test", "jaccard"]]
+          .agg(["min", "mean", "max"]).round(4).to_string())
+    overlaps.to_csv(paths.RESULTS / "split_seed_overlap.csv", index=False)
+    if (overlaps.loc[overlaps["split"] == "scaffold", "jaccard"] == 1.0).all():
+        print("FAILED: the 5 scaffold seeds produce identical test sets")
         return 1
 
     sizes.to_csv(paths.RESULTS / "split_sizes.csv", index=False)

@@ -73,9 +73,27 @@ def main() -> int:
     add(f"   PR-AUC for reference: random {rnd['pr_auc_mean']:.4f} +/- {rnd['pr_auc_std']:.4f}, "
         f"scaffold {scf['pr_auc_mean']:.4f} +/- {scf['pr_auc_std']:.4f}.")
     add("")
+    add("   `+/-` is the **sample standard deviation across the 5 seeds** "
+        "(pandas `.std()`, ddof=1, n=5) of the per-seed macro average over the 12 "
+        "endpoints - i.e. seed-to-seed variability, not spread across endpoints.")
+    add("")
     add(f"**4. PDB ID to use: {rec['recommended']}** (over {rec['runner_up']})")
     add("")
+    add("   Decision criteria, in order: "
+        + "; ".join(rec["criteria"]) + ".")
+    add("")
     add(f"   {rec['reason']}")
+    add("")
+    add("   Evidence actually measured:")
+    add("")
+    add("   | PDB | deposited TITLE | Lys721-Glu738 | state | resolution | "
+        "unobserved residues in pocket | altloc atoms in pocket | mean B pocket / ligand |")
+    add("   | --- | --- | --- | --- | --- | --- | --- | --- |")
+    for pid, ev in rec["evidence"].items():
+        add(f"   | {pid} | {ev['deposited_title']} | {ev['salt_bridge_angstrom']} A "
+            f"| {ev['state']} | {ev['resolution']} A "
+            f"| {ev['missing_in_pocket'] or 'none'} | {ev['altloc_atoms_in_pocket']} "
+            f"| {ev['mean_b_pocket']} / {ev['mean_b_ligand']} |")
     add("")
     add("## How these were produced")
     add("")
@@ -91,7 +109,7 @@ def main() -> int:
     add("")
     add("## Per-endpoint ROC-AUC (mean +/- std over 5 seeds)")
     add("")
-    add("| endpoint | random | scaffold | delta |")
+    add("| endpoint | random | scaffold | delta (scaffold - random) |")
     add("| --- | --- | --- | --- |")
     for endpoint in per_endpoint.index:
         r_m = per_endpoint.loc[endpoint, ("roc_auc_mean", "random")]
@@ -99,10 +117,10 @@ def main() -> int:
         s_m = per_endpoint.loc[endpoint, ("roc_auc_mean", "scaffold")]
         s_s = per_endpoint.loc[endpoint, ("roc_auc_std", "scaffold")]
         add(f"| {endpoint} | {r_m:.4f} +/- {r_s:.4f} | {s_m:.4f} +/- {s_s:.4f} "
-            f"| {r_m - s_m:+.4f} |")
+            f"| {s_m - r_m:+.4f} |")
     add(f"| **macro avg (12)** | **{rnd['roc_auc_mean']:.4f} +/- {rnd['roc_auc_std']:.4f}** "
         f"| **{scf['roc_auc_mean']:.4f} +/- {scf['roc_auc_std']:.4f}** "
-        f"| **{rnd['roc_auc_mean'] - scf['roc_auc_mean']:+.4f}** |")
+        f"| **{scf['roc_auc_mean'] - rnd['roc_auc_mean']:+.4f}** |")
     add("")
     add("## EGFR structures")
     add("")

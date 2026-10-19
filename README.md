@@ -6,25 +6,42 @@ This repository contains the **preliminary results** for the project proposal:
 a reproducible data pipeline, a random-forest baseline under two split
 protocols, and a self-contained 3D pocket viewer.
 
-Headline numbers are in [`results/SUMMARY.md`](results/SUMMARY.md).
+**All measured numbers live in one place: [`RESULTS.md`](RESULTS.md)** (generated
+by `src/07_report.py` from the committed artefacts, so it cannot drift from the
+CSV/JSON tables). The four values the proposal asks for are also in
+[`results/SUMMARY.md`](results/SUMMARY.md).
 
 | value | result |
 | --- | --- |
 | Molecules after standardization + deduplication | **6143** |
 | Mean ROC-AUC over 12 endpoints, random split (5 seeds) | **0.8324 ± 0.0181** |
 | Mean ROC-AUC over 12 endpoints, scaffold split (5 seeds) | **0.7611 ± 0.0227** |
-| Recommended receptor | **1M17** (2.6 Å, 312 residues, erlotinib/AQ4) |
+| Recommended receptor | **1M17** — active αC-in state (Lys721–Glu738 = 3.05 Å), 2.60 Å, 312 residues, erlotinib/AQ4 |
+
+This README covers setup and method; it quotes only headline figures and defers
+the full tables to `RESULTS.md`.
 
 ## Setup
 
 ```bash
-python -m venv .venv                 # Python 3.11 (developed on 3.11.17)
-.venv/Scripts/pip install -r requirements.txt     # Windows
-# source .venv/bin/activate && pip install -r requirements.txt   # Linux/macOS
+python -m venv .venv                                            # Python 3.11 (3.11.17 here)
+.venv/Scripts/python -m pip install --no-deps -r requirements.txt   # Windows
+# source .venv/bin/activate && pip install --no-deps -r requirements.txt   # Linux/macOS
 ```
 
-`requirements.txt` pins every version. Note `setuptools==80.10.2`: PyTDC 0.4.1
-still imports `pkg_resources`, which setuptools removed in 81.
+**`--no-deps` is required, not optional.** `requirements.txt` is a complete lock
+(every direct and transitive dependency pinned). PyTDC 0.4.1 declares a
+dependency on `rdkit-pypi`, which unpacks into the same `rdkit/` package
+directory as the modern `rdkit` wheel; letting the resolver run installs both and
+whichever lands last silently overwrites the other, so `rdkit.__version__`
+becomes install-order dependent. Resolving nothing and pinning everything avoids
+that. Two related pins: `setuptools==80.10.2` (PyTDC 0.4.1 imports
+`pkg_resources`, removed in setuptools 81) and no `dataclasses` backport (a
+Python 3.6-only package that PyTDC pulls in and that shadows the stdlib on 3.11).
+
+Verified by building a throwaway venv from this lock and importing `tdc`,
+`rdkit`, `sklearn`, `gemmi` — one RDKit, stdlib `dataclasses`, 12 endpoints
+resolved.
 
 ## Run the pipeline
 
@@ -38,6 +55,8 @@ python src/03_splits.py            # random + scaffold split index files
 python src/04_baseline_rf.py       # 120 RF fits (~4 min on 8 cores)
 python src/05_egfr_structure.py    # 1M17/4HJO cleaning, pockets, viewer.html
 python src/06_summary.py           # results/SUMMARY.md + stdout
+python src/07_report.py            # RESULTS.md - every measured number
+python src/08_verify_repro.py --with-rf   # re-run + SHA-256 diff of all artefacts
 ```
 
 ## Layout
@@ -110,11 +129,17 @@ stages replay them and assert the InChIKey order matches
 - `scaffold_split`: Bemis-Murcko scaffold SMILES per molecule, grouped by
   identical scaffold, groups sorted by size descending, greedily filling train
   to 80 %, then valid to 10 %, remainder to test → 4915/615/613. Whole groups
-  are never split (`03_splits.py` fails the run if any group spans subsets).
-  The seed permutes only the order of *equal-sized* groups (the size sort is
-  stable), so the required size ordering is preserved while the 5 seeds still
-  probe genuinely different assignments — 1065 molecules change subset between
-  seed 0 and seed 1.
+  are never split. The seed permutes only the order of *equal-sized* groups (the
+  size sort is stable), so the required size ordering is preserved while the 5
+  seeds still probe genuinely different assignments — 1065 molecules change
+  subset between seed 0 and seed 1, and scaffold-split test sets overlap by only
+  Jaccard 0.21–0.27 across seed pairs (`results/split_seed_overlap.csv`).
+
+`03_splits.py` computes `scaffold_groups_spanning_subsets` for **both** splits
+and fails the run unless the scaffold split is exactly 0 *and* the random split
+is nonzero — a zero there would mean the check itself is broken. Measured: the
+random split spreads **243–261 scaffold groups (≈3750–3852 molecules)** across
+subsets; the scaffold split, 0.
 
 Scaffold statistics: **2156 unique scaffolds**, largest group **1260 molecules**
 (benzene, `c1ccccc1`), 1658 singleton scaffolds, 862 acyclic molecules (empty
@@ -164,10 +189,30 @@ with their minimum distances).
 
 Pocket centers: 1M17 `[22.014, 0.253, 52.794]`, 4HJO `[24.770, 9.194, -0.003]`.
 
-**Recommendation: 1M17.** Higher resolution (2.60 vs 2.75 Å) and a more
-complete model (312 vs 278 modelled residues) with the identical ATP-site
-ligand, so the pocket definition is directly comparable and side-chain
-positions are more reliable for docking.
+**Recommendation: 1M17**, decided on pocket-local evidence rather than the 0.15 Å
+resolution difference, which is too small to settle it:
+
+1. *Hard gate — pocket completeness.* Neither structure has a REMARK 465
+   unobserved residue inside the 5 Å pocket, so both pass; internal chain gaps
+   sit outside the site (1M17: 965–976; 4HJO: 710–713).
+2. *Conformational state.* The depositions say it outright — 1M17 is
+   "EGFR tyrosine kinase domain with 4-anilinoquinazoline inhibitor erlotinib"
+   (Stamos et al., *J. Biol. Chem.* 277:46265, 2002) and 4HJO is "crystal
+   structure of the **inactive** EGFR tyrosine kinase domain with erlotinib"
+   (Park et al., *Biochem. J.* 448:417, 2012, "Erlotinib binds both inactive and
+   active conformations of the EGFR tyrosine kinase domain"). The coordinates
+   confirm it: the β3-Lys721–αC-Glu738 salt bridge is intact at **3.05 Å** in
+   1M17 (active, αC-in) and broken at **13.30 Å** in 4HJO (inactive, αC-out).
+   We screen ATP-competitive chemotypes against the catalytically relevant
+   active site, so the αC-in state is the right target.
+3. *Then* resolution (2.60 vs 2.75 Å) and completeness (312 vs 278 modelled
+   residues), both favouring 1M17.
+
+**Caveat to state in the proposal:** 4HJO's pocket is the better-ordered one —
+mean B-factor 42.9 vs 51.5 Å² over pocket atoms, ligand B 47.5 vs 72.8 Å², and 0
+vs 16 alternate-conformer atoms in the site. Since erlotinib demonstrably binds
+both states, 4HJO is kept as the inactive-state counter-structure for a
+cross-docking sanity check rather than discarded.
 
 ### Viewer — `figures/viewer.html`
 
@@ -185,9 +230,11 @@ start figures\viewer.html      # Windows cmd / PowerShell
 Controls: switch between 1M17 and 4HJO, toggle whole-domain vs pocket zoom,
 residue labels, the 5 Å-padded docking box, and a pocket surface. The receptor
 renders as a spectrum cartoon, erlotinib as cyan sticks, and the 20 residues
-within 5 Å as yellow sticks. Verified rendering in headless Chromium; reference
-screenshots are `figures/egfr_1M17_viewer.png` and
-`figures/egfr_4HJO_viewer.png`.
+within 5 Å as yellow sticks. Rendering verified in headless Chromium (canvas
+present, no page errors). Reference captures: `figures/egfr_1M17_viewer.png`,
+`figures/egfr_4HJO_viewer.png` (whole domain) and
+`figures/egfr_1M17_pocket.png` (pocket zoom with residue labels — use this one
+for the proposal figure).
 
 ## Reproducibility
 
@@ -196,9 +243,14 @@ screenshots are `figures/egfr_1M17_viewer.png` and
 - Standardization, deduplication (`groupby(sort=True)`, InChIKey-sorted output)
   and fragment selection (ties broken on canonical SMILES) are
   order-independent, so `tox21_clean.parquet` is byte-stable across runs.
-- Split index files are committed; the baseline replays them rather than
-  recomputing scaffolds.
-- Re-running `02`–`04` reproduces `results/baseline_metrics.csv` exactly.
+- Split index files are committed; the baseline replays them and asserts the
+  InChIKey order still matches `tox21_clean.parquet` rather than recomputing
+  scaffolds.
+- Verified by hash, not by eye: `src/08_verify_repro.py --with-rf` snapshots the
+  SHA-256 of every artefact (`splits/*`, `receptors/*`, `results/*`,
+  `tox21_clean.parquet`), re-runs scripts 02–05 including all 120 forest fits,
+  and diffs. The outcome, with the interpreter path and package versions, is
+  recorded in `results/reproducibility.json` and surfaced in `RESULTS.md` §7.
 
 ## Known limitations (to state in the proposal)
 

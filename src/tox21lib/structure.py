@@ -6,6 +6,7 @@ Used for the EGFR receptors (1M17, 4HJO) that feed the 3Dmol.js viewer.
 from __future__ import annotations
 
 import json
+import re
 from collections import Counter
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -223,6 +224,128 @@ def write_ligand_sdf(
     with Chem.SDWriter(str(out_path)) as writer:
         writer.write(frag)
     return out_path
+
+
+def header_info(pdb_path: Path) -> dict:
+    """TITLE and primary-citation lines straight out of the deposited PDB header.
+
+    The conformational state of an EGFR structure is frequently stated in the
+    deposition itself; reading it beats relying on recollection.
+    """
+    title, jrnl_title, jrnl_ref = [], [], ""
+    for line in pdb_path.read_text(encoding="utf-8", errors="replace").splitlines():
+        if line.startswith("TITLE"):
+            title.append(line[10:].strip())
+        elif line.startswith("JRNL        TITL"):
+            jrnl_title.append(line[19:].strip())
+        elif line.startswith("JRNL        REF ") and not jrnl_ref:
+            jrnl_ref = " ".join(line[19:].split())
+        elif line.startswith("ATOM"):
+            break
+
+    def tidy(parts: list[str]) -> str:
+        joined = " ".join(" ".join(parts).split())
+        # PDB wraps TITLE across 80-column records, so "4-" + "ANILINO..." comes
+        # back as "4- ANILINO...". Rejoin a hyphen that a line break split.
+        return re.sub(r"(\w)- ([A-Z0-9])", r"\1-\2", joined)
+
+    return {
+        "title": tidy(title),
+        "citation_title": tidy(jrnl_title),
+        "citation_ref": jrnl_ref,
+    }
+
+
+def missing_residues(pdb_path: Path, chain_name: str) -> list[int]:
+    """Residue numbers listed as unobserved in REMARK 465 for ``chain_name``."""
+    pattern = re.compile(r"^REMARK 465\s+(\w{1,3})\s+" + re.escape(chain_name) + r"\s+(-?\d+)")
+    out = []
+    for line in pdb_path.read_text(encoding="utf-8", errors="replace").splitlines():
+        m = pattern.match(line)
+        if m:
+            out.append(int(m.group(2)))
+        elif line.startswith("ATOM"):
+            break
+    return sorted(out)
+
+
+def pocket_quality(
+    st: gemmi.Structure,
+    chain_name: str,
+    ligand: HetGroup,
+    pocket_seqids: set[int],
+    missing: list[int],
+) -> dict:
+    """Local quality of the binding site: gaps, disorder and B-factors.
+
+    Resolution is a whole-crystal statistic; what matters for docking is whether
+    the atoms lining *this* pocket are actually resolved and single-conformer.
+    """
+    b_pocket, altloc_atoms = [], 0
+    for res in st[0][chain_name]:
+        if res.het_flag != "A" or res.seqid.num not in pocket_seqids:
+            continue
+        for atom in res:
+            b_pocket.append(atom.b_iso)
+            if atom.altloc not in ("", "\0", " "):
+                altloc_atoms += 1
+
+    b_ligand = []
+    for res in st[0][ligand.chain]:
+        if res.name == ligand.resname and res.seqid.num == ligand.seqid:
+            b_ligand = [a.b_iso for a in res]
+
+    modelled = [r.seqid.num for r in st[0][chain_name] if r.het_flag == "A"]
+    lo, hi = min(modelled), max(modelled)
+    internal_gaps = [m for m in missing if lo < m < hi]
+
+    return {
+        "n_pocket_residues": len(pocket_seqids),
+        "missing_in_pocket": sorted(pocket_seqids & set(missing)),
+        "internal_gap_residues": internal_gaps,
+        "n_internal_gap_residues": len(internal_gaps),
+        "modelled_residue_span": [lo, hi],
+        "altloc_atoms_in_pocket": altloc_atoms,
+        "mean_b_pocket": round(float(np.mean(b_pocket)), 1) if b_pocket else None,
+        "mean_b_ligand": round(float(np.mean(b_ligand)), 1) if b_ligand else None,
+    }
+
+
+def alpha_c_salt_bridge(
+    st: gemmi.Structure,
+    chain_name: str,
+    *,
+    lys_seqid: int = 721,
+    glu_seqid: int = 738,
+) -> dict:
+    """Beta3-lysine / alphaC-glutamate salt-bridge distance -> alphaC-in vs alphaC-out.
+
+    Defaults are the EGFR kinase-domain numbering (Lys721, Glu738). An intact
+    bridge (<= 4 A) is the active, alphaC-in state; a broken one is the inactive
+    alphaC-out state. This is measured from coordinates, not assumed.
+    """
+
+    def atoms(seqid: int, names: set[str]) -> list[np.ndarray]:
+        for res in st[0][chain_name]:
+            if res.seqid.num == seqid and res.het_flag == "A":
+                return [
+                    np.array([a.pos.x, a.pos.y, a.pos.z]) for a in res if a.name in names
+                ]
+        return []
+
+    lys = atoms(lys_seqid, {"NZ"})
+    glu = atoms(glu_seqid, {"OE1", "OE2"})
+    if not lys or not glu:
+        return {"distance_angstrom": None, "state": "undetermined",
+                "lys_seqid": lys_seqid, "glu_seqid": glu_seqid}
+    d = min(float(np.linalg.norm(a - b)) for a in lys for b in glu)
+    return {
+        "distance_angstrom": round(d, 2),
+        "state": "active (alphaC-in, salt bridge intact)" if d <= 4.0
+        else "inactive (alphaC-out, salt bridge broken)",
+        "lys_seqid": lys_seqid,
+        "glu_seqid": glu_seqid,
+    }
 
 
 def contact_residues(

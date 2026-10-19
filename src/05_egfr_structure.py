@@ -58,6 +58,12 @@ def process(pdb_id: str) -> dict:
         pocket, paths.RECEPTORS / f"{pdb_id}_pocket.json"
     )
 
+    header = structure.header_info(raw)
+    missing = structure.missing_residues(raw, chain_name)
+    pocket_seqids = {r["seqid"] for r in pocket.contact_residues}
+    quality = structure.pocket_quality(st, chain_name, ligand, pocket_seqids, missing)
+    conformation = structure.alpha_c_salt_bridge(st, chain_name)
+
     print(f"cleaned receptor     : {receptor_path.name} ({n_res} residues, protein only)")
     print(f"ligand SDF           : {ligand_path.name}")
     print(f"pocket center        : {pocket.center}")
@@ -65,6 +71,16 @@ def process(pdb_id: str) -> dict:
           f"(ligand bbox + 5 A per side, size {pocket.box_size})")
     print(f"residues within 5 A  : {len(pocket.contact_residues)} -> "
           + ", ".join(f"{r['resname']}{r['seqid']}" for r in pocket.contact_residues))
+    print(f"deposited TITLE      : {header['title']}")
+    print(f"primary citation     : {header['citation_title']} [{header['citation_ref']}]")
+    print(f"conformation         : Lys{conformation['lys_seqid']}-Glu{conformation['glu_seqid']} "
+          f"= {conformation['distance_angstrom']} A -> {conformation['state']}")
+    print(f"pocket quality       : unobserved residues in pocket "
+          f"{quality['missing_in_pocket'] or 'none'}; "
+          f"alternate-conformer atoms in pocket {quality['altloc_atoms_in_pocket']}; "
+          f"mean B pocket {quality['mean_b_pocket']}, ligand {quality['mean_b_ligand']}")
+    print(f"internal chain gaps  : {quality['n_internal_gap_residues']} residues "
+          f"{quality['internal_gap_residues'] or ''}")
     print(f"wrote                : {pocket_path.name}")
 
     return {
@@ -92,6 +108,10 @@ def process(pdb_id: str) -> dict:
         "pocket_box_max": pocket.box_max,
         "n_contact_residues": len(pocket.contact_residues),
         "contact_residues": [f"{r['resname']}{r['seqid']}" for r in pocket.contact_residues],
+        "header": header,
+        "conformation": conformation,
+        "pocket_quality": quality,
+        "missing_residues": missing,
         "files": {
             "receptor": f"receptors/{receptor_path.name}",
             "ligand_sdf": f"receptors/{ligand_path.name}",
@@ -101,25 +121,86 @@ def process(pdb_id: str) -> dict:
 
 
 def recommend(reports: list[dict]) -> dict:
-    """Pick the structure to build the docking workflow on, from measured values.
+    """Pick the receptor for the docking workflow from measured structural facts.
 
-    Criteria, in order: crystallographic resolution (lower is better), then the
-    number of modelled residues in the kept chain (more complete pocket).
+    Resolution alone cannot settle 2.60 vs 2.75 A. The ranking is, in order:
+
+      1. no unobserved (REMARK 465) residue inside the 5 A pocket  - hard gate,
+         a gap in the binding site cannot be docked into;
+      2. conformational state matching the screening objective - we screen
+         ATP-competitive ligands, so the active alphaC-in state is preferred;
+      3. crystallographic resolution (lower better);
+      4. completeness of the modelled chain.
+
+    Pocket-local disorder (alternate conformers, B-factors) is reported as an
+    explicit caveat rather than used to rank, because it does not change which
+    conformational state is being screened.
     """
-    ranked = sorted(
-        reports, key=lambda r: (r["resolution"], -r["kept_chain_n_residues"])
-    )
+    def key(r: dict) -> tuple:
+        return (
+            len(r["pocket_quality"]["missing_in_pocket"]),
+            0 if r["conformation"]["state"].startswith("active") else 1,
+            r["resolution"],
+            -r["kept_chain_n_residues"],
+        )
+
+    ranked = sorted(reports, key=key)
     best, other = ranked[0], ranked[1]
+    bq, oq = best["pocket_quality"], other["pocket_quality"]
+
     reason = (
-        f"{best['pdb_id']} is the higher-resolution structure "
-        f"({best['resolution']} A vs {other['resolution']} A for {other['pdb_id']}) "
-        f"and models {best['kept_chain_n_residues']} residues in the kept chain "
-        f"(vs {other['kept_chain_n_residues']}); both carry the same ATP-site ligand "
-        f"{best['ligand']['resname']} (erlotinib), so the pocket definition is "
-        f"directly comparable and the sharper electron density gives more reliable "
-        f"side-chain positions for docking."
+        f"{best['pdb_id']} and {other['pdb_id']} both carry the same ATP-site ligand "
+        f"({best['ligand']['resname']}, erlotinib) in a single clean chain, and neither "
+        f"has an unobserved residue inside the 5 A pocket, so the pocket definitions are "
+        f"directly comparable. They differ in conformational state, which the depositions "
+        f"state explicitly and the coordinates confirm: {best['pdb_id']} is "
+        f"\"{best['header']['title']}\" with Lys{best['conformation']['lys_seqid']}-"
+        f"Glu{best['conformation']['glu_seqid']} at "
+        f"{best['conformation']['distance_angstrom']} A "
+        f"({best['conformation']['state']}), while {other['pdb_id']} is "
+        f"\"{other['header']['title']}\" with the same pair at "
+        f"{other['conformation']['distance_angstrom']} A "
+        f"({other['conformation']['state']}); see {other['header']['citation_ref']}. "
+        f"We screen ATP-competitive chemotypes against the catalytically relevant active "
+        f"site, so the active alphaC-in state is the right target, and {best['pdb_id']} is "
+        f"additionally the higher-resolution ({best['resolution']} vs "
+        f"{other['resolution']} A) and more complete model "
+        f"({best['kept_chain_n_residues']} vs {other['kept_chain_n_residues']} modelled "
+        f"residues, {bq['n_internal_gap_residues']} vs {oq['n_internal_gap_residues']} "
+        f"residues in internal chain gaps). "
+        f"Caveat to state in the proposal: the pocket of {other['pdb_id']} is the better "
+        f"ordered one (mean B {oq['mean_b_pocket']} vs {bq['mean_b_pocket']} "
+        f"for pocket atoms, ligand B {oq['mean_b_ligand']} vs {bq['mean_b_ligand']}, "
+        f"{oq['altloc_atoms_in_pocket']} vs {bq['altloc_atoms_in_pocket']} alternate-"
+        f"conformer atoms), and erlotinib is known to bind both states, so "
+        f"{other['pdb_id']} is kept as the inactive-state counter-structure for a "
+        f"cross-docking sanity check rather than discarded."
     )
-    return {"recommended": best["pdb_id"], "runner_up": other["pdb_id"], "reason": reason}
+    return {
+        "recommended": best["pdb_id"],
+        "runner_up": other["pdb_id"],
+        "reason": reason,
+        "criteria": [
+            "no unobserved residue inside the 5 A pocket (hard gate)",
+            "active alphaC-in conformation for ATP-competitive screening",
+            "resolution",
+            "modelled-chain completeness",
+        ],
+        "evidence": {
+            r["pdb_id"]: {
+                "deposited_title": r["header"]["title"],
+                "citation": f"{r['header']['citation_title']} [{r['header']['citation_ref']}]",
+                "salt_bridge_angstrom": r["conformation"]["distance_angstrom"],
+                "state": r["conformation"]["state"],
+                "resolution": r["resolution"],
+                "missing_in_pocket": r["pocket_quality"]["missing_in_pocket"],
+                "altloc_atoms_in_pocket": r["pocket_quality"]["altloc_atoms_in_pocket"],
+                "mean_b_pocket": r["pocket_quality"]["mean_b_pocket"],
+                "mean_b_ligand": r["pocket_quality"]["mean_b_ligand"],
+            }
+            for r in reports
+        },
+    }
 
 
 def build_viewer(reports: list[dict], recommendation: dict) -> Path:

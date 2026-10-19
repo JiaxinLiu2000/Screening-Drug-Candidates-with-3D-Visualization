@@ -1,0 +1,74 @@
+{
+  "date": "2026-10-19",
+  "scripts_rerun": [
+    "02_standardize.py",
+    "03_splits.py",
+    "04_baseline_rf.py",
+    "05_egfr_structure.py"
+  ],
+  "environment": {
+    "python": "3.11.17",
+    "interpreter": "C:\\Users\\Admin\\Documents\\lab-test\\.venv-check\\Scripts\\python.exe",
+    "rdkit": "2026.09.1",
+    "scikit-learn": "1.9.1",
+    "pandas": "3.0.6",
+    "numpy": "2.4.6",
+    "gemmi": "0.7.5"
+  },
+  "n_artefacts": 24,
+  "n_identical": 24,
+  "differing": [],
+  "checks": [
+    {
+      "artefact": "splits/*.csv (10 split index files + scaffolds.csv)",
+      "check": "SHA-256 before vs after re-running 02+03",
+      "result": "identical (11 files)"
+    },
+    {
+      "artefact": "data/processed/tox21_clean.parquet",
+      "check": "SHA-256 before vs after re-running 02",
+      "result": "identical (1 file)"
+    },
+    {
+      "artefact": "results/*.json, *.csv from 02+03",
+      "check": "SHA-256 before vs after re-running 02+03",
+      "result": "identical (6 files)"
+    },
+    {
+      "artefact": "receptors/* (cleaned receptors, ligand SDFs, pocket JSON)",
+      "check": "SHA-256 before vs after re-running 05",
+      "result": "identical (6 files)"
+    },
+    {
+      "artefact": "results/baseline_metrics.csv + baseline_summary.csv",
+      "check": "SHA-256 before vs after re-running 04 (120 forest fits)",
+      "result": "identical (2 files)"
+    }
+  ],
+  "hashes": {
+    "splits\\random_split_seed0.csv": "34f6688171704510dabd9ca0ba51f874fd0469f5d637f92c3fee55b64c16109f",
+    "splits\\random_split_seed1.csv": "c126e7782d1836e15155e558a8756435bbc6a1edf14e4fbc4d6ce7687d6ffdbd",
+    "splits\\random_split_seed2.csv": "f7986fd25b9d0d5230d3452aa1cd7d415ccd3bf67153cb136607f23e265d6e62",
+    "splits\\random_split_seed3.csv": "5b8248dc74a1ff2010a6c7af093a415c378fd184a348c05832d9f51c5c72450b",
+    "splits\\random_split_seed4.csv": "02109a2d40b0b23b6509615b28c326d988b0c5e1ae6cae9201480b9f41291e18",
+    "splits\\scaffold_split_seed0.csv": "6fce45b7ae790ed0e52586a3dacf401bd037effe8def3dbfbeb7606eb1a0cdf5",
+    "splits\\scaffold_split_seed1.csv": "b01968c16e821ce202518e314b6db3a6b9b974cd76e5e9958b0fff02c01b839b",
+    "splits\\scaffold_split_seed2.csv": "832f6e9352d8071a0620a27cf6caac4356d86b1714fa1ef2f2c21461231cbba5",
+    "splits\\scaffold_split_seed3.csv": "8ef33fbfe0853409d180ca975246abe10a66436cd98c59acdfe1d904983782c6",
+    "splits\\scaffold_split_seed4.csv": "37decab9bbc9f34fb0a7b09d6dc6d62cf6f56438f1a7fab9317ba2c8eae199e7",
+    "splits\\scaffolds.csv": "62c50d0d671d0c642b7eb1cbe33b176a9dffe35a2077f87926a6d709ae72046b",
+    "receptors\\1M17_ligand.sdf": "03cb95a6b2efdcf958bd5da58cd106b22d0e0d3fe059eaf7e5865c3168c0e004",
+    "receptors\\1M17_pocket.json": "edb7dc457da1bf1029591792862d11910beeb009985e85699162c918c0e012b6",
+    "receptors\\1M17_receptor.pdb": "7896fe429fd08ee58ba60bf751a9525c790fc6e32bcf07048e560f38fe6db123",
+    "receptors\\4HJO_ligand.sdf": "4a4afb27f8a000fb66e8839769f308fa3f7fc89fb490bbe2a00f48d2f68d2aa9",
+    "receptors\\4HJO_pocket.json": "310b9bc9c17a13d929673a2336237b60fade37450d0cfa76849e26726d8d2c1e",
+    "receptors\\4HJO_receptor.pdb": "7a5a68eff08859f584b2d3b21fd6542527287be8f6ebb611e77231ad740e6625",
+    "results\\standardization_stats.json": "babbfc7a317ef101a3a6c64c61c80a2a67f5ed6625199b459f5e2a8813dba63a",
+    "results\\scaffold_stats.json": "7015dcdc360de8bdf8cf480d2abbe9412c620ae2da1f7d0f8f8e853fe7f7f80f",
+    "results\\split_sizes.csv": "b6bf42880982d00995b05b25fa6bb91a165ecb24ccec9a8a1876a1986e16a111",
+    "results\\clean_endpoint_stats.csv": "7dc67e32442ced3f3ce8f589ad8bed632a55f15e21c799373ae8132872cc41ea",
+    "data\\processed\\tox21_clean.parquet": "812e1d467d2e69f309124050d7db023266c4b75cb6e8d03648df1fc4c1ff64a4",
+    "results\\baseline_metrics.csv": "30bab58f190d9796c62ec0505b1d706da3834fc840b00e7900f51b840f8a7e53",
+    "results\\baseline_summary.csv": "0ed9400af4c07280bcb4f8a337160876bb6c00c0b6a2d7dae752b2450196f6a9"
+  }
+}

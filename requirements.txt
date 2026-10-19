@@ -1,16 +1,74 @@
-# Python 3.11.17
-# Install:  python -m venv .venv && .venv/Scripts/pip install -r requirements.txt
-PyTDC==0.4.1
+# Python 3.11 (developed and verified on CPython 3.11.17, Windows x86_64).
+#
+# This is a COMPLETE lock: every direct and transitive dependency is pinned, so
+# it MUST be installed with --no-deps:
+#
+#     python -m venv .venv
+#     .venv/Scripts/python -m pip install --no-deps -r requirements.txt
+#
+# Why --no-deps: PyTDC 0.4.1 declares a dependency on `rdkit-pypi`, which
+# installs into the same `rdkit/` package directory as the modern `rdkit`
+# wheel. Letting the resolver run installs both, and whichever lands last
+# silently overwrites the other's files - the build is then not reproducible
+# and `rdkit.__version__` depends on install order. Resolving nothing and
+# pinning everything avoids that entirely.
+#
+# Two further pins worth knowing:
+#   - setuptools is held below 81 because PyTDC 0.4.1 imports `pkg_resources`,
+#     which setuptools 81 removed.
+#   - the `dataclasses` backport that PyTDC pulls in is deliberately absent:
+#     it is a Python 3.6-only package (`Requires-Python <3.7`) and shadows the
+#     standard library on 3.11.
+
+# --- core science stack ---
 rdkit==2026.9.1
 scikit-learn==1.9.1
 pandas==3.0.6
 numpy==2.4.6
-pyarrow==26.0.0
 scipy==1.17.1
+pyarrow==26.0.0
 joblib==1.6.0
+threadpoolctl==3.7.0
+python-dateutil==2.9.0.post0
+tzdata==2026.5
+six==1.17.0
+pillow==13.0.0
+
+# --- structures (Task 5) ---
 gemmi==0.7.5
-requests==2.34.2
-tqdm==4.70.1
+
+# --- Therapeutics Data Commons (Task 1) and its runtime imports ---
+pytdc==0.4.1
 fuzzywuzzy==0.18.0
-# PyTDC 0.4.1 imports pkg_resources, removed from setuptools >= 81
+tqdm==4.70.1
+requests==2.34.2
+urllib3==2.8.0
+certifi==2026.10.18
+idna==3.20
+charset-normalizer==3.5.2
+colorama==0.4.6
 setuptools==80.10.2
+seaborn==0.13.2
+matplotlib==3.11.2
+contourpy==1.3.3
+cycler==0.12.1
+fonttools==4.67.0
+kiwisolver==1.5.1
+pyparsing==3.3.3
+packaging==26.3
+huggingface-hub==2.2.0
+hf-xet==1.7.0
+filelock==4.2.4
+fsspec==2026.9.0
+pyyaml==6.0.3
+typing-extensions==4.16.0
+# huggingface-hub's HTTP stack (imported eagerly by `import tdc`)
+httpx2==2.14.0
+httpcore2==2.14.0
+anyio==4.15.1
+h11==0.16.0
+truststore==0.10.5
+# remaining transitive pins of the stack above
+click==8.5.0
+cloudpickle==3.1.2
+narwhals==2.27.1

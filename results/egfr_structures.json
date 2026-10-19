@@ -71,6 +71,66 @@
         "THR830",
         "ASP831"
       ],
+      "header": {
+        "title": "EPIDERMAL GROWTH FACTOR RECEPTOR TYROSINE KINASE DOMAIN WITH 4-ANILINOQUINAZOLINE INHIBITOR ERLOTINIB",
+        "citation_title": "STRUCTURE OF THE EPIDERMAL GROWTH FACTOR RECEPTOR KINASE DOMAIN ALONE AND IN COMPLEX WITH A 4-ANILINOQUINAZOLINE INHIBITOR.",
+        "citation_ref": "J.BIOL.CHEM. V. 277 46265 2002"
+      },
+      "conformation": {
+        "distance_angstrom": 3.05,
+        "state": "active (alphaC-in, salt bridge intact)",
+        "lys_seqid": 721,
+        "glu_seqid": 738
+      },
+      "pocket_quality": {
+        "n_pocket_residues": 20,
+        "missing_in_pocket": [],
+        "internal_gap_residues": [
+          965,
+          966,
+          967,
+          968,
+          969,
+          970,
+          971,
+          972,
+          973,
+          974,
+          975,
+          976
+        ],
+        "n_internal_gap_residues": 12,
+        "modelled_residue_span": [
+          672,
+          995
+        ],
+        "altloc_atoms_in_pocket": 16,
+        "mean_b_pocket": 51.5,
+        "mean_b_ligand": 72.8
+      },
+      "missing_residues": [
+        666,
+        667,
+        668,
+        669,
+        670,
+        671,
+        965,
+        966,
+        967,
+        968,
+        969,
+        970,
+        971,
+        972,
+        973,
+        974,
+        975,
+        976,
+        996,
+        997,
+        998
+      ],
       "files": {
         "receptor": "receptors/1M17_receptor.pdb",
         "ligand_sdf": "receptors/1M17_ligand.sdf",
@@ -148,6 +208,96 @@
         "THR830",
         "ASP831"
       ],
+      "header": {
+        "title": "CRYSTAL STRUCTURE OF THE INACTIVE EGFR TYROSINE KINASE DOMAIN WITH ERLOTINIB",
+        "citation_title": "ERLOTINIB BINDS BOTH INACTIVE AND ACTIVE CONFORMATIONS OF THE EGFR TYROSINE KINASE DOMAIN.",
+        "citation_ref": "BIOCHEM.J. V. 448 417 2012"
+      },
+      "conformation": {
+        "distance_angstrom": 13.3,
+        "state": "inactive (alphaC-out, salt bridge broken)",
+        "lys_seqid": 721,
+        "glu_seqid": 738
+      },
+      "pocket_quality": {
+        "n_pocket_residues": 20,
+        "missing_in_pocket": [],
+        "internal_gap_residues": [
+          710,
+          711,
+          712,
+          713
+        ],
+        "n_internal_gap_residues": 4,
+        "modelled_residue_span": [
+          679,
+          960
+        ],
+        "altloc_atoms_in_pocket": 0,
+        "mean_b_pocket": 42.9,
+        "mean_b_ligand": 47.5
+      },
+      "missing_residues": [
+        662,
+        663,
+        664,
+        665,
+        666,
+        667,
+        668,
+        669,
+        670,
+        671,
+        672,
+        673,
+        674,
+        675,
+        676,
+        677,
+        678,
+        710,
+        711,
+        712,
+        713,
+        961,
+        962,
+        963,
+        964,
+        965,
+        966,
+        967,
+        968,
+        969,
+        970,
+        971,
+        972,
+        973,
+        974,
+        975,
+        976,
+        977,
+        978,
+        979,
+        980,
+        981,
+        982,
+        983,
+        984,
+        985,
+        986,
+        987,
+        988,
+        989,
+        990,
+        991,
+        992,
+        993,
+        994,
+        995,
+        996,
+        997,
+        998
+      ],
       "files": {
         "receptor": "receptors/4HJO_receptor.pdb",
         "ligand_sdf": "receptors/4HJO_ligand.sdf",
@@ -158,6 +308,36 @@
   "recommendation": {
     "recommended": "1M17",
     "runner_up": "4HJO",
-    "reason": "1M17 is the higher-resolution structure (2.6 A vs 2.75 A for 4HJO) and models 312 residues in the kept chain (vs 278); both carry the same ATP-site ligand AQ4 (erlotinib), so the pocket definition is directly comparable and the sharper electron density gives more reliable side-chain positions for docking."
+    "reason": "1M17 and 4HJO both carry the same ATP-site ligand (AQ4, erlotinib) in a single clean chain, and neither has an unobserved residue inside the 5 A pocket, so the pocket definitions are directly comparable. They differ in conformational state, which the depositions state explicitly and the coordinates confirm: 1M17 is \"EPIDERMAL GROWTH FACTOR RECEPTOR TYROSINE KINASE DOMAIN WITH 4-ANILINOQUINAZOLINE INHIBITOR ERLOTINIB\" with Lys721-Glu738 at 3.05 A (active (alphaC-in, salt bridge intact)), while 4HJO is \"CRYSTAL STRUCTURE OF THE INACTIVE EGFR TYROSINE KINASE DOMAIN WITH ERLOTINIB\" with the same pair at 13.3 A (inactive (alphaC-out, salt bridge broken)); see BIOCHEM.J. V. 448 417 2012. We screen ATP-competitive chemotypes against the catalytically relevant active site, so the active alphaC-in state is the right target, and 1M17 is additionally the higher-resolution (2.6 vs 2.75 A) and more complete model (312 vs 278 modelled residues, 12 vs 4 residues in internal chain gaps). Caveat to state in the proposal: the pocket of 4HJO is the better ordered one (mean B 42.9 vs 51.5 for pocket atoms, ligand B 47.5 vs 72.8, 0 vs 16 alternate-conformer atoms), and erlotinib is known to bind both states, so 4HJO is kept as the inactive-state counter-structure for a cross-docking sanity check rather than discarded.",
+    "criteria": [
+      "no unobserved residue inside the 5 A pocket (hard gate)",
+      "active alphaC-in conformation for ATP-competitive screening",
+      "resolution",
+      "modelled-chain completeness"
+    ],
+    "evidence": {
+      "1M17": {
+        "deposited_title": "EPIDERMAL GROWTH FACTOR RECEPTOR TYROSINE KINASE DOMAIN WITH 4-ANILINOQUINAZOLINE INHIBITOR ERLOTINIB",
+        "citation": "STRUCTURE OF THE EPIDERMAL GROWTH FACTOR RECEPTOR KINASE DOMAIN ALONE AND IN COMPLEX WITH A 4-ANILINOQUINAZOLINE INHIBITOR. [J.BIOL.CHEM. V. 277 46265 2002]",
+        "salt_bridge_angstrom": 3.05,
+        "state": "active (alphaC-in, salt bridge intact)",
+        "resolution": 2.6,
+        "missing_in_pocket": [],
+        "altloc_atoms_in_pocket": 16,
+        "mean_b_pocket": 51.5,
+        "mean_b_ligand": 72.8
+      },
+      "4HJO": {
+        "deposited_title": "CRYSTAL STRUCTURE OF THE INACTIVE EGFR TYROSINE KINASE DOMAIN WITH ERLOTINIB",
+        "citation": "ERLOTINIB BINDS BOTH INACTIVE AND ACTIVE CONFORMATIONS OF THE EGFR TYROSINE KINASE DOMAIN. [BIOCHEM.J. V. 448 417 2012]",
+        "salt_bridge_angstrom": 13.3,
+        "state": "inactive (alphaC-out, salt bridge broken)",
+        "resolution": 2.75,
+        "missing_in_pocket": [],
+        "altloc_atoms_in_pocket": 0,
+        "mean_b_pocket": 42.9,
+        "mean_b_ligand": 47.5
+      }
+    }
   }
 }
