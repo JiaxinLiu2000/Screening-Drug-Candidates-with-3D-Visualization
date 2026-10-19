@@ -1,0 +1,11 @@
+split,seed,train,valid,test,scaffold_groups_spanning_subsets
+random,0,4914,614,615,0
+random,1,4914,614,615,0
+random,2,4914,614,615,0
+random,3,4914,614,615,0
+random,4,4914,614,615,0
+scaffold,0,4915,615,613,0
+scaffold,1,4915,615,613,0
+scaffold,2,4915,615,613,0
+scaffold,3,4915,615,613,0
+scaffold,4,4915,615,613,0

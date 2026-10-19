@@ -1,0 +1,16 @@
+# Python 3.11.17
+# Install:  python -m venv .venv && .venv/Scripts/pip install -r requirements.txt
+PyTDC==0.4.1
+rdkit==2026.9.1
+scikit-learn==1.9.1
+pandas==3.0.6
+numpy==2.4.6
+pyarrow==26.0.0
+scipy==1.17.1
+joblib==1.6.0
+gemmi==0.7.5
+requests==2.34.2
+tqdm==4.70.1
+fuzzywuzzy==0.18.0
+# PyTDC 0.4.1 imports pkg_resources, removed from setuptools >= 81
+setuptools==80.10.2

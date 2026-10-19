@@ -1,0 +1,18 @@
+{
+  "input_rows": 7831,
+  "parse_failures": 8,
+  "parse_failure_breakdown": {
+    "parse_error": 8
+  },
+  "rows_before_dedup": 7823,
+  "unique_inchikeys": 7580,
+  "duplicate_rows_merged": 243,
+  "label_cells_nan_from_tie": 67,
+  "filtered_out": 1437,
+  "filter_breakdown": {
+    "too_few_heavy_atoms": 1263,
+    "disallowed_element": 102,
+    "too_many_heavy_atoms": 72
+  },
+  "final_molecules": 6143
+}

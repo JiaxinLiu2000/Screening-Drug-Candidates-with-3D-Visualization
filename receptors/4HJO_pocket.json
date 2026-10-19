@@ -1,0 +1,130 @@
+{
+  "pdb_id": "4HJO",
+  "ligand_resname": "AQ4",
+  "ligand_chain": "A",
+  "ligand_seqid": 1001,
+  "center": [
+    24.77,
+    9.194,
+    -0.003
+  ],
+  "box_min": [
+    14.997,
+    -2.012,
+    -9.697
+  ],
+  "box_max": [
+    33.817,
+    20.314,
+    8.424
+  ],
+  "box_size": [
+    18.82,
+    22.326,
+    18.121
+  ],
+  "padding_angstrom": 5.0,
+  "contact_residues": [
+    {
+      "resname": "LEU",
+      "seqid": 694,
+      "min_dist": 3.7
+    },
+    {
+      "resname": "VAL",
+      "seqid": 702,
+      "min_dist": 3.7
+    },
+    {
+      "resname": "LYS",
+      "seqid": 704,
+      "min_dist": 4.86
+    },
+    {
+      "resname": "ALA",
+      "seqid": 719,
+      "min_dist": 3.34
+    },
+    {
+      "resname": "ILE",
+      "seqid": 720,
+      "min_dist": 4.27
+    },
+    {
+      "resname": "LYS",
+      "seqid": 721,
+      "min_dist": 3.48
+    },
+    {
+      "resname": "LEU",
+      "seqid": 764,
+      "min_dist": 2.89
+    },
+    {
+      "resname": "ILE",
+      "seqid": 765,
+      "min_dist": 4.09
+    },
+    {
+      "resname": "THR",
+      "seqid": 766,
+      "min_dist": 3.48
+    },
+    {
+      "resname": "GLN",
+      "seqid": 767,
+      "min_dist": 3.18
+    },
+    {
+      "resname": "LEU",
+      "seqid": 768,
+      "min_dist": 3.63
+    },
+    {
+      "resname": "MET",
+      "seqid": 769,
+      "min_dist": 2.92
+    },
+    {
+      "resname": "PRO",
+      "seqid": 770,
+      "min_dist": 3.14
+    },
+    {
+      "resname": "PHE",
+      "seqid": 771,
+      "min_dist": 3.48
+    },
+    {
+      "resname": "GLY",
+      "seqid": 772,
+      "min_dist": 3.3
+    },
+    {
+      "resname": "CYS",
+      "seqid": 773,
+      "min_dist": 3.54
+    },
+    {
+      "resname": "ASP",
+      "seqid": 776,
+      "min_dist": 3.83
+    },
+    {
+      "resname": "LEU",
+      "seqid": 820,
+      "min_dist": 3.28
+    },
+    {
+      "resname": "THR",
+      "seqid": 830,
+      "min_dist": 3.67
+    },
+    {
+      "resname": "ASP",
+      "seqid": 831,
+      "min_dist": 3.18
+    }
+  ],
+  "contact_cutoff_angstrom": 5.0
+}

@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.pyc
+
+# Raw and processed data are NOT committed (regenerate with src/01, src/02)
+data/raw/
+data/processed/

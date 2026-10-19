@@ -1,0 +1,163 @@
+{
+  "structures": [
+    {
+      "pdb_id": "1M17",
+      "resolution": 2.6,
+      "chains_in_model": [
+        "A"
+      ],
+      "protein_chains": [
+        {
+          "chain": "A",
+          "n_residues": 312
+        }
+      ],
+      "het_atom_counts": {
+        "AQ4": 29,
+        "HOH": 20
+      },
+      "het_instances": [
+        {
+          "resname": "AQ4",
+          "chain": "A",
+          "seqid": 999,
+          "n_atoms": 29
+        }
+      ],
+      "n_water_molecules": 20,
+      "ligand": {
+        "resname": "AQ4",
+        "chain": "A",
+        "seqid": 999,
+        "n_atoms": 29
+      },
+      "kept_chain": "A",
+      "kept_chain_n_residues": 312,
+      "pocket_center": [
+        22.014,
+        0.253,
+        52.794
+      ],
+      "pocket_box_min": [
+        8.843,
+        -7.039,
+        43.543
+      ],
+      "pocket_box_max": [
+        34.552,
+        7.645,
+        60.642
+      ],
+      "n_contact_residues": 20,
+      "contact_residues": [
+        "LEU694",
+        "GLY695",
+        "VAL702",
+        "ALA719",
+        "LYS721",
+        "GLU738",
+        "MET742",
+        "LEU764",
+        "ILE765",
+        "THR766",
+        "GLN767",
+        "LEU768",
+        "MET769",
+        "PRO770",
+        "PHE771",
+        "GLY772",
+        "CYS773",
+        "LEU820",
+        "THR830",
+        "ASP831"
+      ],
+      "files": {
+        "receptor": "receptors/1M17_receptor.pdb",
+        "ligand_sdf": "receptors/1M17_ligand.sdf",
+        "pocket_json": "receptors/1M17_pocket.json"
+      }
+    },
+    {
+      "pdb_id": "4HJO",
+      "resolution": 2.75,
+      "chains_in_model": [
+        "A"
+      ],
+      "protein_chains": [
+        {
+          "chain": "A",
+          "n_residues": 278
+        }
+      ],
+      "het_atom_counts": {
+        "HOH": 34,
+        "AQ4": 29
+      },
+      "het_instances": [
+        {
+          "resname": "AQ4",
+          "chain": "A",
+          "seqid": 1001,
+          "n_atoms": 29
+        }
+      ],
+      "n_water_molecules": 34,
+      "ligand": {
+        "resname": "AQ4",
+        "chain": "A",
+        "seqid": 1001,
+        "n_atoms": 29
+      },
+      "kept_chain": "A",
+      "kept_chain_n_residues": 278,
+      "pocket_center": [
+        24.77,
+        9.194,
+        -0.003
+      ],
+      "pocket_box_min": [
+        14.997,
+        -2.012,
+        -9.697
+      ],
+      "pocket_box_max": [
+        33.817,
+        20.314,
+        8.424
+      ],
+      "n_contact_residues": 20,
+      "contact_residues": [
+        "LEU694",
+        "VAL702",
+        "LYS704",
+        "ALA719",
+        "ILE720",
+        "LYS721",
+        "LEU764",
+        "ILE765",
+        "THR766",
+        "GLN767",
+        "LEU768",
+        "MET769",
+        "PRO770",
+        "PHE771",
+        "GLY772",
+        "CYS773",
+        "ASP776",
+        "LEU820",
+        "THR830",
+        "ASP831"
+      ],
+      "files": {
+        "receptor": "receptors/4HJO_receptor.pdb",
+        "ligand_sdf": "receptors/4HJO_ligand.sdf",
+        "pocket_json": "receptors/4HJO_pocket.json"
+      }
+    }
+  ],
+  "recommendation": {
+    "recommended": "1M17",
+    "runner_up": "4HJO",
+    "reason": "1M17 is the higher-resolution structure (2.6 A vs 2.75 A for 4HJO) and models 312 residues in the kept chain (vs 278); both carry the same ATP-site ligand AQ4 (erlotinib), so the pocket definition is directly comparable and the sharper electron density gives more reliable side-chain positions for docking."
+  }
+}
