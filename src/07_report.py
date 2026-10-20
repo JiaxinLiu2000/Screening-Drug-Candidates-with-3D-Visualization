@@ -421,6 +421,21 @@ def main() -> int:
     else:
         add("Run `src/08_verify_repro.py --with-rf` to generate "
             "`results/reproducibility.json`.")
+
+    audit_path = paths.RESULTS / "data_audit.json"
+    if audit_path.exists():
+        audit = load_json("data_audit.json")
+        add("")
+        add(f"Separately, `src/15_data_audit.py` runs **{len(audit['checks'])} "
+            f"cross-artefact integrity checks** that recompute each quantity from the "
+            f"artefact it is derived from rather than trusting any script's own "
+            f"assertions — summary statistics against per-fit rows, pocket geometry "
+            f"against ligand coordinates, split partitions against the molecule tables, "
+            f"quoted figures against their source tables, and the dependency lock "
+            f"against the installed environment. Current state: "
+            f"**{audit['n_pass']} passed, {audit['n_fail']} failed, "
+            f"{audit['n_skip']} skipped** "
+            f"([`results/DATA_AUDIT.md`](results/DATA_AUDIT.md)).")
     add("")
     add("---")
     add("")
