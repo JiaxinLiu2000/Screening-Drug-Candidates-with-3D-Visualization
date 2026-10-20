@@ -1,0 +1,70 @@
+{
+  "pdb_id": "5UGA",
+  "resolution_angstrom": 1.82,
+  "ligand_code": "8BM",
+  "ligand_instance": "8BM/A9001",
+  "ligand_smiles": "CC(=O)N1CC[C@H](Nc2nc(Nc3ccc(N4CCN(C)CC4)cc3)c3ncn(C(C)C)c3n2)C1",
+  "ligand_inchikey": "ACTNABQUCQIOKX-FQEVSTJZSA-N",
+  "ligand_heavy_atoms": 35,
+  "pocket_center": [
+    14.066,
+    -3.397,
+    -32.406
+  ],
+  "pocket_box_min": [
+    1.396,
+    -15.556,
+    -39.733
+  ],
+  "pocket_box_max": [
+    27.639,
+    6.297,
+    -23.923
+  ],
+  "pocket_box_size": [
+    26.243,
+    21.853,
+    15.81
+  ],
+  "pocket_box_padding_angstrom": 5.0,
+  "mean_pocket_b_factor": 28.5,
+  "n_residues_within_5A": 22,
+  "contact_residues": [
+    "LEU718",
+    "GLY719",
+    "SER720",
+    "PHE723",
+    "VAL726",
+    "ALA743",
+    "LYS745",
+    "CYS775",
+    "MET790",
+    "GLN791",
+    "LEU792",
+    "MET793",
+    "PRO794",
+    "PHE795",
+    "GLY796",
+    "CYS797",
+    "GLU804",
+    "ARG841",
+    "ASN842",
+    "LEU844",
+    "THR854",
+    "PHE856"
+  ],
+  "kept_chain": "A",
+  "kept_chain_residues": 283,
+  "title": "CRYSTAL STRUCTURE OF THE EGFR KINASE DOMAIN (L858R, T790M, V948R) IN COMPLEX WITH 4-(4-{[2-{[(3S)-1-ACETYLPYRROLIDIN-3-YL]AMINO}-9- (PROPAN-2-YL)-9H-PURIN-6-YL]AMINO}PHENYL)-1-METHYLPIPERAZIN-1-IUM",
+  "conformation": {
+    "distance_angstrom": 10.63,
+    "state": "inactive (alphaC-out, salt bridge broken)",
+    "lys_seqid": 745,
+    "glu_seqid": 762,
+    "numbering": "precursor"
+  },
+  "files": {
+    "receptor": "receptors/benchmark/5UGA_receptor.pdb",
+    "ligand": "receptors/benchmark/5UGA_ligand.sdf"
+  }
+}

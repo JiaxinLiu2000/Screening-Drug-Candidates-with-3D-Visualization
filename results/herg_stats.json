@@ -1,0 +1,131 @@
+{
+  "rows_missing_drug_id": 22,
+  "input_rows": 655,
+  "parse_failures": 0,
+  "parse_failure_breakdown": {},
+  "rows_before_dedup": 655,
+  "unique_inchikeys": 598,
+  "duplicate_rows_merged": 57,
+  "label_cells_nan_from_tie": 7,
+  "filtered_out": 10,
+  "filter_breakdown": {
+    "too_few_heavy_atoms": 9,
+    "disallowed_element": 1
+  },
+  "final_molecules": 588,
+  "n_labeled": 581,
+  "n_positive": 399,
+  "positive_rate": 0.6867469879518072,
+  "tox21_molecules": 6143,
+  "inchikey_overlap_with_tox21": 135,
+  "inchikey_overlap_pct_of_herg": 22.959183673469386,
+  "scaffolds": {
+    "n_unique_scaffolds": 387,
+    "largest_group_size": 29,
+    "largest_group_scaffold": "c1ccccc1",
+    "n_singleton_scaffolds": 327,
+    "n_acyclic_molecules": 10
+  },
+  "split_sizes": [
+    {
+      "split": "random",
+      "seed": 0,
+      "train": 470,
+      "valid": 59,
+      "test": 59,
+      "scaffold_groups_spanning_subsets": 31,
+      "test_pos_rate": 0.8135593220338984
+    },
+    {
+      "split": "random",
+      "seed": 1,
+      "train": 470,
+      "valid": 59,
+      "test": 59,
+      "scaffold_groups_spanning_subsets": 34,
+      "test_pos_rate": 0.6271186440677966
+    },
+    {
+      "split": "random",
+      "seed": 2,
+      "train": 470,
+      "valid": 59,
+      "test": 59,
+      "scaffold_groups_spanning_subsets": 29,
+      "test_pos_rate": 0.7457627118644068
+    },
+    {
+      "split": "random",
+      "seed": 3,
+      "train": 470,
+      "valid": 59,
+      "test": 59,
+      "scaffold_groups_spanning_subsets": 31,
+      "test_pos_rate": 0.711864406779661
+    },
+    {
+      "split": "random",
+      "seed": 4,
+      "train": 470,
+      "valid": 59,
+      "test": 59,
+      "scaffold_groups_spanning_subsets": 26,
+      "test_pos_rate": 0.6724137931034483
+    },
+    {
+      "split": "scaffold",
+      "seed": 0,
+      "train": 471,
+      "valid": 59,
+      "test": 58,
+      "scaffold_groups_spanning_subsets": 0,
+      "test_pos_rate": 0.6724137931034483
+    },
+    {
+      "split": "scaffold",
+      "seed": 1,
+      "train": 471,
+      "valid": 59,
+      "test": 58,
+      "scaffold_groups_spanning_subsets": 0,
+      "test_pos_rate": 0.6379310344827587
+    },
+    {
+      "split": "scaffold",
+      "seed": 2,
+      "train": 471,
+      "valid": 59,
+      "test": 58,
+      "scaffold_groups_spanning_subsets": 0,
+      "test_pos_rate": 0.6896551724137931
+    },
+    {
+      "split": "scaffold",
+      "seed": 3,
+      "train": 471,
+      "valid": 59,
+      "test": 58,
+      "scaffold_groups_spanning_subsets": 0,
+      "test_pos_rate": 0.6896551724137931
+    },
+    {
+      "split": "scaffold",
+      "seed": 4,
+      "train": 471,
+      "valid": 59,
+      "test": 58,
+      "scaffold_groups_spanning_subsets": 0,
+      "test_pos_rate": 0.6724137931034483
+    }
+  ],
+  "test_to_train_nn_tanimoto_mean": {
+    "random": {
+      "herg_nn_tanimoto": 0.500049,
+      "tox21_nn_tanimoto": 0.584702
+    },
+    "scaffold": {
+      "herg_nn_tanimoto": 0.410318,
+      "tox21_nn_tanimoto": 0.439724
+    }
+  }
+}

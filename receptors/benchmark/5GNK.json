@@ -1,0 +1,76 @@
+{
+  "pdb_id": "5GNK",
+  "resolution_angstrom": 1.8,
+  "ligand_code": "80U",
+  "ligand_instance": "80U/A1001",
+  "ligand_smiles": "C=CC(=O)N1CCC[C@@H](n2nc(-c3ccc(OCc4nccn4C)c(Cl)c3)c3c(N)ncnc32)C1",
+  "ligand_inchikey": "IDPFQFBOJCHECD-MRXNPFEDSA-N",
+  "ligand_heavy_atoms": 35,
+  "pocket_center": [
+    28.37,
+    11.416,
+    39.879
+  ],
+  "pocket_box_min": [
+    17.489,
+    1.889,
+    29.869
+  ],
+  "pocket_box_max": [
+    40.645,
+    20.374,
+    48.945
+  ],
+  "pocket_box_size": [
+    23.156,
+    18.485,
+    19.076
+  ],
+  "pocket_box_padding_angstrom": 5.0,
+  "mean_pocket_b_factor": 16.9,
+  "n_residues_within_5A": 28,
+  "contact_residues": [
+    "LEU718",
+    "GLY719",
+    "SER720",
+    "VAL726",
+    "ALA743",
+    "ILE744",
+    "LYS745",
+    "MET766",
+    "CYS775",
+    "ARG776",
+    "LEU777",
+    "LEU788",
+    "ILE789",
+    "MET790",
+    "GLN791",
+    "LEU792",
+    "MET793",
+    "GLY796",
+    "CYS797",
+    "LEU799",
+    "ASP800",
+    "ARG841",
+    "LEU844",
+    "ILE853",
+    "THR854",
+    "ASP855",
+    "PHE856",
+    "LEU858"
+  ],
+  "kept_chain": "A",
+  "kept_chain_residues": 277,
+  "title": "CRYSTAL STRUCTURE OF EGFR 696-988 T790M IN COMPLEX WITH LXX-6-34",
+  "conformation": {
+    "distance_angstrom": 9.47,
+    "state": "inactive (alphaC-out, salt bridge broken)",
+    "lys_seqid": 745,
+    "glu_seqid": 762,
+    "numbering": "precursor"
+  },
+  "files": {
+    "receptor": "receptors/benchmark/5GNK_receptor.pdb",
+    "ligand": "receptors/benchmark/5GNK_ligand.sdf"
+  }
+}

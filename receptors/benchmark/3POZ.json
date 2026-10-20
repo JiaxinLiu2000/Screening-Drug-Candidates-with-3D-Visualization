@@ -1,0 +1,75 @@
+{
+  "pdb_id": "3POZ",
+  "resolution_angstrom": 1.5,
+  "ligand_code": "03P",
+  "ligand_instance": "03P/A1023",
+  "ligand_smiles": "CC(C)(O)CC(=O)NCCn1ccc2ncnc(Nc3ccc(Oc4cccc(C(F)(F)F)c4)c(Cl)c3)c21",
+  "ligand_inchikey": "ZYQXEVJIFYIBHZ-UHFFFAOYSA-N",
+  "ligand_heavy_atoms": 38,
+  "pocket_center": [
+    17.417,
+    32.793,
+    11.71
+  ],
+  "pocket_box_min": [
+    8.371,
+    22.632,
+    1.017
+  ],
+  "pocket_box_max": [
+    29.121,
+    41.032,
+    22.235
+  ],
+  "pocket_box_size": [
+    20.75,
+    18.4,
+    21.218
+  ],
+  "pocket_box_padding_angstrom": 5.0,
+  "mean_pocket_b_factor": 30.1,
+  "n_residues_within_5A": 27,
+  "contact_residues": [
+    "LEU718",
+    "GLY719",
+    "VAL726",
+    "ALA743",
+    "ILE744",
+    "LYS745",
+    "MET766",
+    "CYS775",
+    "ARG776",
+    "LEU777",
+    "LEU788",
+    "ILE789",
+    "THR790",
+    "GLN791",
+    "LEU792",
+    "MET793",
+    "GLY796",
+    "CYS797",
+    "ARG841",
+    "ASN842",
+    "LEU844",
+    "ILE853",
+    "THR854",
+    "ASP855",
+    "PHE856",
+    "LEU858",
+    "LEU1001"
+  ],
+  "kept_chain": "A",
+  "kept_chain_residues": 293,
+  "title": "EGFR KINASE DOMAIN COMPLEXED WITH TAK-285",
+  "conformation": {
+    "distance_angstrom": 14.59,
+    "state": "inactive (alphaC-out, salt bridge broken)",
+    "lys_seqid": 745,
+    "glu_seqid": 762,
+    "numbering": "precursor"
+  },
+  "files": {
+    "receptor": "receptors/benchmark/3POZ_receptor.pdb",
+    "ligand": "receptors/benchmark/3POZ_ligand.sdf"
+  }
+}

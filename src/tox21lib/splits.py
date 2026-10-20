@@ -29,6 +29,18 @@ def scaffold_smiles(smiles: str) -> str:
     return Chem.MolToSmiles(scaffold)
 
 
+def generic_scaffold_smiles(smiles: str) -> str:
+    """Generic Murcko framework (all atoms C, all bonds single); '' if acyclic."""
+    mol = Chem.MolFromSmiles(smiles)
+    if mol is None:
+        raise ValueError(f"unparsable SMILES passed to scaffold splitter: {smiles!r}")
+    scaffold = MurckoScaffold.GetScaffoldForMol(mol)
+    if scaffold.GetNumAtoms() == 0:
+        return ""
+    generic = MurckoScaffold.MakeScaffoldGeneric(scaffold)
+    return Chem.MolToSmiles(generic)
+
+
 def random_split(
     n: int,
     seed: int,

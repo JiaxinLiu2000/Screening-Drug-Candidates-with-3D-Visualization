@@ -16,6 +16,7 @@ import numpy as np
 import requests
 
 RCSB_PDB_URL = "https://files.rcsb.org/download/{pdb_id}.pdb"
+CCD_SDF_URL = "https://files.rcsb.org/ligands/download/{resname}_ideal.sdf"
 
 #: HETATM codes that are solvent, buffer, cryoprotectant, ion or crystallization
 #: additive - never the drug-like ligand of interest.
@@ -182,15 +183,44 @@ def ligand_coords(st: gemmi.Structure, ligand: HetGroup) -> np.ndarray:
     raise RuntimeError(f"ligand {ligand.label} not found")
 
 
-def write_ligand_sdf(
-    pdb_path: Path, ligand: HetGroup, out_path: Path
-) -> Path:
-    """Extract the ligand to SDF via RDKit, keeping experimental coordinates.
+def fetch_ccd_template(resname: str, cache_dir: Path, *, timeout: int = 60) -> Path:
+    """Download the RCSB Chemical Component Dictionary ideal SDF for a ligand code."""
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    path = cache_dir / f"{resname}_ideal.sdf"
+    if path.exists() and path.stat().st_size > 0:
+        return path
+    resp = requests.get(CCD_SDF_URL.format(resname=resname), timeout=timeout)
+    resp.raise_for_status()
+    path.write_text(resp.text, encoding="utf-8")
+    return path
 
-    Bond orders are perceived by RDKit from PDB connectivity/geometry; this is
-    adequate for visualization, which is the ligand file's only use in v1.
+
+def ccd_template(resname: str, cache_dir: Path):
+    """Heavy-atom reference molecule for a ligand code, with correct bond orders."""
+    from rdkit import Chem
+
+    path = fetch_ccd_template(resname, cache_dir)
+    mol = Chem.MolFromMolFile(str(path), sanitize=True, removeHs=True)
+    if mol is None:
+        raise RuntimeError(f"RDKit could not parse the CCD template for {resname}")
+    return mol
+
+
+def write_ligand_sdf(
+    pdb_path: Path, ligand: HetGroup, out_path: Path, *, ccd_cache: Path
+) -> dict:
+    """Extract the ligand to SDF with crystallographic coordinates and real bonds.
+
+    PDB files carry no bond orders, and RDKit's proximity bonding returns every
+    bond as a single bond - which silently destroys aromatic rings and triple
+    bonds. The connectivity is therefore taken from the RCSB Chemical Component
+    Dictionary entry for the ligand code via ``AssignBondOrdersFromTemplate``,
+    and the function fails loudly if the crystal copy does not match the
+    reference (missing atoms, altloc duplicates), rather than writing a
+    chemically wrong file.
     """
     from rdkit import Chem
+    from rdkit.Chem import AllChem
 
     mol = Chem.MolFromPDBFile(
         str(pdb_path), removeHs=False, sanitize=False, proximityBonding=True
@@ -205,6 +235,7 @@ def write_ligand_sdf(
         and info.GetResidueName().strip() == ligand.resname
         and info.GetChainId().strip() == ligand.chain
         and info.GetResidueNumber() == ligand.seqid
+        and info.GetAltLoc().strip() in ("", "A")
     ]
     if not keep:
         raise RuntimeError(f"ligand {ligand.label} not found by RDKit in {pdb_path}")
@@ -218,12 +249,35 @@ def write_ligand_sdf(
         sanitizeOps=Chem.SanitizeFlags.SANITIZE_ALL
         ^ Chem.SanitizeFlags.SANITIZE_PROPERTIES,
     )
-    frag.SetProp("_Name", f"{Path(pdb_path).stem}_{ligand.resname}")
+    frag = Chem.RemoveHs(frag, sanitize=False)
+
+    template = ccd_template(ligand.resname, ccd_cache)
+    try:
+        frag = AllChem.AssignBondOrdersFromTemplate(template, frag)
+    except Exception as exc:  # noqa: BLE001 - RDKit raises ValueError/RuntimeError
+        raise RuntimeError(
+            f"could not map the CCD template for {ligand.resname} onto the crystal "
+            f"copy in {pdb_path.name} ({frag.GetNumAtoms()} heavy atoms vs "
+            f"{template.GetNumAtoms()} in the reference): {exc}"
+        ) from exc
+
+    Chem.SanitizeMol(frag)
+    frag.SetProp("_Name", f"{pdb_path.stem}_{ligand.resname}")
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with Chem.SDWriter(str(out_path)) as writer:
         writer.write(frag)
-    return out_path
+
+    flat = Chem.Mol(frag)
+    flat.RemoveAllConformers()
+    return {
+        "path": out_path,
+        "smiles": Chem.MolToSmiles(flat),
+        "inchikey": Chem.MolToInchiKey(flat),
+        "n_heavy_atoms": frag.GetNumHeavyAtoms(),
+        "n_aromatic_bonds": sum(1 for b in frag.GetBonds() if b.GetIsAromatic()),
+        "bond_orders_from": f"RCSB CCD {ligand.resname}_ideal.sdf",
+    }
 
 
 def header_info(pdb_path: Path) -> dict:
@@ -400,3 +454,50 @@ def write_pocket_json(pocket: Pocket, out_path: Path) -> Path:
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(asdict(pocket), indent=2) + "\n", encoding="utf-8")
     return out_path
+
+
+def nonpolymer_ligands(st: gemmi.Structure) -> list[tuple[HetGroup, int]]:
+    """Non-polymer HETATM instances not in ``NON_LIGAND_HET``, with heavy-atom counts.
+
+    Modified residues inside a polymer (e.g. PTR, CME) are skipped: they are part
+    of the protein chain, not a bound ligand. Heavy atoms exclude H/D and count
+    each atom name once so alternate conformers are not double-counted.
+    """
+    out = []
+    for chain in st[0]:
+        for res in chain:
+            if res.het_flag != "H" or res.name in NON_LIGAND_HET:
+                continue
+            if res.entity_type == gemmi.EntityType.Polymer:
+                continue
+            heavy = {a.name for a in res if a.element.name not in ("H", "D")}
+            out.append((HetGroup(res.name, chain.name, res.seqid.num, len(res)), len(heavy)))
+    return out
+
+
+def alpha_c_salt_bridge_any_numbering(st: gemmi.Structure, chain_name: str) -> dict:
+    """``alpha_c_salt_bridge`` under mature (721/738) then precursor (745/762) numbering.
+
+    Uses the numbering whose Lys, Glu and hinge Met (Met769 / Met793) are all
+    present with the expected residue names - the hinge check guards against a
+    coincidental Lys/Glu pair under the wrong numbering. Reports ``undetermined``
+    with the reason if no numbering matches, or if both do (ambiguous).
+    """
+    present = {r.seqid.num: r.name for r in st[0][chain_name] if r.het_flag == "A"}
+    tried, matches = [], []
+    for label, lys, glu, met in (("mature", 721, 738, 769), ("precursor", 745, 762, 793)):
+        tried.append(f"{label} {lys}={present.get(lys, 'absent')}/"
+                     f"{glu}={present.get(glu, 'absent')}/{met}={present.get(met, 'absent')}")
+        if (present.get(lys), present.get(glu), present.get(met)) == ("LYS", "GLU", "MET"):
+            matches.append((label, lys, glu))
+    if len(matches) != 1:
+        why = "no" if not matches else "ambiguous:"
+        return {"distance_angstrom": None, "state": "undetermined", "numbering": None,
+                "lys_seqid": None, "glu_seqid": None,
+                "reason": f"{why} Lys/Glu/hinge-Met triple matched: " + "; ".join(tried)}
+    label, lys, glu = matches[0]
+    res = alpha_c_salt_bridge(st, chain_name, lys_seqid=lys, glu_seqid=glu)
+    res["numbering"] = label
+    if res["state"] == "undetermined":
+        res["reason"] = f"Lys{lys}/Glu{glu} present but NZ or OE1/OE2 atoms unmodelled"
+    return res

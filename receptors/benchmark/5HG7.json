@@ -1,0 +1,70 @@
+{
+  "pdb_id": "5HG7",
+  "resolution_angstrom": 1.85,
+  "ligand_code": "630",
+  "ligand_instance": "630/A9001",
+  "ligand_smiles": "CCC(=O)N1C[C@H](COc2nc(Nc3cnn(C)c3)nc3[nH]cc(Cl)c23)[C@@H](OC)C1",
+  "ligand_inchikey": "LYWNQEMCSWYHEM-RISCZKNCSA-N",
+  "ligand_heavy_atoms": 30,
+  "pocket_center": [
+    -13.812,
+    15.219,
+    -26.59
+  ],
+  "pocket_box_min": [
+    -22.516,
+    4.633,
+    -35.19
+  ],
+  "pocket_box_max": [
+    -4.683,
+    26.084,
+    -15.295
+  ],
+  "pocket_box_size": [
+    17.833,
+    21.451,
+    19.895
+  ],
+  "pocket_box_padding_angstrom": 5.0,
+  "mean_pocket_b_factor": 22.1,
+  "n_residues_within_5A": 22,
+  "contact_residues": [
+    "LEU718",
+    "GLY719",
+    "SER720",
+    "PHE723",
+    "VAL726",
+    "ALA743",
+    "LYS745",
+    "CYS775",
+    "MET790",
+    "GLN791",
+    "LEU792",
+    "MET793",
+    "PRO794",
+    "PHE795",
+    "GLY796",
+    "CYS797",
+    "LEU799",
+    "ASP800",
+    "ARG841",
+    "LEU844",
+    "THR854",
+    "PHE856"
+  ],
+  "kept_chain": "A",
+  "kept_chain_residues": 280,
+  "title": "EGFR (L858R, T790M, V948R) IN COMPLEX WITH 1-{(3R,4R)-3-[5-CHLORO-2- (1-METHYL-1H-PYRAZOL-4-YLAMINO)-7H-PYRROLO[2,3-D]PYRIMIDIN-4-YLOXYMETHYL]-4-METHOXY-PYRROLIDIN-1-YL}PROPENONE (PF-06459988)",
+  "conformation": {
+    "distance_angstrom": 9.74,
+    "state": "inactive (alphaC-out, salt bridge broken)",
+    "lys_seqid": 745,
+    "glu_seqid": 762,
+    "numbering": "precursor"
+  },
+  "files": {
+    "receptor": "receptors/benchmark/5HG7_receptor.pdb",
+    "ligand": "receptors/benchmark/5HG7_ligand.sdf"
+  }
+}

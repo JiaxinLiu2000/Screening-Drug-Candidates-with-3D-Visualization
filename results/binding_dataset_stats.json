@@ -1,0 +1,83 @@
+{
+  "DAVIS": {
+    "affinity_distribution": {
+      "max": 9.935542010773082,
+      "mean": 5.407418806300983,
+      "median": 4.999995657076895,
+      "min": 4.999995657076895,
+      "p25": 4.999995657076895,
+      "p75": 5.423100365649288,
+      "std": 0.8263066811791118
+    },
+    "ceiling_pkd_value": 4.999995657076895,
+    "conversion": "pKd = -log10(Kd_nM*1e-9 + 1e-10) (TDC convert_to_log)",
+    "distinct_drugs": 68,
+    "distinct_proteins": 379,
+    "feature_matrix_bytes": 254421184,
+    "final_pairs_at_ceiling_kd_10000nM": 18343,
+    "matrix_density": 1.0,
+    "measured_pairs": 25772,
+    "pairs": {
+      "final_pairs": 25772,
+      "pairs_after_standardization": 25772,
+      "pairs_dropped_by_standardization": 0,
+      "pairs_merged_by_inchikey": 0,
+      "raw_pairs": 25772
+    },
+    "raw_kd_nm_distribution": {
+      "max": 10000.0,
+      "mean": 7558.1129969346575,
+      "median": 10000.0,
+      "min": 0.016,
+      "p25": 3775.0,
+      "p75": 10000.0,
+      "std": 3990.0135784086974
+    },
+    "raw_rows_at_ceiling_kd_10000nM": 18343,
+    "standardization": {
+      "duplicate_rows_merged": 0,
+      "filtered_out": 0,
+      "final_molecules": 68,
+      "input_rows": 68,
+      "label_cells_nan_from_tie": 0,
+      "parse_failures": 0,
+      "rows_before_dedup": 68,
+      "unique_inchikeys": 68
+    },
+    "units_returned_by_tdc": "Kd in nM (raw, no log transform)"
+  },
+  "KIBA": {
+    "affinity_distribution": {
+      "max": 17.200179498,
+      "mean": 11.722655122817983,
+      "median": 11.555931955999998,
+      "min": 0.0,
+      "p25": 11.200000128,
+      "p75": 11.949999209,
+      "std": 0.8336725884097743
+    },
+    "distinct_drugs": 2030,
+    "distinct_proteins": 229,
+    "feature_matrix_bytes": 1156929296,
+    "matrix_density": 0.25209843612192656,
+    "measured_pairs": 117193,
+    "pairs": {
+      "final_pairs": 117193,
+      "pairs_after_standardization": 117244,
+      "pairs_dropped_by_standardization": 413,
+      "pairs_merged_by_inchikey": 51,
+      "raw_pairs": 117657
+    },
+    "standardization": {
+      "duplicate_rows_merged": 3,
+      "filtered_out": 35,
+      "final_molecules": 2030,
+      "input_rows": 2068,
+      "label_cells_nan_from_tie": 0,
+      "parse_failures": 0,
+      "rows_before_dedup": 2068,
+      "unique_inchikeys": 2065
+    },
+    "units_returned_by_tdc": "KIBA score (no conversion applied)"
+  }
+}

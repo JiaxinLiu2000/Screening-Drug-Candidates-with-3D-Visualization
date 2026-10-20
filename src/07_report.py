@@ -8,6 +8,7 @@ nothing is estimated.
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -48,16 +49,12 @@ def pretty(text: str) -> str:
 
     The scripts keep Angstrom/alpha out of stdout because a Windows console in
     cp1252 cannot encode them; this document is UTF-8, so restore them here.
+    Only an "A" that follows a number becomes "Å" - a bare "A" is a chain id or
+    the English article ("IN COMPLEX WITH A 4-ANILINOQUINAZOLINE"), and
+    rewriting those corrupts deposited titles.
     """
-    return (
-        text.replace("alphaC", "\u03b1C")
-        .replace(" A pocket", " \u00c5 pocket")
-        .replace(" A (", " \u00c5 (")
-        .replace(" A,", " \u00c5,")
-        .replace(" A ", " \u00c5 ")
-        .replace(" A.", " \u00c5.")
-    )
-
+    text = text.replace("alphaC", "\u03b1C").replace("beta3", "\u03b23")
+    return re.sub(r"(?<=\d) A\b", " \u00c5", text)
 
 
 def environment() -> list[str]:
@@ -90,9 +87,16 @@ def environment() -> list[str]:
 
 
 def git_commit() -> str:
+    """Short commit, marked `-dirty` when uncommitted changes are present.
+
+    A document generated from a dirty tree cannot honestly cite a commit as its
+    provenance, and a committed document can never contain its own hash, so the
+    dirty marker is the only accurate answer until `07_report.py` is re-run
+    after the commit that includes it.
+    """
     try:
         out = subprocess.run(
-            ["git", "rev-parse", "--short", "HEAD"],
+            ["git", "describe", "--always", "--dirty", "--abbrev=7"],
             cwd=paths.ROOT,
             capture_output=True,
             text=True,
@@ -113,6 +117,10 @@ def main() -> int:
     overlap = pd.read_csv(require(paths.RESULTS / "split_seed_overlap.csv"))
     metrics = pd.read_csv(require(paths.RESULTS / "baseline_metrics.csv"))
     summary = pd.read_csv(require(paths.RESULTS / "baseline_summary.csv"))
+    # Section 5 is the Tox21 baseline; the hERG external check (Phase 2) shares
+    # these tables and is reported in results/herg_baseline.md.
+    metrics = metrics[metrics["dataset"] == "Tox21"].reset_index(drop=True)
+    summary = summary[summary["dataset"] == "Tox21"].reset_index(drop=True)
 
     overall = summary[summary["level"] == "overall"].set_index("split")
     rnd, scf_row = overall.loc["random"], overall.loc["scaffold"]
@@ -410,6 +418,55 @@ def main() -> int:
     add("")
     add("---")
     add("")
+    add("## 7b. Phase 2 validation (data foundation)")
+    add("")
+    add("Phase 2 checked whether the data supports the project's central claim before "
+        "model development. Headline numbers, each with its own document:")
+    add("")
+    add("| check | measured result | document |")
+    add("| --- | --- | --- |")
+    phase2 = [
+        ("scaffold_audit.json", "Murcko vs generic scaffold variant",
+         lambda d: f"chemically-aware Murcko already in use: "
+                   f"{d['variants']['murcko']['n_unique_scaffolds']} vs "
+                   f"{d['variants']['generic']['n_unique_scaffolds']} unique scaffolds; "
+                   f"0.761 needs no correction",
+         "results/scaffold_audit.md"),
+        ("chemical_space_overlap.json", "Tox21 vs Davis chemical-space overlap",
+         lambda d: f"**{d['verdict']}** — median nearest-neighbour Tanimoto "
+                   f"{d['nn_tanimoto']['tox21_to_davis']['median']:.4f}",
+         "results/chemical_space_overlap.md"),
+        ("herg_stats.json", "hERG external toxicity check",
+         lambda d: f"{d['final_molecules']} molecules, positive rate "
+                   f"{d['positive_rate']:.3f}, {d['inchikey_overlap_with_tox21']} "
+                   f"InChIKeys shared with Tox21",
+         "results/herg_baseline.md"),
+        ("docking_benchmark_set.json", "EGFR co-crystal docking benchmark",
+         lambda d: f"{d['n_selected']} structures from {d['n_queried']} queried; "
+                   f"median pairwise ligand Tanimoto {d['similarity']['median']:.3f}; "
+                   f"{d['conformation_counts']['active']} active / "
+                   f"{d['conformation_counts']['inactive']} inactive",
+         "results/docking_benchmark_set.md"),
+        ("binding_dataset_stats.json", "Davis + KIBA binding baseline",
+         lambda d: f"KIBA {d['KIBA']['distinct_drugs']} drugs / "
+                   f"{d['KIBA']['measured_pairs']} pairs vs Davis "
+                   f"{d['DAVIS']['distinct_drugs']} drugs / "
+                   f"{d['DAVIS']['measured_pairs']} pairs "
+                   f"({d['DAVIS']['final_pairs_at_ceiling_kd_10000nM'] / d['DAVIS']['measured_pairs'] * 100:.0f}% censored)",
+         "results/binding_baseline.md"),
+    ]
+    for filename, label, render, doc in phase2:
+        path = paths.RESULTS / filename
+        if path.exists():
+            value = render(json.loads(path.read_text(encoding="utf-8")))
+            add(f"| {label} | {value} | [`{doc}`]({doc}) |")
+    add("")
+    add("The five go/no-go decisions these feed are in "
+        "[`results/PHASE2_DECISIONS.md`](results/PHASE2_DECISIONS.md).")
+    add("")
+    add("---")
+    add("")
+
     add("## 8. Known limitations to state in the proposal")
     add("")
     add("1. Stereochemistry is dropped (v1 simplification, Section 3).")

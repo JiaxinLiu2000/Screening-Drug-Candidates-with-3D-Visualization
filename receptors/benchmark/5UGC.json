@@ -1,0 +1,70 @@
+{
+  "pdb_id": "5UGC",
+  "resolution_angstrom": 1.58,
+  "ligand_code": "8BS",
+  "ligand_instance": "8BS/A9001",
+  "ligand_smiles": "CCC(=O)N[C@@H]1CN(c2nc(Nc3cn(C)nc3OC)c3ncn(C)c3n2)C[C@H]1F",
+  "ligand_inchikey": "XWNKXCUQRQRAFF-GHMZBOCLSA-N",
+  "ligand_heavy_atoms": 30,
+  "pocket_center": [
+    -14.186,
+    14.693,
+    -26.376
+  ],
+  "pocket_box_min": [
+    -23.014,
+    3.631,
+    -34.737
+  ],
+  "pocket_box_max": [
+    -4.748,
+    24.015,
+    -15.116
+  ],
+  "pocket_box_size": [
+    18.266,
+    20.384,
+    19.621
+  ],
+  "pocket_box_padding_angstrom": 5.0,
+  "mean_pocket_b_factor": 28.6,
+  "n_residues_within_5A": 22,
+  "contact_residues": [
+    "LEU718",
+    "GLY719",
+    "SER720",
+    "PHE723",
+    "VAL726",
+    "LYS728",
+    "ALA743",
+    "CYS775",
+    "MET790",
+    "GLN791",
+    "LEU792",
+    "MET793",
+    "PRO794",
+    "PHE795",
+    "GLY796",
+    "CYS797",
+    "LEU799",
+    "ASP800",
+    "ARG841",
+    "LEU844",
+    "THR854",
+    "PHE856"
+  ],
+  "kept_chain": "A",
+  "kept_chain_residues": 280,
+  "title": "CRYSTAL STRUCTURE OF THE EGFR KINASE DOMAIN (L858R, T790M, V948R) IN COMPLEX WITH A COVALENT INHIBITOR N-[(3R,4R)-4-FLUORO-1-{6-[(3-METHOXY-1-METHYL-1H-PYRAZOL-4-YL)AMINO]-9-METHYL-9H-PURIN-2-YL}PYRROLIDIN-3-YL]PROPANAMIDE",
+  "conformation": {
+    "distance_angstrom": 10.83,
+    "state": "inactive (alphaC-out, salt bridge broken)",
+    "lys_seqid": 745,
+    "glu_seqid": 762,
+    "numbering": "precursor"
+  },
+  "files": {
+    "receptor": "receptors/benchmark/5UGC_receptor.pdb",
+    "ligand": "receptors/benchmark/5UGC_ligand.sdf"
+  }
+}

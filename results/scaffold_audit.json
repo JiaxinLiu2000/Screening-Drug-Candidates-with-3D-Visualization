@@ -1,0 +1,130 @@
+{
+  "variant_used_by_03_splits": "murcko",
+  "evidence": "src/tox21lib/splits.py:28 scaffold_smiles() calls MurckoScaffold.GetScaffoldForMol(mol)",
+  "variants": {
+    "murcko": {
+      "n_molecules": 6143,
+      "n_unique_scaffolds": 2156,
+      "largest_group_size": 1260,
+      "largest_group_scaffold": "c1ccccc1",
+      "n_singleton_scaffolds": 1658,
+      "n_acyclic_molecules": 862,
+      "top10": [
+        {
+          "rank": 1,
+          "scaffold": "c1ccccc1",
+          "n": 1260
+        },
+        {
+          "rank": 2,
+          "scaffold": "",
+          "n": 862
+        },
+        {
+          "rank": 3,
+          "scaffold": "c1ccc(Cc2ccccc2)cc1",
+          "n": 80
+        },
+        {
+          "rank": 4,
+          "scaffold": "c1ccc2ccccc2c1",
+          "n": 68
+        },
+        {
+          "rank": 5,
+          "scaffold": "c1ccncc1",
+          "n": 57
+        },
+        {
+          "rank": 6,
+          "scaffold": "c1ccc(Oc2ccccc2)cc1",
+          "n": 46
+        },
+        {
+          "rank": 7,
+          "scaffold": "C1CCCCC1",
+          "n": 44
+        },
+        {
+          "rank": 8,
+          "scaffold": "O=C1C=C2CCC3C4CCCC4CCC3C2CC1",
+          "n": 41
+        },
+        {
+          "rank": 9,
+          "scaffold": "c1ccc(-c2ccccc2)cc1",
+          "n": 40
+        },
+        {
+          "rank": 10,
+          "scaffold": "O=C1C=CC2C(=C1)CCC1C3CCCC3CCC21",
+          "n": 38
+        }
+      ]
+    },
+    "generic": {
+      "n_molecules": 6143,
+      "n_unique_scaffolds": 1285,
+      "largest_group_size": 1501,
+      "largest_group_scaffold": "C1CCCCC1",
+      "n_singleton_scaffolds": 895,
+      "n_acyclic_molecules": 862,
+      "top10": [
+        {
+          "rank": 1,
+          "scaffold": "C1CCCCC1",
+          "n": 1501
+        },
+        {
+          "rank": 2,
+          "scaffold": "",
+          "n": 862
+        },
+        {
+          "rank": 3,
+          "scaffold": "C1CCC(CC2CCCCC2)CC1",
+          "n": 224
+        },
+        {
+          "rank": 4,
+          "scaffold": "C1CCC2CCCCC2C1",
+          "n": 147
+        },
+        {
+          "rank": 5,
+          "scaffold": "C1CCC2CCCC2C1",
+          "n": 116
+        },
+        {
+          "rank": 6,
+          "scaffold": "CC1CCC2C(CCC3C4CCCC4CCC23)C1",
+          "n": 99
+        },
+        {
+          "rank": 7,
+          "scaffold": "C1CCC(C2CCCCC2)CC1",
+          "n": 87
+        },
+        {
+          "rank": 8,
+          "scaffold": "C1CCCC1",
+          "n": 83
+        },
+        {
+          "rank": 9,
+          "scaffold": "C1CCC(CCC2CCCCC2)CC1",
+          "n": 58
+        },
+        {
+          "rank": 10,
+          "scaffold": "CC(CC1CCCCC1)C1CCCCC1",
+          "n": 53
+        }
+      ]
+    }
+  },
+  "n_molecules_changing_group_membership": 4060,
+  "generic_over_murcko_group_count_ratio": 0.596011,
+  "rf_baseline_rerun_required": false,
+  "recommendation": "murcko"
+}

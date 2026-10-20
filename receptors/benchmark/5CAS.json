@@ -1,0 +1,68 @@
+{
+  "pdb_id": "5CAS",
+  "resolution_angstrom": 2.1,
+  "ligand_code": "4ZQ",
+  "ligand_instance": "4ZQ/A1102",
+  "ligand_smiles": "CO[C@H]1CCN(c2nccc(Nc3cc4c(cn3)nc([C@@H](C)O)n4[C@@H](C)C(F)(F)F)n2)C[C@H]1F",
+  "ligand_inchikey": "BOPSHQJEVUOWPS-IATRGZMQSA-N",
+  "ligand_heavy_atoms": 34,
+  "pocket_center": [
+    -52.039,
+    -0.488,
+    -23.144
+  ],
+  "pocket_box_min": [
+    -61.152,
+    -8.606,
+    -33.529
+  ],
+  "pocket_box_max": [
+    -43.514,
+    7.27,
+    -11.62
+  ],
+  "pocket_box_size": [
+    17.638,
+    15.876,
+    21.909
+  ],
+  "pocket_box_padding_angstrom": 5.0,
+  "mean_pocket_b_factor": 51.2,
+  "n_residues_within_5A": 20,
+  "contact_residues": [
+    "LEU718",
+    "GLY719",
+    "PHE723",
+    "VAL726",
+    "ALA743",
+    "LYS745",
+    "GLU762",
+    "MET766",
+    "CYS775",
+    "MET790",
+    "GLN791",
+    "LEU792",
+    "MET793",
+    "PRO794",
+    "GLY796",
+    "CYS797",
+    "ASP800",
+    "LEU844",
+    "THR854",
+    "ASP855"
+  ],
+  "kept_chain": "A",
+  "kept_chain_residues": 299,
+  "title": "EGFR KINASE DOMAIN MUTANT \"TMLR\" WITH COMPOUND 41A",
+  "conformation": {
+    "distance_angstrom": 2.83,
+    "state": "active (alphaC-in, salt bridge intact)",
+    "lys_seqid": 745,
+    "glu_seqid": 762,
+    "numbering": "precursor"
+  },
+  "files": {
+    "receptor": "receptors/benchmark/5CAS_receptor.pdb",
+    "ligand": "receptors/benchmark/5CAS_ligand.sdf"
+  }
+}

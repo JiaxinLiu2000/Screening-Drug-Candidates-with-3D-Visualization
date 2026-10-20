@@ -1,0 +1,76 @@
+{
+  "pdb_id": "3W32",
+  "resolution_angstrom": 1.8,
+  "ligand_code": "W32",
+  "ligand_instance": "W32/A1101",
+  "ligand_smiles": "CS(=O)(=O)CCNC(=O)C1=Cc2c(ncnc2Nc2ccc(Oc3cccc(C(F)(F)F)c3)c(Cl)c2)NCC1",
+  "ligand_inchikey": "QRXMEGUJRZKMEO-UHFFFAOYSA-N",
+  "ligand_heavy_atoms": 39,
+  "pocket_center": [
+    16.594,
+    33.208,
+    12.264
+  ],
+  "pocket_box_min": [
+    7.598,
+    22.611,
+    0.798
+  ],
+  "pocket_box_max": [
+    28.066,
+    42.443,
+    23.7
+  ],
+  "pocket_box_size": [
+    20.468,
+    19.832,
+    22.902
+  ],
+  "pocket_box_padding_angstrom": 5.0,
+  "mean_pocket_b_factor": 37.0,
+  "n_residues_within_5A": 28,
+  "contact_residues": [
+    "LEU718",
+    "GLY719",
+    "SER720",
+    "VAL726",
+    "ALA743",
+    "ILE744",
+    "LYS745",
+    "MET766",
+    "CYS775",
+    "ARG776",
+    "LEU777",
+    "LEU788",
+    "ILE789",
+    "THR790",
+    "GLN791",
+    "LEU792",
+    "MET793",
+    "PRO794",
+    "GLY796",
+    "CYS797",
+    "LEU844",
+    "ILE853",
+    "THR854",
+    "ASP855",
+    "PHE856",
+    "LEU858",
+    "PHE997",
+    "LEU1001"
+  ],
+  "kept_chain": "A",
+  "kept_chain_residues": 317,
+  "title": "EGFR KINASE DOMAIN COMPLEXED WITH COMPOUND 20A",
+  "conformation": {
+    "distance_angstrom": 13.6,
+    "state": "inactive (alphaC-out, salt bridge broken)",
+    "lys_seqid": 745,
+    "glu_seqid": 762,
+    "numbering": "precursor"
+  },
+  "files": {
+    "receptor": "receptors/benchmark/3W32_receptor.pdb",
+    "ligand": "receptors/benchmark/3W32_ligand.sdf"
+  }
+}

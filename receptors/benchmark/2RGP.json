@@ -1,0 +1,73 @@
+{
+  "pdb_id": "2RGP",
+  "resolution_angstrom": 2.0,
+  "ligand_code": "HYZ",
+  "ligand_instance": "HYZ/A1",
+  "ligand_smiles": "Nc1ncnc(Nc2ccc3c(cnn3Cc3cccc(F)c3)c2)c1CNN1CCCCC1",
+  "ligand_inchikey": "IMHOFYWDXRUQBM-UHFFFAOYSA-N",
+  "ligand_heavy_atoms": 33,
+  "pocket_center": [
+    16.292,
+    34.871,
+    92.035
+  ],
+  "pocket_box_min": [
+    7.954,
+    26.19,
+    79.858
+  ],
+  "pocket_box_max": [
+    25.573,
+    45.222,
+    102.686
+  ],
+  "pocket_box_size": [
+    17.619,
+    19.032,
+    22.828
+  ],
+  "pocket_box_padding_angstrom": 5.0,
+  "mean_pocket_b_factor": 36.2,
+  "n_residues_within_5A": 25,
+  "contact_residues": [
+    "LEU718",
+    "GLY719",
+    "SER720",
+    "VAL726",
+    "ALA743",
+    "ILE744",
+    "LYS745",
+    "MET766",
+    "CYS775",
+    "ARG776",
+    "LEU777",
+    "LEU788",
+    "ILE789",
+    "THR790",
+    "GLN791",
+    "LEU792",
+    "MET793",
+    "GLY796",
+    "CYS797",
+    "ASP800",
+    "LEU844",
+    "THR854",
+    "ASP855",
+    "PHE856",
+    "LEU858"
+  ],
+  "kept_chain": "A",
+  "kept_chain_residues": 284,
+  "title": "STRUCTURE OF EGFR IN COMPLEX WITH HYDRAZONE, A POTENT DUAL INHIBITOR",
+  "conformation": {
+    "distance_angstrom": 12.98,
+    "state": "inactive (alphaC-out, salt bridge broken)",
+    "lys_seqid": 745,
+    "glu_seqid": 762,
+    "numbering": "precursor"
+  },
+  "files": {
+    "receptor": "receptors/benchmark/2RGP_receptor.pdb",
+    "ligand": "receptors/benchmark/2RGP_ligand.sdf"
+  }
+}

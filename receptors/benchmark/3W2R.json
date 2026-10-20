@@ -1,0 +1,75 @@
+{
+  "pdb_id": "3W2R",
+  "resolution_angstrom": 2.05,
+  "ligand_code": "W2R",
+  "ligand_instance": "W2R/A1101",
+  "ligand_smiles": "O=C(Nc1cccc(Oc2ccc(Nc3ncnc4ccn(CCOCCO)c34)cc2Cl)c1)NC1CCCCC1",
+  "ligand_inchikey": "WDGCQQKABPWBPZ-UHFFFAOYSA-N",
+  "ligand_heavy_atoms": 40,
+  "pocket_center": [
+    4.484,
+    12.169,
+    45.785
+  ],
+  "pocket_box_min": [
+    -6.418,
+    0.015,
+    34.002
+  ],
+  "pocket_box_max": [
+    14.496,
+    24.667,
+    55.453
+  ],
+  "pocket_box_size": [
+    20.914,
+    24.652,
+    21.451
+  ],
+  "pocket_box_padding_angstrom": 5.0,
+  "mean_pocket_b_factor": 41.4,
+  "n_residues_within_5A": 27,
+  "contact_residues": [
+    "LEU718",
+    "PHE723",
+    "VAL726",
+    "ALA743",
+    "ILE744",
+    "LYS745",
+    "LEU747",
+    "ILE759",
+    "GLU762",
+    "MET766",
+    "CYS775",
+    "LEU788",
+    "ILE789",
+    "MET790",
+    "GLN791",
+    "LEU792",
+    "MET793",
+    "GLY796",
+    "CYS797",
+    "ARG841",
+    "ASN842",
+    "LEU844",
+    "THR854",
+    "ASP855",
+    "PHE856",
+    "ARG858",
+    "PHE997"
+  ],
+  "kept_chain": "A",
+  "kept_chain_residues": 297,
+  "title": "EGFR KINASE DOMAIN T790M/L858R MUTANT WITH COMPOUND 4",
+  "conformation": {
+    "distance_angstrom": 9.81,
+    "state": "inactive (alphaC-out, salt bridge broken)",
+    "lys_seqid": 745,
+    "glu_seqid": 762,
+    "numbering": "precursor"
+  },
+  "files": {
+    "receptor": "receptors/benchmark/3W2R_receptor.pdb",
+    "ligand": "receptors/benchmark/3W2R_ligand.sdf"
+  }
+}

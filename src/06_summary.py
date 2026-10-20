@@ -35,6 +35,10 @@ def main() -> int:
     )
     summary = pd.read_csv(require(paths.RESULTS / "baseline_summary.csv"))
     metrics = pd.read_csv(require(paths.RESULTS / "baseline_metrics.csv"))
+    # Both tables are keyed by dataset (Tox21 + the hERG external check); the four
+    # proposal values are Tox21 only.
+    summary = summary[summary["dataset"] == "Tox21"]
+    metrics = metrics[metrics["dataset"] == "Tox21"]
 
     overall = summary[summary["level"] == "overall"].set_index("split")
     n_mols = std["final_molecules"]

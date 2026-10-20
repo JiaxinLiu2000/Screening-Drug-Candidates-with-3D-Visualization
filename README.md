@@ -21,6 +21,13 @@ CSV/JSON tables). The four values the proposal asks for are also in
 This README covers setup and method; it quotes only headline figures and defers
 the full tables to `RESULTS.md`.
 
+**Phase 2 (data-foundation validation) is complete; the decisions are in
+[`results/PHASE2_DECISIONS.md`](results/PHASE2_DECISIONS.md).** The headline: the
+shared-encoder premise is **not** supported by the data — the median
+nearest-neighbour Tanimoto between Tox21 and Davis is 0.1667 (negligible overlap)
+— while KIBA (2030 drugs) makes the cold-drug binding evaluation viable where
+Davis (68 drugs, 7 in a cold-drug test fold) never could.
+
 ## Setup
 
 ```bash
@@ -45,34 +52,48 @@ resolved.
 
 ## Run the pipeline
 
-Scripts are numbered and must run in order; each is a thin driver over the
-importable modules in `src/tox21lib/`.
+Scripts are numbered and run in order; each is a thin driver over the importable
+modules in `src/tox21lib/`. Phase 1 (`01`–`08`) builds the Tox21 baseline and the
+EGFR receptor; Phase 2 (`09`–`14`) validates the data foundation before model
+development.
 
 ```bash
+# Phase 1 — baseline
 python src/01_download_tox21.py    # TDC download + merge to one wide table
 python src/02_standardize.py       # RDKit standardize, dedup, filter
 python src/03_splits.py            # random + scaffold split index files
-python src/04_baseline_rf.py       # 120 RF fits (~4 min on 8 cores)
+python src/04_baseline_rf.py       # 120 RF fits (~7 min on 8 cores)
 python src/05_egfr_structure.py    # 1M17/4HJO cleaning, pockets, viewer.html
 python src/06_summary.py           # results/SUMMARY.md + stdout
 python src/07_report.py            # RESULTS.md - every measured number
 python src/08_verify_repro.py --with-rf   # re-run + SHA-256 diff of all artefacts
+
+# Phase 2 — data-foundation validation
+python src/09_scaffold_audit.py    # Murcko vs generic scaffold variant
+python src/10_chem_space.py        # Tox21 vs Davis overlap + PCA/UMAP figures
+python src/11_binding_baseline.py  # Davis + KIBA, 3 splits x 5 seeds (~40 min)
+python src/12_herg_baseline.py     # hERG external check, appends to the metric tables
+python src/13_docking_benchmark.py # RCSB query -> 20-structure co-crystal set
+python src/14_phase2_decisions.py  # results/PHASE2_DECISIONS.md
 ```
 
 ## Layout
 
 ```
-data/raw/            TDC CSVs and downloaded PDBs            (gitignored)
-data/processed/      tox21_wide.parquet, tox21_clean.parquet (gitignored)
-splits/              random_split_seed{0..4}.csv,
-                     scaffold_split_seed{0..4}.csv, scaffolds.csv   (committed)
+data/raw/            TDC CSVs, downloaded PDBs, CCD ligand templates (gitignored)
+data/processed/      tox21_wide.parquet, tox21_clean.parquet         (gitignored)
+splits/              Tox21 random/scaffold index files, scaffolds.csv,
+                     herg_*, davis_*, kiba_* index files             (committed)
 receptors/           <ID>_receptor.pdb, <ID>_ligand.sdf,
-                     <ID>_pocket.json                               (committed)
-results/             metric tables, stats JSON, SUMMARY.md          (committed)
-figures/             viewer.html + screenshots                      (committed)
-src/tox21lib/        importable modules: paths, standardize,
-                     featurize, splits, structure
-src/0*.py            numbered drivers
+                     <ID>_pocket.json                                (committed)
+receptors/benchmark/ 20 EGFR co-crystals: receptor, ligand SDF, JSON (committed)
+results/             metric tables, stats JSON, SUMMARY.md,
+                     PHASE2_DECISIONS.md and the Phase 2 reports      (committed)
+figures/             viewer.html, screenshots, chemical-space figures (committed)
+src/tox21lib/        importable modules: paths, standardize, featurize,
+                     splits, structure, datasets, baseline, dti,
+                     properties, rcsb
+src/NN_*.py          numbered drivers
 ```
 
 The training code and the planned web service both import
