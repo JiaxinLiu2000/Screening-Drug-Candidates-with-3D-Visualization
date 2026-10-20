@@ -10,67 +10,63 @@ There is no ground truth for atom attribution, so this is validated qualitativel
 | --- | --- |
 | test molecules | 613 |
 | with at least one structural alert | 252 |
-| top-3 atoms include an alert atom | 31.7% of them |
-| attribution enriched on the alert (>1x uniform) | 39.3% |
-| median enrichment | 0.84x |
-| median share of positive attribution on alert atoms | 9.1% |
+| top-3 atoms include an alert atom | 40.9% of them |
+| attribution enriched on the alert (>1x uniform) | 48.0% |
+| median enrichment | 0.96x |
+| median share of positive attribution on alert atoms | 12.2% |
 
 ## By alert type
 
 | alert | molecules | median enrichment | top-k hit rate |
 | --- | --- | --- | --- |
-| aromatic_halide | 143 | 0.74x | 21.7% |
-| michael_acceptor | 63 | 1.17x | 54.0% |
-| aromatic_amine | 58 | 1.03x | 41.4% |
-| epoxide | 14 | 1.01x | 57.1% |
-| nitroaromatic | 9 | 1.82x | 88.9% |
-| aldehyde | 4 | 1.14x | 50.0% |
-| para_quinone | 2 | 0.26x | 0.0% |
+| aromatic_halide | 143 | 0.83x | 37.8% |
+| michael_acceptor | 63 | 1.18x | 52.4% |
+| aromatic_amine | 58 | 0.85x | 39.7% |
+| epoxide | 14 | 1.33x | 78.6% |
+| nitroaromatic | 9 | 1.96x | 77.8% |
+| aldehyde | 4 | 2.29x | 75.0% |
+| para_quinone | 2 | 0.63x | 0.0% |
 
 ## Annotated examples
 
 Red = removing the atom lowered the prediction (it pushed toxicity up); blue = the opposite. Alert atoms are drawn with a larger highlight radius.
 
-![PWAUCHMQEXVFJR-UHFFFAOYSA-N](figures\attribution\example_01_PWAUCHMQEXVFJR.png) 
+![PXUIZULXJVRBPC-UHFFFAOYSA-N](figures\attribution\example_01_PXUIZULXJVRBPC.png) 
 
-- `PWAUCHMQEXVFJR-UHFFFAOYSA-N` — alerts: michael_acceptor, enrichment 4.42x
+- `PXUIZULXJVRBPC-UHFFFAOYSA-N` — alerts: aromatic_halide, enrichment 6.29x
 
-![NSVFSAJIGAJDMR-UHFFFAOYSA-N](figures\attribution\example_02_NSVFSAJIGAJDMR.png) 
+![OWNRRUFOJXFKCU-UHFFFAOYSA-N](figures\attribution\example_02_OWNRRUFOJXFKCU.png) 
 
-- `NSVFSAJIGAJDMR-UHFFFAOYSA-N` — alerts: michael_acceptor,nitroaromatic, enrichment 3.79x
+- `OWNRRUFOJXFKCU-UHFFFAOYSA-N` — alerts: aromatic_halide, enrichment 5.24x
 
-![FMZXNVLFJHCSAF-UHFFFAOYSA-N](figures\attribution\example_03_FMZXNVLFJHCSAF.png) 
+![FGXWKSZFVQUSTL-UHFFFAOYSA-N](figures\attribution\example_03_FGXWKSZFVQUSTL.png) 
 
-- `FMZXNVLFJHCSAF-UHFFFAOYSA-N` — alerts: michael_acceptor, enrichment 3.65x
+- `FGXWKSZFVQUSTL-UHFFFAOYSA-N` — alerts: aromatic_halide, enrichment 5.09x
 
-![FQVHOULQCKDUCY-UHFFFAOYSA-N](figures\attribution\example_04_FQVHOULQCKDUCY.png) 
+![AUZUGWXLBGZUPP-UHFFFAOYSA-N](figures\attribution\example_04_AUZUGWXLBGZUPP.png) 
 
-- `FQVHOULQCKDUCY-UHFFFAOYSA-N` — alerts: aldehyde,epoxide,michael_acceptor, enrichment 3.31x
+- `AUZUGWXLBGZUPP-UHFFFAOYSA-N` — alerts: michael_acceptor, enrichment 4.75x
 
-![SVJMLYUFVDMUHP-UHFFFAOYSA-N](figures\attribution\example_05_SVJMLYUFVDMUHP.png) 
+![KGFYHTZWPPHNLQ-UHFFFAOYSA-N](figures\attribution\example_05_KGFYHTZWPPHNLQ.png) 
 
-- `SVJMLYUFVDMUHP-UHFFFAOYSA-N` — alerts: michael_acceptor,nitroaromatic, enrichment 3.08x
+- `KGFYHTZWPPHNLQ-UHFFFAOYSA-N` — alerts: aromatic_halide, enrichment 4.54x
 
-![MXXWOMGUGJBKIW-UHFFFAOYSA-N](figures\attribution\example_06_MXXWOMGUGJBKIW.png) 
+![AKTXOQVMWSFEBQ-UHFFFAOYSA-N](figures\attribution\example_06_AKTXOQVMWSFEBQ.png) 
 
-- `MXXWOMGUGJBKIW-UHFFFAOYSA-N` — alerts: michael_acceptor, enrichment 2.90x
+- `AKTXOQVMWSFEBQ-UHFFFAOYSA-N` — alerts: michael_acceptor, enrichment 4.07x
 
 ## Where it fails
 
-- **Diffuse attribution**: 2 of 252 molecules have a normalised attribution entropy above 0.95, i.e. the signal is spread almost uniformly over every atom and carries no localised explanation.
+- **Diffuse attribution**: 0 of 252 molecules have a normalised attribution entropy above 0.95, i.e. the signal is spread almost uniformly over every atom and carries no localised explanation.
 - **Off-target attribution**: 74 molecules put the top-3 atoms outside the alert AND concentrate less than half the uniform share of attribution mass on it.
 
-![GHKNHBRWJYMSHK-UHFFFAOYSA-N](figures\attribution\failure_01_GHKNHBRWJYMSHK.png) 
+![NAUWTFJOPJWYOT-UHFFFAOYSA-N](figures\attribution\failure_01_NAUWTFJOPJWYOT.png) 
 
-- `GHKNHBRWJYMSHK-UHFFFAOYSA-N` — alerts: aromatic_amine,aromatic_halide, enrichment 1.31x
+- `NAUWTFJOPJWYOT-UHFFFAOYSA-N` — alerts: aromatic_halide, enrichment 0.50x
 
-![ZLWLKVQCHZSSEL-UHFFFAOYSA-N](figures\attribution\failure_02_ZLWLKVQCHZSSEL.png) 
+![QTANTQQOYSUMLC-UHFFFAOYSA-O](figures\attribution\failure_02_QTANTQQOYSUMLC.png) 
 
-- `ZLWLKVQCHZSSEL-UHFFFAOYSA-N` — alerts: aromatic_halide, enrichment 0.50x
-
-![MDLAAYDRRZXJIF-UHFFFAOYSA-N](figures\attribution\failure_03_MDLAAYDRRZXJIF.png) 
-
-- `MDLAAYDRRZXJIF-UHFFFAOYSA-N` — alerts: aromatic_halide, enrichment 0.49x
+- `QTANTQQOYSUMLC-UHFFFAOYSA-O` — alerts: aromatic_amine, enrichment 0.49x
 
 Per-molecule numbers for every alert-bearing test molecule are in `results/attribution_per_molecule.csv`.
 
