@@ -1103,23 +1103,23 @@
       "ligand_inchikey": "LPJIZDSOUGHTNB-CQSZACIVSA-N",
       "ligand_heavy_atoms": 31,
       "pocket_center": [
-        20.274,
-        1.028,
-        51.131
+        21.682,
+        0.364,
+        51.404
       ],
       "pocket_box_min": [
-        9.591,
+        9.786,
         -7.542,
         41.552
       ],
       "pocket_box_max": [
         33.769,
-        9.086,
+        8.894,
         59.857
       ],
       "pocket_box_size": [
-        24.178,
-        16.628,
+        23.983,
+        16.436,
         18.305
       ],
       "pocket_box_padding_angstrom": 5.0,

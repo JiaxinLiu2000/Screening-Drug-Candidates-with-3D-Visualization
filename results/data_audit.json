@@ -1,0 +1,235 @@
+{
+  "n_pass": 38,
+  "n_fail": 0,
+  "n_skip": 0,
+  "checks": [
+    {
+      "section": "Tox21 molecule table",
+      "name": "row count matches the reported final_molecules",
+      "status": "PASS",
+      "detail": "parquet rows 6143, stats final_molecules 6143"
+    },
+    {
+      "section": "Tox21 molecule table",
+      "name": "InChIKeys unique and sorted (deduplication held)",
+      "status": "PASS",
+      "detail": "duplicates 0, sorted True"
+    },
+    {
+      "section": "Tox21 molecule table",
+      "name": "every canonical SMILES re-parses and is canonical",
+      "status": "PASS",
+      "detail": "unparsable 0, non-canonical 0"
+    },
+    {
+      "section": "Tox21 molecule table",
+      "name": "InChIKey column matches the SMILES it sits next to",
+      "status": "PASS",
+      "detail": "mismatched 0 of 6143"
+    },
+    {
+      "section": "Tox21 molecule table",
+      "name": "heavy-atom and element filters actually hold",
+      "status": "PASS",
+      "detail": "violations 0, heavy-atom range (10, 60)"
+    },
+    {
+      "section": "Tox21 molecule table",
+      "name": "labels are only 0, 1 or NaN and endpoints are the 12 expected",
+      "status": "PASS",
+      "detail": "endpoints 12, out-of-domain values none"
+    },
+    {
+      "section": "Tox21 splits",
+      "name": "index files align row-for-row with the molecule table",
+      "status": "PASS",
+      "detail": "misaligned none across 10 files"
+    },
+    {
+      "section": "Tox21 splits",
+      "name": "subsets partition the set exactly, at 80/10/10",
+      "status": "PASS",
+      "detail": "random0:4914/614/615; random1:4914/614/615; ... (10 files, all within 1% of 80/10/10)"
+    },
+    {
+      "section": "Tox21 splits",
+      "name": "scaffold groups never span subsets, and random splits do",
+      "status": "PASS",
+      "detail": "scaffold spanning groups {0}, random 242-260 (leakage the split removes)"
+    },
+    {
+      "section": "Tox21 splits",
+      "name": "committed scaffolds reproduce from the SMILES (seeded 250-molecule sample)",
+      "status": "PASS",
+      "detail": "sample mismatches 0/250; 2156 unique scaffolds, largest group 1260"
+    },
+    {
+      "section": "Classification metrics",
+      "name": "row counts per dataset are the full grid",
+      "status": "PASS",
+      "detail": "rows per dataset {'Tox21': 120, 'hERG': 10}"
+    },
+    {
+      "section": "Classification metrics",
+      "name": "every AUC is in [0, 1] and fold counts are consistent",
+      "status": "PASS",
+      "detail": "out-of-range AUCs 0, impossible positive counts 0; ROC-AUC range 0.6120-0.9580"
+    },
+    {
+      "section": "Classification metrics",
+      "name": "summary mean/std recompute exactly from the per-fit rows",
+      "status": "PASS",
+      "detail": "largest absolute discrepancy over 30 summary rows: 2.22e-16"
+    },
+    {
+      "section": "Classification metrics",
+      "name": "the macro row is the mean over endpoints, not over fits",
+      "status": "PASS",
+      "detail": "random 0.8324 +/- 0.0181; scaffold 0.7611 +/- 0.0227"
+    },
+    {
+      "section": "hERG",
+      "name": "split files partition one consistent molecule set",
+      "status": "PASS",
+      "detail": "molecule count in every file {588}, stats final_molecules 588"
+    },
+    {
+      "section": "hERG",
+      "name": "the reported drop equals the summary rows it is drawn from",
+      "status": "PASS",
+      "detail": "random 0.8577 - scaffold 0.8665 = -0.0088, quoted in md: True"
+    },
+    {
+      "section": "Binding",
+      "name": "metric table is the full 30-fit grid with in-range values",
+      "status": "PASS",
+      "detail": "rows 30, groups 6, out-of-range rows 0"
+    },
+    {
+      "section": "Binding",
+      "name": "cold splits leak no entity between train and valid/test",
+      "status": "PASS",
+      "detail": "leaking entities none across 20 cold-split files"
+    },
+    {
+      "section": "Binding",
+      "name": "split files cover every pair exactly once",
+      "status": "PASS",
+      "detail": "files with incomplete pair coverage none of 30"
+    },
+    {
+      "section": "Binding",
+      "name": "dataset statistics recompute from the split files",
+      "status": "PASS",
+      "detail": "DAVIS 68x379=25772 pairs, density 1.0000; KIBA 2030x229=117193 pairs, density 0.2521"
+    },
+    {
+      "section": "Binding",
+      "name": "Davis cold-drug test folds really are too small to be stable",
+      "status": "PASS",
+      "detail": "Davis 7 test drugs, Pearson sd 0.1897; KIBA 203 test drugs, Pearson sd 0.0305"
+    },
+    {
+      "section": "Chemical space",
+      "name": "median nearest-neighbour Tanimoto recomputes to the reported value",
+      "status": "PASS",
+      "detail": "68 Davis molecules re-standardized; recomputed median 0.166667 vs stored 0.166667"
+    },
+    {
+      "section": "Chemical space",
+      "name": "the verdict band matches the measured median",
+      "status": "PASS",
+      "detail": "median 0.1667 -> Negligible overlap; JSON says Negligible overlap; md heading present"
+    },
+    {
+      "section": "EGFR receptors",
+      "name": "ligand SDFs carry real bond orders and are erlotinib",
+      "status": "PASS",
+      "detail": "1M17: 17 aromatic, 1 triple, AAKJLRGGTJKAMG-UHFFFAOYSA-N; 4HJO: 17 aromatic, 1 triple, AAKJLRGGTJKAMG-UHFFFAOYSA-N"
+    },
+    {
+      "section": "EGFR receptors",
+      "name": "cleaned receptors contain protein only, one chain",
+      "status": "PASS",
+      "detail": "1M17: HETATM 0, HOH 0, chains ['A']; 4HJO: HETATM 0, HOH 0, chains ['A']"
+    },
+    {
+      "section": "EGFR receptors",
+      "name": "pocket centre and box recompute from the ligand coordinates",
+      "status": "PASS",
+      "detail": "1M17: centre delta 0.000 A, box delta 0.000 A; 4HJO: centre delta 0.000 A, box delta 0.000 A"
+    },
+    {
+      "section": "EGFR receptors",
+      "name": "conformation label agrees with the measured salt-bridge distance",
+      "status": "PASS",
+      "detail": "1M17: 3.05 A -> active; 4HJO: 13.3 A -> inactive"
+    },
+    {
+      "section": "Docking benchmark",
+      "name": "20 structures, every referenced file present",
+      "status": "PASS",
+      "detail": "records 20, missing files 0"
+    },
+    {
+      "section": "Docking benchmark",
+      "name": "ligand SDFs match their JSON record (atoms, InChIKey, SMILES)",
+      "status": "PASS",
+      "detail": "inconsistencies none across 20 structures"
+    },
+    {
+      "section": "Docking benchmark",
+      "name": "selection filters hold: resolution, heavy atoms, distinct chemistry",
+      "status": "PASS",
+      "detail": "resolution 1.07-2.1 A, heavy atoms 28-49, 20 distinct ligands, erlotinib absent"
+    },
+    {
+      "section": "Docking benchmark",
+      "name": "benchmark receptors are protein-only, single chain",
+      "status": "PASS",
+      "detail": "receptors with HETATM or extra chains none of 20"
+    },
+    {
+      "section": "Docking benchmark",
+      "name": "pocket boxes recompute from the benchmark ligand coordinates",
+      "status": "PASS",
+      "detail": "largest deviation 0.000 A over 20 structures; offenders none"
+    },
+    {
+      "section": "Docking benchmark",
+      "name": "conformation calls use the same 4 A threshold as 1M17",
+      "status": "PASS",
+      "detail": "3 active / 17 inactive, matches the report: True"
+    },
+    {
+      "section": "Docking benchmark",
+      "name": "pairwise ligand similarity recomputes to the reported median",
+      "status": "PASS",
+      "detail": "190 pairs, median 0.159 (reported 0.159), max 0.831 (reported 0.831)"
+    },
+    {
+      "section": "Documents",
+      "name": "headline numbers quoted in the markdown match their source tables",
+      "status": "PASS",
+      "detail": "checked 4 headline values across SUMMARY.md, RESULTS.md, PHASE2_DECISIONS.md; mismatches none"
+    },
+    {
+      "section": "Documents",
+      "name": "reproducibility record reports a complete, all-identical run",
+      "status": "PASS",
+      "detail": "36/36 identical across 7 groups, scripts 5"
+    },
+    {
+      "section": "Environment",
+      "name": "dependency lock matches the installed environment exactly",
+      "status": "PASS",
+      "detail": "49 pins; installed-but-unpinned none; pinned-but-absent none"
+    },
+    {
+      "section": "Repository",
+      "name": "no raw or processed data is tracked by git",
+      "status": "PASS",
+      "detail": "tracked data files 0, committed artefacts 146"
+    }
+  ]
+}

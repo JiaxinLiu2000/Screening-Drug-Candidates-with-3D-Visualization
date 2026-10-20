@@ -175,11 +175,30 @@ def write_clean_receptor(
     return out_path, n_res
 
 
+#: Altloc codes that belong to the single ligand copy we keep (blank, or "A").
+PRIMARY_ALTLOCS = frozenset({"", " ", "\x00", "A"})
+
+
 def ligand_coords(st: gemmi.Structure, ligand: HetGroup) -> np.ndarray:
-    """(n_atoms, 3) coordinates of the selected ligand instance (heavy + H)."""
+    """(n_atoms, 3) heavy-atom coordinates of ONE copy of the ligand instance.
+
+    Disordered ligands are deposited as several mutually exclusive conformers
+    sharing a residue (altloc A/B/C). Averaging across them would place the
+    pocket centre between conformers and inflate the box - 8SC7's D0D moved the
+    centre by 1.4 A - so only the primary copy counts, matching exactly the atom
+    set that ``write_ligand_sdf`` writes. Hydrogens are excluded for the same
+    reason: the SDF is heavy-atom only.
+    """
     for res in st[0][ligand.chain]:
         if res.name == ligand.resname and res.seqid.num == ligand.seqid:
-            return np.array([[a.pos.x, a.pos.y, a.pos.z] for a in res])
+            xyz = [
+                [a.pos.x, a.pos.y, a.pos.z]
+                for a in res
+                if a.altloc in PRIMARY_ALTLOCS and a.element.name != "H"
+            ]
+            if not xyz:
+                raise RuntimeError(f"ligand {ligand.label} has no primary-conformer atoms")
+            return np.array(xyz)
     raise RuntimeError(f"ligand {ligand.label} not found")
 
 
