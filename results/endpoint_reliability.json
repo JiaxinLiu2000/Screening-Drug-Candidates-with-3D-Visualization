@@ -1,0 +1,2435 @@
+{
+  "n_test_pos_check": {
+    "rows": 150,
+    "missing": 0,
+    "non_integer": 0,
+    "non_positive": 0,
+    "ok": true
+  },
+  "reproduction": {
+    "n_fits": 120,
+    "max_abs_deviation": 1.11e-16,
+    "tolerance": 1e-06
+  },
+  "bootstrap": {
+    "n_resamples": 1000,
+    "rng": "np.random.default_rng(10000 + seed)",
+    "unit": "test molecules of each split/seed, shared across endpoints",
+    "ci": "95% percentile",
+    "total_skipped": 0
+  },
+  "threshold_test_pos": 20,
+  "flagged": [
+    {
+      "dataset": "Tox21",
+      "setting": "standard",
+      "split": "random",
+      "endpoint": "NR-AR",
+      "n_test_pos_mean": 25.2,
+      "n_test_pos_min": 16
+    },
+    {
+      "dataset": "Tox21",
+      "setting": "standard",
+      "split": "random",
+      "endpoint": "NR-AR-LBD",
+      "n_test_pos_mean": 17.8,
+      "n_test_pos_min": 14
+    },
+    {
+      "dataset": "Tox21",
+      "setting": "standard",
+      "split": "random",
+      "endpoint": "NR-PPAR-gamma",
+      "n_test_pos_mean": 13.8,
+      "n_test_pos_min": 11
+    },
+    {
+      "dataset": "Tox21",
+      "setting": "standard",
+      "split": "random",
+      "endpoint": "SR-ATAD5",
+      "n_test_pos_mean": 22.2,
+      "n_test_pos_min": 15
+    },
+    {
+      "dataset": "Tox21",
+      "setting": "standard",
+      "split": "scaffold",
+      "endpoint": "NR-AR",
+      "n_test_pos_mean": 18.8,
+      "n_test_pos_min": 17
+    },
+    {
+      "dataset": "Tox21",
+      "setting": "standard",
+      "split": "scaffold",
+      "endpoint": "NR-AR-LBD",
+      "n_test_pos_mean": 14.0,
+      "n_test_pos_min": 9
+    },
+    {
+      "dataset": "Tox21",
+      "setting": "standard",
+      "split": "scaffold",
+      "endpoint": "NR-ER-LBD",
+      "n_test_pos_mean": 15.6,
+      "n_test_pos_min": 12
+    },
+    {
+      "dataset": "Tox21",
+      "setting": "standard",
+      "split": "scaffold",
+      "endpoint": "NR-PPAR-gamma",
+      "n_test_pos_mean": 21.2,
+      "n_test_pos_min": 17
+    },
+    {
+      "dataset": "Tox21",
+      "setting": "standard",
+      "split": "scaffold",
+      "endpoint": "SR-ATAD5",
+      "n_test_pos_mean": 24.6,
+      "n_test_pos_min": 17
+    }
+  ],
+  "macro": {
+    "random": {
+      "roc_auc": {
+        "point": 0.832365,
+        "ci": [
+          0.819481,
+          0.845023
+        ]
+      },
+      "pr_auc": {
+        "point": 0.492646,
+        "ci": [
+          0.472102,
+          0.533668
+        ]
+      }
+    },
+    "scaffold": {
+      "roc_auc": {
+        "point": 0.76108,
+        "ci": [
+          0.744425,
+          0.776331
+        ]
+      },
+      "pr_auc": {
+        "point": 0.380619,
+        "ci": [
+          0.367124,
+          0.419396
+        ]
+      }
+    }
+  },
+  "difference_random_minus_scaffold": {
+    "roc_auc": {
+      "point": 0.071285,
+      "ci": [
+        0.051002,
+        0.091878
+      ],
+      "ci_excludes_zero": true,
+      "fraction_resamples_le_0": 0.0,
+      "split_cis_disjoint": true
+    },
+    "pr_auc": {
+      "point": 0.112027,
+      "ci": [
+        0.067521,
+        0.15085
+      ],
+      "ci_excludes_zero": true,
+      "fraction_resamples_le_0": 0.0,
+      "split_cis_disjoint": true
+    }
+  },
+  "penalty_survives": true,
+  "fits": [
+    {
+      "split": "random",
+      "seed": 0,
+      "endpoint": "NR-AR",
+      "n_test": 566,
+      "n_test_pos": 23,
+      "roc_auc": 0.805709,
+      "roc_auc_ci": [
+        0.687092,
+        0.908712
+      ],
+      "pr_auc": 0.559766,
+      "pr_auc_ci": [
+        0.32675,
+        0.768312
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 0,
+      "endpoint": "NR-AR-LBD",
+      "n_test": 518,
+      "n_test_pos": 17,
+      "roc_auc": 0.913585,
+      "roc_auc_ci": [
+        0.781693,
+        0.999016
+      ],
+      "pr_auc": 0.83522,
+      "pr_auc_ci": [
+        0.660222,
+        0.973926
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 1.11e-16
+    },
+    {
+      "split": "random",
+      "seed": 0,
+      "endpoint": "NR-AhR",
+      "n_test": 506,
+      "n_test_pos": 73,
+      "roc_auc": 0.900709,
+      "roc_auc_ci": [
+        0.859526,
+        0.936237
+      ],
+      "pr_auc": 0.624552,
+      "pr_auc_ci": [
+        0.511616,
+        0.745684
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 0,
+      "endpoint": "NR-Aromatase",
+      "n_test": 437,
+      "n_test_pos": 30,
+      "roc_auc": 0.838984,
+      "roc_auc_ci": [
+        0.742743,
+        0.915795
+      ],
+      "pr_auc": 0.511508,
+      "pr_auc_ci": [
+        0.337601,
+        0.681203
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 0,
+      "endpoint": "NR-ER",
+      "n_test": 472,
+      "n_test_pos": 70,
+      "roc_auc": 0.808511,
+      "roc_auc_ci": [
+        0.742006,
+        0.870446
+      ],
+      "pr_auc": 0.575614,
+      "pr_auc_ci": [
+        0.465199,
+        0.68153
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 0,
+      "endpoint": "NR-ER-LBD",
+      "n_test": 537,
+      "n_test_pos": 36,
+      "roc_auc": 0.885451,
+      "roc_auc_ci": [
+        0.813073,
+        0.946071
+      ],
+      "pr_auc": 0.651033,
+      "pr_auc_ci": [
+        0.492221,
+        0.786267
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 0,
+      "endpoint": "NR-PPAR-gamma",
+      "n_test": 496,
+      "n_test_pos": 14,
+      "roc_auc": 0.864997,
+      "roc_auc_ci": [
+        0.728087,
+        0.964083
+      ],
+      "pr_auc": 0.445312,
+      "pr_auc_ci": [
+        0.184432,
+        0.732348
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 0,
+      "endpoint": "SR-ARE",
+      "n_test": 451,
+      "n_test_pos": 88,
+      "roc_auc": 0.815693,
+      "roc_auc_ci": [
+        0.76252,
+        0.869738
+      ],
+      "pr_auc": 0.552223,
+      "pr_auc_ci": [
+        0.449475,
+        0.664988
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 0,
+      "endpoint": "SR-ATAD5",
+      "n_test": 548,
+      "n_test_pos": 21,
+      "roc_auc": 0.824704,
+      "roc_auc_ci": [
+        0.71003,
+        0.926096
+      ],
+      "pr_auc": 0.483942,
+      "pr_auc_ci": [
+        0.27514,
+        0.700931
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "random",
+      "seed": 0,
+      "endpoint": "SR-HSE",
+      "n_test": 507,
+      "n_test_pos": 38,
+      "roc_auc": 0.837644,
+      "roc_auc_ci": [
+        0.776445,
+        0.895978
+      ],
+      "pr_auc": 0.426017,
+      "pr_auc_ci": [
+        0.276601,
+        0.590935
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "random",
+      "seed": 0,
+      "endpoint": "SR-MMP",
+      "n_test": 434,
+      "n_test_pos": 73,
+      "roc_auc": 0.845824,
+      "roc_auc_ci": [
+        0.791811,
+        0.891927
+      ],
+      "pr_auc": 0.596658,
+      "pr_auc_ci": [
+        0.488103,
+        0.71268
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 0,
+      "endpoint": "SR-p53",
+      "n_test": 508,
+      "n_test_pos": 41,
+      "roc_auc": 0.885752,
+      "roc_auc_ci": [
+        0.827333,
+        0.935772
+      ],
+      "pr_auc": 0.479531,
+      "pr_auc_ci": [
+        0.335953,
+        0.640098
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 1,
+      "endpoint": "NR-AR",
+      "n_test": 569,
+      "n_test_pos": 16,
+      "roc_auc": 0.894835,
+      "roc_auc_ci": [
+        0.815482,
+        0.963918
+      ],
+      "pr_auc": 0.505253,
+      "pr_auc_ci": [
+        0.276251,
+        0.7845
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 1,
+      "endpoint": "NR-AR-LBD",
+      "n_test": 515,
+      "n_test_pos": 14,
+      "roc_auc": 0.847662,
+      "roc_auc_ci": [
+        0.726314,
+        0.947995
+      ],
+      "pr_auc": 0.51281,
+      "pr_auc_ci": [
+        0.226061,
+        0.787194
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 1,
+      "endpoint": "NR-AhR",
+      "n_test": 508,
+      "n_test_pos": 58,
+      "roc_auc": 0.842069,
+      "roc_auc_ci": [
+        0.789528,
+        0.897848
+      ],
+      "pr_auc": 0.48544,
+      "pr_auc_ci": [
+        0.374537,
+        0.621428
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 1,
+      "endpoint": "NR-Aromatase",
+      "n_test": 445,
+      "n_test_pos": 30,
+      "roc_auc": 0.779719,
+      "roc_auc_ci": [
+        0.660808,
+        0.876967
+      ],
+      "pr_auc": 0.42582,
+      "pr_auc_ci": [
+        0.254997,
+        0.585662
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 1,
+      "endpoint": "NR-ER",
+      "n_test": 470,
+      "n_test_pos": 63,
+      "roc_auc": 0.754495,
+      "roc_auc_ci": [
+        0.681982,
+        0.822285
+      ],
+      "pr_auc": 0.4386,
+      "pr_auc_ci": [
+        0.323349,
+        0.560298
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "random",
+      "seed": 1,
+      "endpoint": "NR-ER-LBD",
+      "n_test": 544,
+      "n_test_pos": 24,
+      "roc_auc": 0.845393,
+      "roc_auc_ci": [
+        0.73164,
+        0.937974
+      ],
+      "pr_auc": 0.551432,
+      "pr_auc_ci": [
+        0.343145,
+        0.743115
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 1,
+      "endpoint": "NR-PPAR-gamma",
+      "n_test": 484,
+      "n_test_pos": 12,
+      "roc_auc": 0.849929,
+      "roc_auc_ci": [
+        0.706107,
+        0.963875
+      ],
+      "pr_auc": 0.33918,
+      "pr_auc_ci": [
+        0.098562,
+        0.607386
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "random",
+      "seed": 1,
+      "endpoint": "SR-ARE",
+      "n_test": 436,
+      "n_test_pos": 75,
+      "roc_auc": 0.818966,
+      "roc_auc_ci": [
+        0.767406,
+        0.866446
+      ],
+      "pr_auc": 0.568938,
+      "pr_auc_ci": [
+        0.455451,
+        0.675465
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 1,
+      "endpoint": "SR-ATAD5",
+      "n_test": 542,
+      "n_test_pos": 22,
+      "roc_auc": 0.865953,
+      "roc_auc_ci": [
+        0.779768,
+        0.940589
+      ],
+      "pr_auc": 0.422796,
+      "pr_auc_ci": [
+        0.222341,
+        0.652459
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "random",
+      "seed": 1,
+      "endpoint": "SR-HSE",
+      "n_test": 492,
+      "n_test_pos": 31,
+      "roc_auc": 0.764222,
+      "roc_auc_ci": [
+        0.658316,
+        0.865388
+      ],
+      "pr_auc": 0.291549,
+      "pr_auc_ci": [
+        0.173278,
+        0.470147
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "random",
+      "seed": 1,
+      "endpoint": "SR-MMP",
+      "n_test": 453,
+      "n_test_pos": 82,
+      "roc_auc": 0.864654,
+      "roc_auc_ci": [
+        0.812294,
+        0.908654
+      ],
+      "pr_auc": 0.659643,
+      "pr_auc_ci": [
+        0.542885,
+        0.762741
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 1,
+      "endpoint": "SR-p53",
+      "n_test": 519,
+      "n_test_pos": 38,
+      "roc_auc": 0.877147,
+      "roc_auc_ci": [
+        0.814189,
+        0.928846
+      ],
+      "pr_auc": 0.5201,
+      "pr_auc_ci": [
+        0.360574,
+        0.676589
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 2,
+      "endpoint": "NR-AR",
+      "n_test": 567,
+      "n_test_pos": 27,
+      "roc_auc": 0.771468,
+      "roc_auc_ci": [
+        0.652861,
+        0.881328
+      ],
+      "pr_auc": 0.473266,
+      "pr_auc_ci": [
+        0.277211,
+        0.693572
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 2,
+      "endpoint": "NR-AR-LBD",
+      "n_test": 519,
+      "n_test_pos": 18,
+      "roc_auc": 0.839654,
+      "roc_auc_ci": [
+        0.681022,
+        0.963817
+      ],
+      "pr_auc": 0.505147,
+      "pr_auc_ci": [
+        0.288723,
+        0.788428
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 2,
+      "endpoint": "NR-AhR",
+      "n_test": 499,
+      "n_test_pos": 81,
+      "roc_auc": 0.886984,
+      "roc_auc_ci": [
+        0.847134,
+        0.922959
+      ],
+      "pr_auc": 0.65789,
+      "pr_auc_ci": [
+        0.552123,
+        0.768937
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 2,
+      "endpoint": "NR-Aromatase",
+      "n_test": 439,
+      "n_test_pos": 22,
+      "roc_auc": 0.793056,
+      "roc_auc_ci": [
+        0.669548,
+        0.900819
+      ],
+      "pr_auc": 0.403598,
+      "pr_auc_ci": [
+        0.193019,
+        0.622924
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 2,
+      "endpoint": "NR-ER",
+      "n_test": 475,
+      "n_test_pos": 71,
+      "roc_auc": 0.71315,
+      "roc_auc_ci": [
+        0.637581,
+        0.78607
+      ],
+      "pr_auc": 0.415557,
+      "pr_auc_ci": [
+        0.30588,
+        0.540443
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 2,
+      "endpoint": "NR-ER-LBD",
+      "n_test": 543,
+      "n_test_pos": 28,
+      "roc_auc": 0.80423,
+      "roc_auc_ci": [
+        0.708252,
+        0.895242
+      ],
+      "pr_auc": 0.407956,
+      "pr_auc_ci": [
+        0.23054,
+        0.621866
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 2,
+      "endpoint": "NR-PPAR-gamma",
+      "n_test": 493,
+      "n_test_pos": 16,
+      "roc_auc": 0.76153,
+      "roc_auc_ci": [
+        0.605036,
+        0.90077
+      ],
+      "pr_auc": 0.223058,
+      "pr_auc_ci": [
+        0.097847,
+        0.466971
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "random",
+      "seed": 2,
+      "endpoint": "SR-ARE",
+      "n_test": 437,
+      "n_test_pos": 75,
+      "roc_auc": 0.812965,
+      "roc_auc_ci": [
+        0.756981,
+        0.866143
+      ],
+      "pr_auc": 0.516932,
+      "pr_auc_ci": [
+        0.411908,
+        0.635178
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 2,
+      "endpoint": "SR-ATAD5",
+      "n_test": 551,
+      "n_test_pos": 26,
+      "roc_auc": 0.82674,
+      "roc_auc_ci": [
+        0.739844,
+        0.902609
+      ],
+      "pr_auc": 0.294247,
+      "pr_auc_ci": [
+        0.163305,
+        0.476428
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 2,
+      "endpoint": "SR-HSE",
+      "n_test": 502,
+      "n_test_pos": 41,
+      "roc_auc": 0.743426,
+      "roc_auc_ci": [
+        0.657361,
+        0.821557
+      ],
+      "pr_auc": 0.253362,
+      "pr_auc_ci": [
+        0.159035,
+        0.416486
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "random",
+      "seed": 2,
+      "endpoint": "SR-MMP",
+      "n_test": 449,
+      "n_test_pos": 78,
+      "roc_auc": 0.899924,
+      "roc_auc_ci": [
+        0.859765,
+        0.933392
+      ],
+      "pr_auc": 0.714208,
+      "pr_auc_ci": [
+        0.608654,
+        0.801338
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 2,
+      "endpoint": "SR-p53",
+      "n_test": 526,
+      "n_test_pos": 40,
+      "roc_auc": 0.780916,
+      "roc_auc_ci": [
+        0.702979,
+        0.844109
+      ],
+      "pr_auc": 0.344204,
+      "pr_auc_ci": [
+        0.208603,
+        0.506744
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 3,
+      "endpoint": "NR-AR",
+      "n_test": 574,
+      "n_test_pos": 32,
+      "roc_auc": 0.787189,
+      "roc_auc_ci": [
+        0.669476,
+        0.883536
+      ],
+      "pr_auc": 0.58684,
+      "pr_auc_ci": [
+        0.39581,
+        0.750442
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 3,
+      "endpoint": "NR-AR-LBD",
+      "n_test": 524,
+      "n_test_pos": 21,
+      "roc_auc": 0.898608,
+      "roc_auc_ci": [
+        0.797744,
+        0.982472
+      ],
+      "pr_auc": 0.753677,
+      "pr_auc_ci": [
+        0.54274,
+        0.924386
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 3,
+      "endpoint": "NR-AhR",
+      "n_test": 516,
+      "n_test_pos": 73,
+      "roc_auc": 0.858669,
+      "roc_auc_ci": [
+        0.812869,
+        0.901063
+      ],
+      "pr_auc": 0.600458,
+      "pr_auc_ci": [
+        0.490262,
+        0.711946
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 3,
+      "endpoint": "NR-Aromatase",
+      "n_test": 439,
+      "n_test_pos": 27,
+      "roc_auc": 0.780205,
+      "roc_auc_ci": [
+        0.669187,
+        0.879749
+      ],
+      "pr_auc": 0.411905,
+      "pr_auc_ci": [
+        0.225643,
+        0.605971
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 3,
+      "endpoint": "NR-ER",
+      "n_test": 477,
+      "n_test_pos": 62,
+      "roc_auc": 0.781248,
+      "roc_auc_ci": [
+        0.712321,
+        0.846007
+      ],
+      "pr_auc": 0.469143,
+      "pr_auc_ci": [
+        0.345804,
+        0.604118
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 3,
+      "endpoint": "NR-ER-LBD",
+      "n_test": 538,
+      "n_test_pos": 22,
+      "roc_auc": 0.831351,
+      "roc_auc_ci": [
+        0.711264,
+        0.926015
+      ],
+      "pr_auc": 0.370611,
+      "pr_auc_ci": [
+        0.193597,
+        0.597034
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "random",
+      "seed": 3,
+      "endpoint": "NR-PPAR-gamma",
+      "n_test": 495,
+      "n_test_pos": 11,
+      "roc_auc": 0.831893,
+      "roc_auc_ci": [
+        0.684141,
+        0.961147
+      ],
+      "pr_auc": 0.293186,
+      "pr_auc_ci": [
+        0.064665,
+        0.567611
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 3,
+      "endpoint": "SR-ARE",
+      "n_test": 430,
+      "n_test_pos": 81,
+      "roc_auc": 0.82923,
+      "roc_auc_ci": [
+        0.776611,
+        0.875507
+      ],
+      "pr_auc": 0.604087,
+      "pr_auc_ci": [
+        0.496911,
+        0.700895
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 3,
+      "endpoint": "SR-ATAD5",
+      "n_test": 547,
+      "n_test_pos": 15,
+      "roc_auc": 0.876128,
+      "roc_auc_ci": [
+        0.777224,
+        0.955903
+      ],
+      "pr_auc": 0.217616,
+      "pr_auc_ci": [
+        0.10682,
+        0.46294
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 3,
+      "endpoint": "SR-HSE",
+      "n_test": 488,
+      "n_test_pos": 41,
+      "roc_auc": 0.81339,
+      "roc_auc_ci": [
+        0.745218,
+        0.877136
+      ],
+      "pr_auc": 0.353402,
+      "pr_auc_ci": [
+        0.233635,
+        0.516688
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "random",
+      "seed": 3,
+      "endpoint": "SR-MMP",
+      "n_test": 451,
+      "n_test_pos": 91,
+      "roc_auc": 0.867002,
+      "roc_auc_ci": [
+        0.819632,
+        0.912138
+      ],
+      "pr_auc": 0.715549,
+      "pr_auc_ci": [
+        0.623074,
+        0.80263
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 3,
+      "endpoint": "SR-p53",
+      "n_test": 517,
+      "n_test_pos": 45,
+      "roc_auc": 0.871846,
+      "roc_auc_ci": [
+        0.808848,
+        0.924845
+      ],
+      "pr_auc": 0.542738,
+      "pr_auc_ci": [
+        0.412741,
+        0.678675
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 4,
+      "endpoint": "NR-AR",
+      "n_test": 560,
+      "n_test_pos": 28,
+      "roc_auc": 0.777356,
+      "roc_auc_ci": [
+        0.657439,
+        0.884893
+      ],
+      "pr_auc": 0.452311,
+      "pr_auc_ci": [
+        0.258145,
+        0.666305
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 4,
+      "endpoint": "NR-AR-LBD",
+      "n_test": 527,
+      "n_test_pos": 19,
+      "roc_auc": 0.920483,
+      "roc_auc_ci": [
+        0.812747,
+        0.987847
+      ],
+      "pr_auc": 0.644058,
+      "pr_auc_ci": [
+        0.421633,
+        0.878299
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 4,
+      "endpoint": "NR-AhR",
+      "n_test": 495,
+      "n_test_pos": 66,
+      "roc_auc": 0.911475,
+      "roc_auc_ci": [
+        0.863774,
+        0.950424
+      ],
+      "pr_auc": 0.733403,
+      "pr_auc_ci": [
+        0.631973,
+        0.827848
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 4,
+      "endpoint": "NR-Aromatase",
+      "n_test": 444,
+      "n_test_pos": 35,
+      "roc_auc": 0.737513,
+      "roc_auc_ci": [
+        0.622417,
+        0.830929
+      ],
+      "pr_auc": 0.40411,
+      "pr_auc_ci": [
+        0.245797,
+        0.559866
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "random",
+      "seed": 4,
+      "endpoint": "NR-ER",
+      "n_test": 490,
+      "n_test_pos": 67,
+      "roc_auc": 0.773402,
+      "roc_auc_ci": [
+        0.708557,
+        0.831473
+      ],
+      "pr_auc": 0.414086,
+      "pr_auc_ci": [
+        0.310189,
+        0.536038
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 4,
+      "endpoint": "NR-ER-LBD",
+      "n_test": 528,
+      "n_test_pos": 32,
+      "roc_auc": 0.827463,
+      "roc_auc_ci": [
+        0.725887,
+        0.908267
+      ],
+      "pr_auc": 0.463367,
+      "pr_auc_ci": [
+        0.294213,
+        0.630833
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "random",
+      "seed": 4,
+      "endpoint": "NR-PPAR-gamma",
+      "n_test": 501,
+      "n_test_pos": 16,
+      "roc_auc": 0.848776,
+      "roc_auc_ci": [
+        0.703577,
+        0.962896
+      ],
+      "pr_auc": 0.444549,
+      "pr_auc_ci": [
+        0.220611,
+        0.702688
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "random",
+      "seed": 4,
+      "endpoint": "SR-ARE",
+      "n_test": 447,
+      "n_test_pos": 72,
+      "roc_auc": 0.880963,
+      "roc_auc_ci": [
+        0.839541,
+        0.916667
+      ],
+      "pr_auc": 0.61959,
+      "pr_auc_ci": [
+        0.50849,
+        0.718739
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 4,
+      "endpoint": "SR-ATAD5",
+      "n_test": 552,
+      "n_test_pos": 27,
+      "roc_auc": 0.893086,
+      "roc_auc_ci": [
+        0.820603,
+        0.954347
+      ],
+      "pr_auc": 0.491026,
+      "pr_auc_ci": [
+        0.318083,
+        0.696571
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 4,
+      "endpoint": "SR-HSE",
+      "n_test": 518,
+      "n_test_pos": 29,
+      "roc_auc": 0.723856,
+      "roc_auc_ci": [
+        0.60836,
+        0.830051
+      ],
+      "pr_auc": 0.181498,
+      "pr_auc_ci": [
+        0.100726,
+        0.344637
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 2.776e-17
+    },
+    {
+      "split": "random",
+      "seed": 4,
+      "endpoint": "SR-MMP",
+      "n_test": 442,
+      "n_test_pos": 69,
+      "roc_auc": 0.866088,
+      "roc_auc_ci": [
+        0.815047,
+        0.916173
+      ],
+      "pr_auc": 0.649896,
+      "pr_auc_ci": [
+        0.535895,
+        0.75359
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "random",
+      "seed": 4,
+      "endpoint": "SR-p53",
+      "n_test": 530,
+      "n_test_pos": 33,
+      "roc_auc": 0.888025,
+      "roc_auc_ci": [
+        0.82362,
+        0.947352
+      ],
+      "pr_auc": 0.469295,
+      "pr_auc_ci": [
+        0.315909,
+        0.645371
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 0,
+      "endpoint": "NR-AR",
+      "n_test": 555,
+      "n_test_pos": 17,
+      "roc_auc": 0.849497,
+      "roc_auc_ci": [
+        0.72725,
+        0.957652
+      ],
+      "pr_auc": 0.469796,
+      "pr_auc_ci": [
+        0.256002,
+        0.770521
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 0,
+      "endpoint": "NR-AR-LBD",
+      "n_test": 480,
+      "n_test_pos": 19,
+      "roc_auc": 0.776972,
+      "roc_auc_ci": [
+        0.636334,
+        0.912309
+      ],
+      "pr_auc": 0.387404,
+      "pr_auc_ci": [
+        0.184315,
+        0.682481
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "scaffold",
+      "seed": 0,
+      "endpoint": "NR-AhR",
+      "n_test": 475,
+      "n_test_pos": 67,
+      "roc_auc": 0.844692,
+      "roc_auc_ci": [
+        0.793572,
+        0.893313
+      ],
+      "pr_auc": 0.516373,
+      "pr_auc_ci": [
+        0.393205,
+        0.650905
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 0,
+      "endpoint": "NR-Aromatase",
+      "n_test": 396,
+      "n_test_pos": 41,
+      "roc_auc": 0.784748,
+      "roc_auc_ci": [
+        0.701451,
+        0.865533
+      ],
+      "pr_auc": 0.463494,
+      "pr_auc_ci": [
+        0.318306,
+        0.615843
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "scaffold",
+      "seed": 0,
+      "endpoint": "NR-ER",
+      "n_test": 418,
+      "n_test_pos": 49,
+      "roc_auc": 0.706543,
+      "roc_auc_ci": [
+        0.617363,
+        0.78954
+      ],
+      "pr_auc": 0.387048,
+      "pr_auc_ci": [
+        0.255817,
+        0.523681
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 0,
+      "endpoint": "NR-ER-LBD",
+      "n_test": 506,
+      "n_test_pos": 17,
+      "roc_auc": 0.848069,
+      "roc_auc_ci": [
+        0.735306,
+        0.944961
+      ],
+      "pr_auc": 0.428044,
+      "pr_auc_ci": [
+        0.201873,
+        0.678885
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 0,
+      "endpoint": "NR-PPAR-gamma",
+      "n_test": 439,
+      "n_test_pos": 22,
+      "roc_auc": 0.772836,
+      "roc_auc_ci": [
+        0.635251,
+        0.883825
+      ],
+      "pr_auc": 0.286753,
+      "pr_auc_ci": [
+        0.137332,
+        0.517834
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 0,
+      "endpoint": "SR-ARE",
+      "n_test": 365,
+      "n_test_pos": 88,
+      "roc_auc": 0.763476,
+      "roc_auc_ci": [
+        0.711259,
+        0.814447
+      ],
+      "pr_auc": 0.505622,
+      "pr_auc_ci": [
+        0.410371,
+        0.603481
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 0,
+      "endpoint": "SR-ATAD5",
+      "n_test": 506,
+      "n_test_pos": 17,
+      "roc_auc": 0.826116,
+      "roc_auc_ci": [
+        0.715228,
+        0.91433
+      ],
+      "pr_auc": 0.261362,
+      "pr_auc_ci": [
+        0.098212,
+        0.497729
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 0,
+      "endpoint": "SR-HSE",
+      "n_test": 443,
+      "n_test_pos": 32,
+      "roc_auc": 0.787485,
+      "roc_auc_ci": [
+        0.672309,
+        0.888259
+      ],
+      "pr_auc": 0.442117,
+      "pr_auc_ci": [
+        0.253818,
+        0.623017
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 0,
+      "endpoint": "SR-MMP",
+      "n_test": 397,
+      "n_test_pos": 86,
+      "roc_auc": 0.836349,
+      "roc_auc_ci": [
+        0.782506,
+        0.884161
+      ],
+      "pr_auc": 0.631156,
+      "pr_auc_ci": [
+        0.534676,
+        0.744146
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 0,
+      "endpoint": "SR-p53",
+      "n_test": 478,
+      "n_test_pos": 57,
+      "roc_auc": 0.780056,
+      "roc_auc_ci": [
+        0.716885,
+        0.835591
+      ],
+      "pr_auc": 0.375336,
+      "pr_auc_ci": [
+        0.259937,
+        0.495015
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 1,
+      "endpoint": "NR-AR",
+      "n_test": 561,
+      "n_test_pos": 20,
+      "roc_auc": 0.727126,
+      "roc_auc_ci": [
+        0.569958,
+        0.863202
+      ],
+      "pr_auc": 0.420947,
+      "pr_auc_ci": [
+        0.21163,
+        0.643702
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "scaffold",
+      "seed": 1,
+      "endpoint": "NR-AR-LBD",
+      "n_test": 474,
+      "n_test_pos": 15,
+      "roc_auc": 0.752941,
+      "roc_auc_ci": [
+        0.597915,
+        0.889581
+      ],
+      "pr_auc": 0.392742,
+      "pr_auc_ci": [
+        0.132603,
+        0.642494
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "scaffold",
+      "seed": 1,
+      "endpoint": "NR-AhR",
+      "n_test": 469,
+      "n_test_pos": 81,
+      "roc_auc": 0.839729,
+      "roc_auc_ci": [
+        0.794013,
+        0.88433
+      ],
+      "pr_auc": 0.57348,
+      "pr_auc_ci": [
+        0.468233,
+        0.681788
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 1,
+      "endpoint": "NR-Aromatase",
+      "n_test": 393,
+      "n_test_pos": 36,
+      "roc_auc": 0.68927,
+      "roc_auc_ci": [
+        0.583383,
+        0.784946
+      ],
+      "pr_auc": 0.328923,
+      "pr_auc_ci": [
+        0.19278,
+        0.489599
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "scaffold",
+      "seed": 1,
+      "endpoint": "NR-ER",
+      "n_test": 421,
+      "n_test_pos": 60,
+      "roc_auc": 0.652424,
+      "roc_auc_ci": [
+        0.571264,
+        0.734019
+      ],
+      "pr_auc": 0.355423,
+      "pr_auc_ci": [
+        0.248562,
+        0.469694
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 1,
+      "endpoint": "NR-ER-LBD",
+      "n_test": 519,
+      "n_test_pos": 16,
+      "roc_auc": 0.797652,
+      "roc_auc_ci": [
+        0.669842,
+        0.905877
+      ],
+      "pr_auc": 0.285158,
+      "pr_auc_ci": [
+        0.090445,
+        0.536431
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 1,
+      "endpoint": "NR-PPAR-gamma",
+      "n_test": 451,
+      "n_test_pos": 26,
+      "roc_auc": 0.740905,
+      "roc_auc_ci": [
+        0.612324,
+        0.848311
+      ],
+      "pr_auc": 0.261144,
+      "pr_auc_ci": [
+        0.124104,
+        0.469004
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "scaffold",
+      "seed": 1,
+      "endpoint": "SR-ARE",
+      "n_test": 386,
+      "n_test_pos": 95,
+      "roc_auc": 0.744891,
+      "roc_auc_ci": [
+        0.689633,
+        0.796793
+      ],
+      "pr_auc": 0.486474,
+      "pr_auc_ci": [
+        0.385982,
+        0.588301
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "scaffold",
+      "seed": 1,
+      "endpoint": "SR-ATAD5",
+      "n_test": 522,
+      "n_test_pos": 28,
+      "roc_auc": 0.711213,
+      "roc_auc_ci": [
+        0.600991,
+        0.804897
+      ],
+      "pr_auc": 0.173248,
+      "pr_auc_ci": [
+        0.085141,
+        0.307917
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 8.327e-17
+    },
+    {
+      "split": "scaffold",
+      "seed": 1,
+      "endpoint": "SR-HSE",
+      "n_test": 455,
+      "n_test_pos": 42,
+      "roc_auc": 0.71296,
+      "roc_auc_ci": [
+        0.620517,
+        0.795879
+      ],
+      "pr_auc": 0.289899,
+      "pr_auc_ci": [
+        0.181722,
+        0.439811
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 1,
+      "endpoint": "SR-MMP",
+      "n_test": 406,
+      "n_test_pos": 86,
+      "roc_auc": 0.822184,
+      "roc_auc_ci": [
+        0.769502,
+        0.869939
+      ],
+      "pr_auc": 0.57802,
+      "pr_auc_ci": [
+        0.471531,
+        0.695242
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 1,
+      "endpoint": "SR-p53",
+      "n_test": 490,
+      "n_test_pos": 57,
+      "roc_auc": 0.736437,
+      "roc_auc_ci": [
+        0.666411,
+        0.797121
+      ],
+      "pr_auc": 0.294848,
+      "pr_auc_ci": [
+        0.198008,
+        0.417431
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "scaffold",
+      "seed": 2,
+      "endpoint": "NR-AR",
+      "n_test": 550,
+      "n_test_pos": 18,
+      "roc_auc": 0.657529,
+      "roc_auc_ci": [
+        0.495025,
+        0.806244
+      ],
+      "pr_auc": 0.368813,
+      "pr_auc_ci": [
+        0.174498,
+        0.59454
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "scaffold",
+      "seed": 2,
+      "endpoint": "NR-AR-LBD",
+      "n_test": 493,
+      "n_test_pos": 9,
+      "roc_auc": 0.957989,
+      "roc_auc_ci": [
+        0.888472,
+        0.996836
+      ],
+      "pr_auc": 0.584875,
+      "pr_auc_ci": [
+        0.233922,
+        0.873095
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 2,
+      "endpoint": "NR-AhR",
+      "n_test": 481,
+      "n_test_pos": 83,
+      "roc_auc": 0.841693,
+      "roc_auc_ci": [
+        0.789615,
+        0.886518
+      ],
+      "pr_auc": 0.56191,
+      "pr_auc_ci": [
+        0.448737,
+        0.67488
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 2,
+      "endpoint": "NR-Aromatase",
+      "n_test": 408,
+      "n_test_pos": 40,
+      "roc_auc": 0.714912,
+      "roc_auc_ci": [
+        0.603577,
+        0.812407
+      ],
+      "pr_auc": 0.429391,
+      "pr_auc_ci": [
+        0.266511,
+        0.592643
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 2,
+      "endpoint": "NR-ER",
+      "n_test": 431,
+      "n_test_pos": 52,
+      "roc_auc": 0.691673,
+      "roc_auc_ci": [
+        0.607219,
+        0.77799
+      ],
+      "pr_auc": 0.314384,
+      "pr_auc_ci": [
+        0.205803,
+        0.450031
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 2,
+      "endpoint": "NR-ER-LBD",
+      "n_test": 505,
+      "n_test_pos": 12,
+      "roc_auc": 0.611984,
+      "roc_auc_ci": [
+        0.434771,
+        0.780073
+      ],
+      "pr_auc": 0.164501,
+      "pr_auc_ci": [
+        0.020968,
+        0.403656
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "scaffold",
+      "seed": 2,
+      "endpoint": "NR-PPAR-gamma",
+      "n_test": 446,
+      "n_test_pos": 17,
+      "roc_auc": 0.807075,
+      "roc_auc_ci": [
+        0.6738,
+        0.917162
+      ],
+      "pr_auc": 0.454438,
+      "pr_auc_ci": [
+        0.2111,
+        0.682092
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "scaffold",
+      "seed": 2,
+      "endpoint": "SR-ARE",
+      "n_test": 405,
+      "n_test_pos": 93,
+      "roc_auc": 0.735267,
+      "roc_auc_ci": [
+        0.684746,
+        0.790187
+      ],
+      "pr_auc": 0.467567,
+      "pr_auc_ci": [
+        0.378268,
+        0.570219
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "scaffold",
+      "seed": 2,
+      "endpoint": "SR-ATAD5",
+      "n_test": 516,
+      "n_test_pos": 24,
+      "roc_auc": 0.811907,
+      "roc_auc_ci": [
+        0.723044,
+        0.891668
+      ],
+      "pr_auc": 0.18413,
+      "pr_auc_ci": [
+        0.095014,
+        0.347682
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 2.776e-17
+    },
+    {
+      "split": "scaffold",
+      "seed": 2,
+      "endpoint": "SR-HSE",
+      "n_test": 471,
+      "n_test_pos": 29,
+      "roc_auc": 0.761741,
+      "roc_auc_ci": [
+        0.655507,
+        0.859218
+      ],
+      "pr_auc": 0.321107,
+      "pr_auc_ci": [
+        0.168165,
+        0.513828
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "scaffold",
+      "seed": 2,
+      "endpoint": "SR-MMP",
+      "n_test": 390,
+      "n_test_pos": 78,
+      "roc_auc": 0.814698,
+      "roc_auc_ci": [
+        0.760573,
+        0.868135
+      ],
+      "pr_auc": 0.527431,
+      "pr_auc_ci": [
+        0.422393,
+        0.656141
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 2,
+      "endpoint": "SR-p53",
+      "n_test": 501,
+      "n_test_pos": 58,
+      "roc_auc": 0.79826,
+      "roc_auc_ci": [
+        0.740634,
+        0.857276
+      ],
+      "pr_auc": 0.414425,
+      "pr_auc_ci": [
+        0.292305,
+        0.546182
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 3,
+      "endpoint": "NR-AR",
+      "n_test": 552,
+      "n_test_pos": 20,
+      "roc_auc": 0.664991,
+      "roc_auc_ci": [
+        0.48957,
+        0.82354
+      ],
+      "pr_auc": 0.31767,
+      "pr_auc_ci": [
+        0.134991,
+        0.578757
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 3,
+      "endpoint": "NR-AR-LBD",
+      "n_test": 488,
+      "n_test_pos": 10,
+      "roc_auc": 0.783473,
+      "roc_auc_ci": [
+        0.569175,
+        0.978231
+      ],
+      "pr_auc": 0.283947,
+      "pr_auc_ci": [
+        0.08618,
+        0.643662
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "scaffold",
+      "seed": 3,
+      "endpoint": "NR-AhR",
+      "n_test": 488,
+      "n_test_pos": 76,
+      "roc_auc": 0.811127,
+      "roc_auc_ci": [
+        0.755746,
+        0.860778
+      ],
+      "pr_auc": 0.484582,
+      "pr_auc_ci": [
+        0.370753,
+        0.610148
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 3,
+      "endpoint": "NR-Aromatase",
+      "n_test": 405,
+      "n_test_pos": 34,
+      "roc_auc": 0.705724,
+      "roc_auc_ci": [
+        0.608169,
+        0.798124
+      ],
+      "pr_auc": 0.313954,
+      "pr_auc_ci": [
+        0.178518,
+        0.475784
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 3,
+      "endpoint": "NR-ER",
+      "n_test": 428,
+      "n_test_pos": 51,
+      "roc_auc": 0.693062,
+      "roc_auc_ci": [
+        0.614397,
+        0.772727
+      ],
+      "pr_auc": 0.353153,
+      "pr_auc_ci": [
+        0.239598,
+        0.478664
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 3,
+      "endpoint": "NR-ER-LBD",
+      "n_test": 511,
+      "n_test_pos": 15,
+      "roc_auc": 0.778629,
+      "roc_auc_ci": [
+        0.658913,
+        0.881911
+      ],
+      "pr_auc": 0.243122,
+      "pr_auc_ci": [
+        0.060974,
+        0.497534
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 2.776e-17
+    },
+    {
+      "split": "scaffold",
+      "seed": 3,
+      "endpoint": "NR-PPAR-gamma",
+      "n_test": 459,
+      "n_test_pos": 21,
+      "roc_auc": 0.771744,
+      "roc_auc_ci": [
+        0.661158,
+        0.864693
+      ],
+      "pr_auc": 0.335639,
+      "pr_auc_ci": [
+        0.149681,
+        0.543856
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "scaffold",
+      "seed": 3,
+      "endpoint": "SR-ARE",
+      "n_test": 384,
+      "n_test_pos": 82,
+      "roc_auc": 0.755007,
+      "roc_auc_ci": [
+        0.695821,
+        0.810508
+      ],
+      "pr_auc": 0.502455,
+      "pr_auc_ci": [
+        0.391401,
+        0.612566
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 3,
+      "endpoint": "SR-ATAD5",
+      "n_test": 521,
+      "n_test_pos": 27,
+      "roc_auc": 0.767844,
+      "roc_auc_ci": [
+        0.665506,
+        0.856552
+      ],
+      "pr_auc": 0.246567,
+      "pr_auc_ci": [
+        0.127892,
+        0.430138
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 8.327e-17
+    },
+    {
+      "split": "scaffold",
+      "seed": 3,
+      "endpoint": "SR-HSE",
+      "n_test": 446,
+      "n_test_pos": 24,
+      "roc_auc": 0.726254,
+      "roc_auc_ci": [
+        0.600675,
+        0.834144
+      ],
+      "pr_auc": 0.185768,
+      "pr_auc_ci": [
+        0.078168,
+        0.348504
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "scaffold",
+      "seed": 3,
+      "endpoint": "SR-MMP",
+      "n_test": 397,
+      "n_test_pos": 73,
+      "roc_auc": 0.811327,
+      "roc_auc_ci": [
+        0.756379,
+        0.864163
+      ],
+      "pr_auc": 0.497783,
+      "pr_auc_ci": [
+        0.391614,
+        0.622732
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "scaffold",
+      "seed": 3,
+      "endpoint": "SR-p53",
+      "n_test": 489,
+      "n_test_pos": 42,
+      "roc_auc": 0.755886,
+      "roc_auc_ci": [
+        0.677433,
+        0.827257
+      ],
+      "pr_auc": 0.286875,
+      "pr_auc_ci": [
+        0.18126,
+        0.413833
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 4,
+      "endpoint": "NR-AR",
+      "n_test": 557,
+      "n_test_pos": 19,
+      "roc_auc": 0.671004,
+      "roc_auc_ci": [
+        0.482541,
+        0.838749
+      ],
+      "pr_auc": 0.401418,
+      "pr_auc_ci": [
+        0.1863,
+        0.619074
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "scaffold",
+      "seed": 4,
+      "endpoint": "NR-AR-LBD",
+      "n_test": 499,
+      "n_test_pos": 17,
+      "roc_auc": 0.782402,
+      "roc_auc_ci": [
+        0.646714,
+        0.904647
+      ],
+      "pr_auc": 0.365249,
+      "pr_auc_ci": [
+        0.156146,
+        0.631531
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 4,
+      "endpoint": "NR-AhR",
+      "n_test": 475,
+      "n_test_pos": 70,
+      "roc_auc": 0.844462,
+      "roc_auc_ci": [
+        0.792761,
+        0.891691
+      ],
+      "pr_auc": 0.561181,
+      "pr_auc_ci": [
+        0.447548,
+        0.676539
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 4,
+      "endpoint": "NR-Aromatase",
+      "n_test": 402,
+      "n_test_pos": 32,
+      "roc_auc": 0.617779,
+      "roc_auc_ci": [
+        0.516775,
+        0.725211
+      ],
+      "pr_auc": 0.196362,
+      "pr_auc_ci": [
+        0.097857,
+        0.350571
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "scaffold",
+      "seed": 4,
+      "endpoint": "NR-ER",
+      "n_test": 427,
+      "n_test_pos": 54,
+      "roc_auc": 0.740095,
+      "roc_auc_ci": [
+        0.665165,
+        0.810861
+      ],
+      "pr_auc": 0.391798,
+      "pr_auc_ci": [
+        0.2773,
+        0.525732
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 4,
+      "endpoint": "NR-ER-LBD",
+      "n_test": 515,
+      "n_test_pos": 18,
+      "roc_auc": 0.707076,
+      "roc_auc_ci": [
+        0.540253,
+        0.853369
+      ],
+      "pr_auc": 0.27577,
+      "pr_auc_ci": [
+        0.093225,
+        0.512082
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "scaffold",
+      "seed": 4,
+      "endpoint": "NR-PPAR-gamma",
+      "n_test": 446,
+      "n_test_pos": 20,
+      "roc_auc": 0.797359,
+      "roc_auc_ci": [
+        0.683916,
+        0.88758
+      ],
+      "pr_auc": 0.274877,
+      "pr_auc_ci": [
+        0.121433,
+        0.484973
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 4,
+      "endpoint": "SR-ARE",
+      "n_test": 376,
+      "n_test_pos": 82,
+      "roc_auc": 0.774287,
+      "roc_auc_ci": [
+        0.722228,
+        0.822056
+      ],
+      "pr_auc": 0.445522,
+      "pr_auc_ci": [
+        0.361433,
+        0.55541
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 5.551e-17
+    },
+    {
+      "split": "scaffold",
+      "seed": 4,
+      "endpoint": "SR-ATAD5",
+      "n_test": 525,
+      "n_test_pos": 27,
+      "roc_auc": 0.755615,
+      "roc_auc_ci": [
+        0.646089,
+        0.842687
+      ],
+      "pr_auc": 0.239476,
+      "pr_auc_ci": [
+        0.117026,
+        0.412608
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 4,
+      "endpoint": "SR-HSE",
+      "n_test": 455,
+      "n_test_pos": 34,
+      "roc_auc": 0.645522,
+      "roc_auc_ci": [
+        0.536662,
+        0.752483
+      ],
+      "pr_auc": 0.264986,
+      "pr_auc_ci": [
+        0.138619,
+        0.422581
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 4,
+      "endpoint": "SR-MMP",
+      "n_test": 398,
+      "n_test_pos": 82,
+      "roc_auc": 0.834266,
+      "roc_auc_ci": [
+        0.783792,
+        0.879358
+      ],
+      "pr_auc": 0.579837,
+      "pr_auc_ci": [
+        0.47414,
+        0.69802
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    },
+    {
+      "split": "scaffold",
+      "seed": 4,
+      "endpoint": "SR-p53",
+      "n_test": 491,
+      "n_test_pos": 51,
+      "roc_auc": 0.760539,
+      "roc_auc_ci": [
+        0.691215,
+        0.82498
+      ],
+      "pr_auc": 0.401375,
+      "pr_auc_ci": [
+        0.271177,
+        0.536096
+      ],
+      "n_skipped": 0,
+      "abs_dev_vs_baseline": 0.0
+    }
+  ]
+}

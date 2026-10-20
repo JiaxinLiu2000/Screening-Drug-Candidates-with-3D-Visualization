@@ -1,0 +1,74 @@
+{
+  "pdb_id": "4I22",
+  "use": "self-docking: dock this ligand into this receptor, score RMSD vs this SDF",
+  "resolution_angstrom": 1.71,
+  "ligand_code": "IRE",
+  "ligand_instance": "IRE/A9001",
+  "ligand_smiles": "COc1cc2ncnc(Nc3ccc(F)c(Cl)c3)c2cc1OCCCN1CCOCC1",
+  "ligand_inchikey": "XGALLCVXEZPNRQ-UHFFFAOYSA-N",
+  "ligand_heavy_atoms": 31,
+  "conformation": {
+    "distance_angstrom": 12.18,
+    "state": "inactive (alphaC-out, salt bridge broken)",
+    "lys_seqid": 745,
+    "glu_seqid": 762,
+    "numbering": "precursor"
+  },
+  "state": "inactive",
+  "pocket_source": "cognate ligand IRE/A9001 of 4I22",
+  "pocket_center": [
+    10.2,
+    -15.762,
+    11.212
+  ],
+  "pocket_box_min": [
+    -0.605,
+    -26.839,
+    0.991
+  ],
+  "pocket_box_max": [
+    22.004,
+    -6.651,
+    22.12
+  ],
+  "pocket_box_size": [
+    22.609,
+    20.188,
+    21.129
+  ],
+  "pocket_box_padding_angstrom": 5.0,
+  "mean_pocket_b_factor": 25.0,
+  "mean_ligand_b_factor": 27.9,
+  "altloc_atoms_in_pocket": 0,
+  "n_residues_within_5A": 20,
+  "contact_residues": [
+    "LEU718",
+    "GLY719",
+    "VAL726",
+    "ALA743",
+    "ILE744",
+    "LYS745",
+    "LEU788",
+    "ILE789",
+    "MET790",
+    "GLN791",
+    "LEU792",
+    "MET793",
+    "PRO794",
+    "PHE795",
+    "GLY796",
+    "CYS797",
+    "ASP800",
+    "LEU844",
+    "THR854",
+    "ASP855"
+  ],
+  "kept_chain": "A",
+  "kept_chain_residues": 297,
+  "title": "STRUCTURE OF THE MONOMERIC (V948R)GEFITINIB/ERLOTINIB RESISTANT DOUBLE MUTANT (L858R+T790M) EGFR KINASE DOMAIN CO-CRYSTALLIZED WITH GEFITINIB",
+  "files": {
+    "receptor": "receptors/benchmark_v2/4I22_receptor.pdb",
+    "ligand": "receptors/benchmark_v2/4I22_ligand.sdf",
+    "record": "receptors/benchmark_v2/4I22.json"
+  }
+}

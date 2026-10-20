@@ -1,0 +1,13 @@
+{
+  "model": "esm2_t33_650M_UR50D",
+  "n_proteins": 229,
+  "embedding_dim": 1280,
+  "max_window": 1022,
+  "pooling": "length-weighted mean over residue representations, BOS/EOS excluded, windows of at most 1022 residues",
+  "n_sequences_over_window": 42,
+  "residue_length_min": 215,
+  "residue_length_median": 620,
+  "residue_length_max": 4128,
+  "embedding_norm_median": 6.313877582550049,
+  "device": "cuda"
+}

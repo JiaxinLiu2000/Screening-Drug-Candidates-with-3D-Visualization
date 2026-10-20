@@ -473,3 +473,290 @@ discussion section.
    group that matches nothing fails instead of passing vacuously, and keys are
    normalised to POSIX form.
 6. The delta column is labelled "delta (scaffold - random)" in both generators.
+
+---
+
+## Prompt 5 — 2026-10-20
+
+**Verbatim message:**
+
+```text
+继续新的尝试 "C:\Users\Admin\Documents\WeChat Files\wxid_icmox6yaq5k022\FileStorage\File\2026-10\claude-code-prompt-phase3.md"
+```
+
+("Continue with the new attempt: <path>")
+
+The message also carried a third aggregated automated code review.
+
+**Purpose:** Phase 3 — fix what Phase 2 exposed, then build the shared-encoder
+experiment: re-measure chemical-space overlap against KIBA with a within-set
+calibration reference, rebuild the docking benchmark around self-docking, replace
+hERG with the large variant, bootstrap per-endpoint confidence intervals, build
+the GIN/ChemBERTa encoder and run the four-way ablation, add atom-level
+attribution, and write the decision summary (Tasks 1–7 of the referenced file).
+
+**Phase 2 review findings also acted on in this round:**
+
+1. `HetGroup.n_atoms` counted hydrogens and every alternate conformer, so
+   `pick_ligand`'s size threshold and "largest group" ranking used the wrong
+   number (8SC7's D0D: 41 records, 31 heavy atoms). `HetGroup` now carries
+   `n_heavy_atoms` (primary conformer, no H) and selection uses it. The docking
+   benchmark's 15–60 filter was unaffected — it already de-duplicated altlocs by
+   atom name — and re-running `13_docking_benchmark.py` reproduced the same 20
+   structures.
+2. `contact_residues` is fed the same filtered coordinate array as the pocket box,
+   because `build_pocket` passes the output of `ligand_coords` to both; the altloc
+   restriction therefore applies to the 5 Å residue list as well.
+3. `PRIMARY_ALTLOCS` moved to the top of `structure.py` as the single definition
+   of "the ligand copy we keep", used by heavy-atom counts, pocket centre, box,
+   contact residues and the SDF alike.
+
+**Referenced file, `claude-code-prompt-phase3.md`, in full:**
+
+````markdown
+# Phase 3: Fix what Phase 2 exposed, then build the shared-encoder experiment
+
+## Context
+
+Phase 2 validated the data foundation and turned up four things that change the
+plan. Read `results/PHASE2_DECISIONS.md` before starting; this document assumes
+its contents.
+
+What Phase 2 settled:
+
+- The scaffold split already uses the chemically-aware Murcko variant (2156 vs
+  1285 generic scaffolds), so the 0.761 scaffold-split ROC-AUC stands. No
+  correction needed.
+- KIBA (2030 drugs, 117193 pairs) is the right primary binding dataset. Davis
+  (68 drugs, 71% censored) becomes a small-data comparison only.
+- 36/36 artefacts reproduce byte-identically and 38 integrity checks pass. Keep
+  that standard; every task below must stay reproducible.
+
+What Phase 2 broke:
+
+1. **Tox21 and Davis barely share chemical space** (median nearest-neighbour
+   Tanimoto 0.1667). The central claim of this project is that a shared
+   molecular encoder helps both tasks. If the two tasks occupy disjoint
+   chemical space, a from-scratch shared encoder will probably show no gain, and
+   for a reason that says nothing about whether the tasks are related.
+2. **The docking benchmark is 17/20 inactive conformation** while the chosen
+   receptor 1M17 is active. Cross-docking every ligand into 1M17 would fail for
+   conformational reasons unrelated to engine quality.
+3. **The hERG dataset is the small variant** (588 molecules, 68.7% positive,
+   135 InChIKeys shared with Tox21). Too small and too enriched to work as an
+   external check.
+4. **Several endpoints have very few test positives** (NR-PPAR-gamma 14,
+   NR-AR-LBD 17, SR-ATAD5 21), which is why their per-endpoint PR-AUC standard
+   deviations reach ±0.11.
+
+Tasks 1 to 4 fix these. Tasks 5 to 7 build on the fixes. Work through them in
+order; several later tasks depend on the measurement in Task 1.
+
+**Standing rules.** Pin versions. Set every seed explicitly. Commit split index
+files, not just seeds. Append every prompt to `PROMPTS.md` with date and
+purpose. Import the existing standardization module rather than reimplementing
+it. Extend `src/15_data_audit.py` with integrity checks for every new artefact.
+Report after each numbered task.
+
+**If a step fails or the result is ambiguous, stop and tell me. Never
+substitute placeholder, estimated or illustrative numbers. Do not soften a
+measurement to match what we hoped for — a negative result reported plainly is
+worth more to us than a flattering one.**
+
+---
+
+## Task 1 — Re-measure chemical-space overlap against KIBA
+
+The 0.1667 figure was computed against Davis, which has only 68 distinct drugs.
+KIBA has 2030. A set thirty times larger and chemically broader may overlap
+Tox21 considerably more, and the whole shared-encoder design hinges on this
+number. Measure it before changing anything else.
+
+Run the same procedure as `src/*_chemical_space_overlap.py` used for Davis, now
+for Tox21 against KIBA:
+
+- Nearest-neighbour maximum Tanimoto for every Tox21 molecule against all of
+  KIBA, 2048-bit Morgan radius 2. Report min, quartiles, median, max, and the
+  fraction above 0.4 and above 0.6. Then the reverse direction.
+- Exact InChIKey overlap between the two sets.
+- Property distributions (molecular weight, cLogP, TPSA, ring count, aromatic
+  ring count, rotatable bonds, fraction sp3) with means, standard deviations and
+  a Kolmogorov-Smirnov statistic per property.
+- A PCA projection of the combined fingerprint matrix coloured by source, with
+  Davis shown as a third colour so all three sets appear on one figure.
+
+Also report, as a calibration reference, the median nearest-neighbour Tanimoto
+**within** Tox21 and **within** KIBA. Without that, we cannot tell whether 0.1667
+is unusually low or simply what Morgan fingerprints give for any two large
+diverse sets.
+
+Write `results/chemical_space_overlap_kiba.md`. End with the same three-way
+verdict as before (strong above 0.4, weak 0.25 to 0.4, negligible below 0.25),
+and state explicitly whether the Davis-based conclusion still holds.
+
+---
+
+## Task 2 — Rebuild the docking benchmark around self-docking
+
+A pose-prediction benchmark compares a predicted pose against the
+crystallographic pose of the same ligand in the same receptor. Docking all 20
+ligands into 1M17 instead measures how well each ligand tolerates a foreign
+receptor conformation, which is a different question.
+
+Restructure `receptors/benchmark/` so each of the 20 entries carries its own
+cognate receptor, its own pocket definition and its own crystallographic ligand
+pose, ready for self-docking. For each entry record:
+
+- PDB ID, resolution, ligand code, ligand SMILES, ligand heavy-atom count
+- conformational state (active or inactive) by the Lys/Glu salt-bridge
+  criterion, with the measured distance and the residue numbering used
+- pocket centre and box from the cognate ligand
+- mean pocket B-factor and count of alternate-conformer atoms in the site
+
+Then check whether 3 active structures is enough to say anything about
+conformational stratification. Query RCSB again specifically for **active-state**
+EGFR kinase-domain co-crystals meeting the same quality filters, and report how
+many exist. If more are available, extend the set toward a more even active /
+inactive balance and report the final counts. If the active-state population is
+genuinely small, say so and record it as a limitation rather than padding the
+set with low-quality entries.
+
+Write `results/docking_benchmark_v2.md` with the per-entry table, the final
+active/inactive counts, pairwise ligand Tanimoto statistics, and a short
+protocol note distinguishing two uses of docking in this project: self-docking
+into cognate receptors for engine evaluation, and docking novel molecules into
+1M17 for screening. Still no docking runs in this task.
+
+---
+
+## Task 3 — Replace hERG with the large variant
+
+Download the larger hERG dataset available through Therapeutics Data Commons
+(the Karim et al. version, roughly 13,000 molecules, not the ~650-molecule
+one currently in use). Standardize it with the existing pipeline and report
+size, positive rate, and InChIKey overlap with Tox21.
+
+Build two evaluation settings and keep them separate:
+
+- **Full**: standard scaffold split over the whole hERG set
+- **Disjoint**: every molecule whose InChIKey also appears in Tox21 removed
+  before splitting, so the result is a genuine external check
+
+Train the random-forest baseline under both settings, random and scaffold
+splits, five seeds each. Append to `results/baseline_summary.csv` with a dataset
+and setting column.
+
+Report whether the random-to-scaffold ROC-AUC drop on hERG resembles the 0.0713
+seen on Tox21. Keep the old small-hERG numbers in the table, clearly labelled,
+so the two versions can be compared.
+
+---
+
+## Task 4 — Report test-set positive counts and flag unreliable endpoints
+
+Add a `n_test_positives` column to `results/baseline_metrics.csv` for every fit
+(it already exists for one seed; make it universal), and to the per-endpoint
+summary table.
+
+Then quantify the instability directly: for each endpoint, bootstrap the test
+set 1000 times within each seed and report the 95% confidence interval on
+ROC-AUC and PR-AUC. Mark any endpoint whose test set holds fewer than 20
+positives.
+
+Write `results/endpoint_reliability.md` with the table and a one-line rule we
+will follow in the report, of the form: endpoints below the threshold are
+included in the macro average but not interpreted individually. Confirm whether
+the macro-average confidence interval is tight enough that the 0.0713
+scaffold-split penalty survives as a claim.
+
+---
+
+## Task 5 — Build the molecular encoder and run the four-way ablation
+
+This is the project's central experiment, restructured in light of Task 1.
+
+Implement a GIN encoder over molecular graphs (atoms as nodes, bonds as edges;
+standard atom and bond features) with a configurable output dimension, plus two
+heads: a 12-way toxicity head and an affinity head that concatenates the
+molecular embedding with a frozen ESM-2 protein embedding. Precompute and cache
+the ESM-2 embeddings for all KIBA proteins; they do not change during training.
+
+Train and evaluate four configurations on identical splits and five seeds:
+
+| config | encoder | training |
+| --- | --- | --- |
+| A | GIN from scratch | toxicity only |
+| B | GIN from scratch | affinity only |
+| C | GIN from scratch | both tasks, shared encoder |
+| D | pretrained chemical language model, fine-tuned | both tasks, shared encoder |
+
+For D, use a pretrained molecular encoder (ChemBERTa, MolFormer, or equivalent)
+whose pretraining corpus spans both industrial chemicals and drug-like
+molecules. Full fine-tuning, not LoRA, unless the checkpoint exceeds what the
+GPU allows. The point of D is that its representation already covers both
+chemical spaces, so transfer is possible even if Task 1 confirms the two task
+datasets are disjoint.
+
+For C and D, sweep the loss weight ratio over {0.1, 0.5, 1, 2, 5} and report the
+full grid, not only the best cell.
+
+Metrics: toxicity by ROC-AUC and PR-AUC under scaffold split; affinity by RMSE,
+Pearson, Spearman and concordance index under random, cold-drug and cold-target
+splits. The random forests remain the floor for both tasks.
+
+Write `results/shared_encoder_ablation.md` with the four-way comparison, the
+loss-weight grid, and an explicit statement of which of these the evidence
+supports:
+
+- shared encoding helps regardless of pretraining
+- shared encoding helps only when the encoder is pretrained
+- shared encoding does not help, and the chemical-space measurement from Task 1
+  explains why
+
+Any of the three is a publishable finding for this report. Report whichever the
+numbers show.
+
+---
+
+## Task 6 — Atom-level attribution for the toxicity model
+
+Implement atom masking attribution: for each heavy atom, zero its features (or
+replace them with an unknown-atom token), re-run inference, and record the drop
+in predicted probability. Produce one attribution vector per molecule per
+endpoint, ordered to match the canonical SMILES atom ordering.
+
+Validate qualitatively rather than numerically, since there is no ground truth.
+Select molecules from the test set containing well-known structural alerts
+(nitroaromatics, aromatic amines, quinones, Michael acceptors), and check
+whether the attribution concentrates on those substructures. Produce a figure
+with four to six annotated examples, the alerting substructure circled, for the
+report.
+
+Also report the failure cases: molecules where attribution is diffuse or lands
+on chemically implausible atoms. Showing where the method breaks is more
+convincing than showing only where it works.
+
+Write `results/attribution.md` and save figures to `figures/attribution/`.
+
+---
+
+## Task 7 — Decision summary
+
+Write `results/PHASE3_DECISIONS.md`, one short paragraph per question, each
+backed by a number:
+
+1. Does the KIBA overlap measurement change the shared-encoder design, and does
+   the within-set calibration reference change how we interpret 0.1667?
+2. Is the rebuilt docking benchmark adequate for an engine comparison, and what
+   is the final active / inactive balance?
+3. Does the large hERG set corroborate the Tox21 scaffold-split penalty, and
+   does the disjoint setting change the picture?
+4. Which endpoints will we decline to interpret individually, and does the
+   0.0713 penalty survive bootstrapping?
+5. Which of the three shared-encoder outcomes did we observe, and what does the
+   loss-weight grid show?
+6. Does atom attribution recover known structural alerts often enough to put in
+   the demo, and where does it fail?
+
+This file is what we will write the report's discussion section from.
+````

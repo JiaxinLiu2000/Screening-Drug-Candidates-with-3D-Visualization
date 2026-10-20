@@ -1,0 +1,77 @@
+{
+  "pdb_id": "6LUB",
+  "use": "self-docking: dock this ligand into this receptor, score RMSD vs this SDF",
+  "resolution_angstrom": 2.32,
+  "ligand_code": "EUX",
+  "ligand_instance": "EUX/A1101",
+  "ligand_smiles": "CC(C)n1c2cc(Nc3ccnc(-c4cnn(S(=O)(=O)C5CC5)c4)n3)ncc2c2c(OCC(F)(F)F)cc(N3CCN(C)CC3)cc21",
+  "ligand_inchikey": "KMBMYNDPNVGEFI-UHFFFAOYSA-N",
+  "ligand_heavy_atoms": 47,
+  "conformation": {
+    "distance_angstrom": 3.02,
+    "state": "active (alphaC-in, salt bridge intact)",
+    "lys_seqid": 745,
+    "glu_seqid": 762,
+    "numbering": "precursor"
+  },
+  "state": "active",
+  "pocket_source": "cognate ligand EUX/A1101 of 6LUB",
+  "pocket_center": [
+    -50.868,
+    -0.349,
+    -19.762
+  ],
+  "pocket_box_min": [
+    -60.459,
+    -10.818,
+    -31.663
+  ],
+  "pocket_box_max": [
+    -39.783,
+    10.003,
+    -7.966
+  ],
+  "pocket_box_size": [
+    20.676,
+    20.821,
+    23.697
+  ],
+  "pocket_box_padding_angstrom": 5.0,
+  "mean_pocket_b_factor": 58.1,
+  "mean_ligand_b_factor": 89.6,
+  "altloc_atoms_in_pocket": 0,
+  "n_residues_within_5A": 23,
+  "contact_residues": [
+    "LEU718",
+    "GLY719",
+    "VAL726",
+    "LYS728",
+    "ALA743",
+    "LYS745",
+    "GLU762",
+    "MET766",
+    "CYS775",
+    "MET790",
+    "GLN791",
+    "LEU792",
+    "MET793",
+    "PRO794",
+    "PHE795",
+    "GLY796",
+    "SER797",
+    "ASP800",
+    "ARG841",
+    "ASN842",
+    "LEU844",
+    "THR854",
+    "ASP855"
+  ],
+  "kept_chain": "A",
+  "kept_chain_residues": 301,
+  "title": "CRYSTAL STRUCTURE OF EGFR(L858R/T790M/C797S) IN COMPLEX WITH CH7233163",
+  "files": {
+    "receptor": "receptors/benchmark_v2/6LUB_receptor.pdb",
+    "ligand": "receptors/benchmark_v2/6LUB_ligand.sdf",
+    "record": "receptors/benchmark_v2/6LUB.json"
+  }
+}

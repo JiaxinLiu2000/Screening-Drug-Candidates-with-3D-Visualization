@@ -1,0 +1,169 @@
+{
+  "kiba_drugs_before_standardization": 2068,
+  "kiba_drugs_after_standardization": 2030,
+  "kiba_standardization_stats": {
+    "input_rows": 2068,
+    "parse_failures": 0,
+    "parse_failure_breakdown": "{}",
+    "rows_before_dedup": 2068,
+    "unique_inchikeys": 2065,
+    "duplicate_rows_merged": 3,
+    "label_cells_nan_from_tie": 0,
+    "filtered_out": 35,
+    "filter_breakdown": "{'too_many_heavy_atoms': 35}",
+    "final_molecules": 2030
+  },
+  "tox21_molecules": 6143,
+  "davis_molecules": 68,
+  "nn_tanimoto": {
+    "tox21_to_kiba": {
+      "n": 6143,
+      "min": 0.058823529411764705,
+      "p25": 0.21505376344086022,
+      "median": 0.2597402597402597,
+      "p75": 0.3103448275862069,
+      "max": 1.0,
+      "frac_gt_0.4": 0.06527755168484455,
+      "frac_gt_0.6": 0.010581149275598242
+    },
+    "kiba_to_tox21": {
+      "n": 2030,
+      "min": 0.15384615384615385,
+      "p25": 0.2813258495145631,
+      "median": 0.3229967948717949,
+      "p75": 0.38691348973607037,
+      "max": 1.0,
+      "frac_gt_0.4": 0.21182266009852216,
+      "frac_gt_0.6": 0.03251231527093596
+    },
+    "within_tox21": {
+      "n": 6143,
+      "min": 0.16,
+      "p25": 0.4653167602245389,
+      "median": 0.6,
+      "p75": 0.7096774193548387,
+      "max": 1.0,
+      "frac_gt_0.4": 0.8451896467524012,
+      "frac_gt_0.6": 0.49063975256389386
+    },
+    "within_kiba": {
+      "n": 2030,
+      "min": 0.16326530612244897,
+      "p25": 0.52,
+      "median": 0.7142857142857143,
+      "p75": 0.7971014492753623,
+      "max": 1.0,
+      "frac_gt_0.4": 0.8403940886699507,
+      "frac_gt_0.6": 0.6758620689655173
+    }
+  },
+  "exact_inchikey_overlap": {
+    "count": 23,
+    "inchikeys": [
+      "ACPOUJIDANTYHO-UHFFFAOYSA-N",
+      "AFSDNFLWKVMVRB-UHFFFAOYSA-N",
+      "AIFRHYZBTHREPW-UHFFFAOYSA-N",
+      "BIIVYFLTOXDAOV-UHFFFAOYSA-N",
+      "FBMQNRKSAWNXBT-UHFFFAOYSA-N",
+      "GWEHVDNNLFDJLR-UHFFFAOYSA-N",
+      "HBOMLICNUCNMMY-UHFFFAOYSA-N",
+      "LDMWSLGGVTVJPG-UHFFFAOYSA-N",
+      "MHFRGQHAERHWKZ-UHFFFAOYSA-N",
+      "NGOGFTYYXHNFQH-UHFFFAOYSA-N",
+      "OPXLLQIJSORQAM-UHFFFAOYSA-N",
+      "PFTAWBLQPZVEMU-UHFFFAOYSA-N",
+      "REFJWTPEDVJJIY-UHFFFAOYSA-N",
+      "RITAVMQDGBJQJZ-UHFFFAOYSA-N",
+      "RJMUSRYZPJIFPJ-UHFFFAOYSA-N",
+      "RYYVLZVUVIJVGH-UHFFFAOYSA-N",
+      "TZBJGXHYKVUXJN-UHFFFAOYSA-N",
+      "UHTHHESEBZOYNR-UHFFFAOYSA-N",
+      "VTJXFTPMFYAJJU-UHFFFAOYSA-N",
+      "WUWDLXZGHZSWQZ-UHFFFAOYSA-N",
+      "WVPSKSLAZQPAKQ-UHFFFAOYSA-N",
+      "XUBOMFCQGDBHNK-UHFFFAOYSA-N",
+      "YCOYDOIWSSHVCK-UHFFFAOYSA-N"
+    ]
+  },
+  "properties": [
+    {
+      "property": "mol_weight",
+      "tox21_mean": 292.2100319559392,
+      "tox21_std": 129.72439079017283,
+      "kiba_mean": 387.5954029556651,
+      "kiba_std": 104.83498201207392,
+      "ks_statistic": 0.41312519596577146,
+      "ks_pvalue": 2.789835265916168e-234
+    },
+    {
+      "property": "clogp",
+      "tox21_mean": 2.714580634868958,
+      "tox21_std": 2.1477773003822977,
+      "kiba_mean": 3.566390684729066,
+      "kiba_std": 1.579169208761469,
+      "ks_statistic": 0.2395281104128292,
+      "ks_pvalue": 2.407448704786753e-77
+    },
+    {
+      "property": "tpsa",
+      "tox21_mean": 60.48640403711541,
+      "tox21_std": 45.64214856223294,
+      "kiba_mean": 89.89391133004926,
+      "kiba_std": 41.22210615975906,
+      "ks_statistic": 0.43046432761387265,
+      "ks_pvalue": 4.397678407587769e-255
+    },
+    {
+      "property": "ring_count",
+      "tox21_mean": 2.000651147647729,
+      "tox21_std": 1.4736366296403425,
+      "kiba_mean": 4.039408866995074,
+      "kiba_std": 1.393650193846885,
+      "ks_statistic": 0.6098474053129478,
+      "ks_pvalue": 2.94e-321
+    },
+    {
+      "property": "aromatic_ring_count",
+      "tox21_mean": 1.274295946605893,
+      "tox21_std": 1.0505624340650208,
+      "kiba_mean": 3.358128078817734,
+      "kiba_std": 1.087733679385422,
+      "ks_statistic": 0.7064089928943112,
+      "ks_pvalue": 1.59e-321
+    },
+    {
+      "property": "rotatable_bonds",
+      "tox21_mean": 4.628357480058603,
+      "tox21_std": 4.127023745540002,
+      "kiba_mean": 4.327093596059114,
+      "kiba_std": 2.926301073960802,
+      "ks_statistic": 0.0831043223533695,
+      "ks_pvalue": 1.283984751409264e-09
+    },
+    {
+      "property": "fraction_csp3",
+      "tox21_mean": 0.4293953054049921,
+      "tox21_std": 0.3037163035411317,
+      "kiba_mean": 0.20247186357168873,
+      "kiba_std": 0.15260101698414302,
+      "ks_statistic": 0.41774994807658844,
+      "ks_pvalue": 9.874134495192774e-240
+    }
+  ],
+  "pca_explained_variance_ratio": [
+    0.03727638999356473,
+    0.02502813863952369
+  ],
+  "pca_sources_order": [
+    "tox21",
+    "davis",
+    "kiba"
+  ],
+  "verdict_direction": "tox21_to_kiba",
+  "verdict_median": 0.2597402597402597,
+  "verdict": "Weak overlap",
+  "davis_verdict_median": 0.16666666666666666,
+  "davis_verdict": "Negligible overlap",
+  "davis_conclusion_holds": false,
+  "cross_over_within_tox21_median_ratio": 0.4329004329004329
+}

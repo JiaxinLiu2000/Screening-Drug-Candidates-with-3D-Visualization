@@ -1,0 +1,72 @@
+{
+  "pdb_id": "5XDK",
+  "use": "self-docking: dock this ligand into this receptor, score RMSD vs this SDF",
+  "resolution_angstrom": 2.35,
+  "ligand_code": "8JC",
+  "ligand_instance": "8JC/A1101",
+  "ligand_smiles": "C=CC(=O)Nc1cccc(Nc2nc(Nc3ccc(N4CCN(C(C)=O)CC4)cc3OC)ncc2C(F)(F)F)c1",
+  "ligand_inchikey": "HUFOZJXAKZVRNJ-UHFFFAOYSA-N",
+  "ligand_heavy_atoms": 40,
+  "conformation": {
+    "distance_angstrom": 3.33,
+    "state": "active (alphaC-in, salt bridge intact)",
+    "lys_seqid": 745,
+    "glu_seqid": 762,
+    "numbering": "precursor"
+  },
+  "state": "active",
+  "pocket_source": "cognate ligand 8JC/A1101 of 5XDK",
+  "pocket_center": [
+    -50.545,
+    0.004,
+    -18.769
+  ],
+  "pocket_box_min": [
+    -58.917,
+    -11.947,
+    -29.796
+  ],
+  "pocket_box_max": [
+    -40.129,
+    9.038,
+    -7.792
+  ],
+  "pocket_box_size": [
+    18.788,
+    20.985,
+    22.004
+  ],
+  "pocket_box_padding_angstrom": 5.0,
+  "mean_pocket_b_factor": 31.5,
+  "mean_ligand_b_factor": 40.1,
+  "altloc_atoms_in_pocket": 0,
+  "n_residues_within_5A": 18,
+  "contact_residues": [
+    "LEU718",
+    "GLY719",
+    "VAL726",
+    "LYS728",
+    "ALA743",
+    "MET790",
+    "GLN791",
+    "LEU792",
+    "MET793",
+    "PRO794",
+    "PHE795",
+    "GLY796",
+    "CYS797",
+    "LEU799",
+    "ASP800",
+    "ARG841",
+    "LEU844",
+    "THR854"
+  ],
+  "kept_chain": "A",
+  "kept_chain_residues": 307,
+  "title": "CRYSTAL STRUCTURE OF EGFR 696-1022 T790M IN COMPLEX WITH CO-1686",
+  "files": {
+    "receptor": "receptors/benchmark_v2/5XDK_receptor.pdb",
+    "ligand": "receptors/benchmark_v2/5XDK_ligand.sdf",
+    "record": "receptors/benchmark_v2/5XDK.json"
+  }
+}

@@ -37,15 +37,29 @@ NON_LIGAND_HET: frozenset[str] = frozenset(
 #: Minimum heavy atoms for a HETATM group to qualify as "drug-like".
 MIN_LIGAND_HEAVY_ATOMS = 10
 
+#: Altloc codes belonging to the single ligand copy we keep (blank, or "A").
+#: Everything derived from ligand atoms - heavy-atom counts, pocket centre, box,
+#: contact residues, the SDF - uses exactly this selection, so a disordered
+#: ligand is never mixed across mutually exclusive conformers.
+PRIMARY_ALTLOCS = frozenset({"", " ", "\x00", "A"})
+
 
 @dataclass(frozen=True)
 class HetGroup:
-    """One HETATM residue instance in a structure."""
+    """One HETATM residue instance in a structure.
+
+    ``n_atoms`` is the raw record count, which includes hydrogens and every
+    alternate conformer. ``n_heavy_atoms`` is the chemically meaningful count:
+    the primary conformer's heavy atoms, i.e. exactly the atom set written to the
+    ligand SDF. Size filters MUST use ``n_heavy_atoms`` - 8SC7's D0D ligand has
+    41 records but 31 heavy atoms because three conformers are deposited.
+    """
 
     resname: str
     chain: str
     seqid: int
     n_atoms: int
+    n_heavy_atoms: int
 
     @property
     def label(self) -> str:
@@ -89,14 +103,19 @@ def read_structure(path: Path) -> gemmi.Structure:
 
 
 def het_groups(st: gemmi.Structure) -> list[HetGroup]:
-    """Every HETATM residue instance in model 1, with its atom count."""
+    """Every HETATM residue instance in model 1, with raw and heavy atom counts."""
     groups: list[HetGroup] = []
     for chain in st[0]:
         for res in chain:
             if res.het_flag != "H":
                 continue
+            n_heavy = sum(
+                1
+                for a in res
+                if a.altloc in PRIMARY_ALTLOCS and a.element.name != "H"
+            )
             groups.append(
-                HetGroup(res.name, chain.name, res.seqid.num, len(res))
+                HetGroup(res.name, chain.name, res.seqid.num, len(res), n_heavy)
             )
     return groups
 
@@ -121,15 +140,20 @@ def protein_chains(st: gemmi.Structure) -> list[tuple[str, int]]:
 
 
 def pick_ligand(st: gemmi.Structure) -> HetGroup:
-    """Pick the drug-like ligand: largest HETATM group not in the exclusion list."""
+    """Pick the drug-like ligand: largest eligible HETATM group by heavy atoms.
+
+    Selection and the size threshold both use the primary conformer's heavy-atom
+    count, so a ligand deposited with several alternate conformers is not treated
+    as larger than it chemically is.
+    """
     candidates = [
         g
         for g in het_groups(st)
-        if g.resname not in NON_LIGAND_HET and g.n_atoms >= MIN_LIGAND_HEAVY_ATOMS
+        if g.resname not in NON_LIGAND_HET and g.n_heavy_atoms >= MIN_LIGAND_HEAVY_ATOMS
     ]
     if not candidates:
         raise RuntimeError(f"no drug-like HETATM group found in {st.name}")
-    return max(candidates, key=lambda g: (g.n_atoms, g.chain, -g.seqid))
+    return max(candidates, key=lambda g: (g.n_heavy_atoms, g.chain, -g.seqid))
 
 
 def main_protein_chain(st: gemmi.Structure, ligand: HetGroup) -> str:
@@ -174,9 +198,6 @@ def write_clean_receptor(
     clean.write_pdb(str(out_path))
     return out_path, n_res
 
-
-#: Altloc codes that belong to the single ligand copy we keep (blank, or "A").
-PRIMARY_ALTLOCS = frozenset({"", " ", "\x00", "A"})
 
 
 def ligand_coords(st: gemmi.Structure, ligand: HetGroup) -> np.ndarray:
@@ -475,12 +496,12 @@ def write_pocket_json(pocket: Pocket, out_path: Path) -> Path:
     return out_path
 
 
-def nonpolymer_ligands(st: gemmi.Structure) -> list[tuple[HetGroup, int]]:
-    """Non-polymer HETATM instances not in ``NON_LIGAND_HET``, with heavy-atom counts.
+def nonpolymer_ligands(st: gemmi.Structure) -> list[HetGroup]:
+    """Non-polymer HETATM instances not in ``NON_LIGAND_HET``.
 
     Modified residues inside a polymer (e.g. PTR, CME) are skipped: they are part
-    of the protein chain, not a bound ligand. Heavy atoms exclude H/D and count
-    each atom name once so alternate conformers are not double-counted.
+    of the protein chain, not a bound ligand. Each returned group carries its
+    ``n_heavy_atoms`` (primary conformer, no H/D), which is what size filters use.
     """
     out = []
     for chain in st[0]:
@@ -489,8 +510,13 @@ def nonpolymer_ligands(st: gemmi.Structure) -> list[tuple[HetGroup, int]]:
                 continue
             if res.entity_type == gemmi.EntityType.Polymer:
                 continue
-            heavy = {a.name for a in res if a.element.name not in ("H", "D")}
-            out.append((HetGroup(res.name, chain.name, res.seqid.num, len(res)), len(heavy)))
+            n_heavy = sum(
+                1 for a in res
+                if a.altloc in PRIMARY_ALTLOCS and a.element.name not in ("H", "D")
+            )
+            out.append(
+                HetGroup(res.name, chain.name, res.seqid.num, len(res), n_heavy)
+            )
     return out
 
 

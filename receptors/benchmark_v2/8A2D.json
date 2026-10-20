@@ -1,0 +1,79 @@
+{
+  "pdb_id": "8A2D",
+  "use": "self-docking: dock this ligand into this receptor, score RMSD vs this SDF",
+  "resolution_angstrom": 1.11,
+  "ligand_code": "KXY",
+  "ligand_instance": "KXY/A1103",
+  "ligand_smiles": "Cc1c(C#Cc2ccc(CN3CCC(CO)CC3)cc2)cc(C(F)F)c2cn([C@@H](C(=O)Nc3nccs3)c3ncn4c3CCC43CC3)nc12",
+  "ligand_inchikey": "XGCQKFFIRIFVIZ-MGBGTMOVSA-N",
+  "ligand_heavy_atoms": 49,
+  "conformation": {
+    "distance_angstrom": 10.52,
+    "state": "inactive (alphaC-out, salt bridge broken)",
+    "lys_seqid": 745,
+    "glu_seqid": 762,
+    "numbering": "precursor"
+  },
+  "state": "inactive",
+  "pocket_source": "cognate ligand KXY/A1103 of 8A2D",
+  "pocket_center": [
+    -2.672,
+    -10.605,
+    21.108
+  ],
+  "pocket_box_min": [
+    -15.771,
+    -20.411,
+    9.172
+  ],
+  "pocket_box_max": [
+    12.891,
+    0.804,
+    31.326
+  ],
+  "pocket_box_size": [
+    28.662,
+    21.215,
+    22.154
+  ],
+  "pocket_box_padding_angstrom": 5.0,
+  "mean_pocket_b_factor": 13.4,
+  "mean_ligand_b_factor": 17.8,
+  "altloc_atoms_in_pocket": 12,
+  "n_residues_within_5A": 25,
+  "contact_residues": [
+    "PHE723",
+    "VAL726",
+    "ALA743",
+    "ILE744",
+    "LYS745",
+    "LEU747",
+    "THR751",
+    "ALA755",
+    "ILE759",
+    "GLU762",
+    "ALA763",
+    "MET766",
+    "VAL769",
+    "VAL774",
+    "CYS775",
+    "ARG776",
+    "LEU777",
+    "LEU788",
+    "ILE789",
+    "THR790",
+    "ILE853",
+    "THR854",
+    "ASP855",
+    "PHE856",
+    "ARG858"
+  ],
+  "kept_chain": "A",
+  "kept_chain_residues": 281,
+  "title": "EGFR KINASE DOMAIN (L858R/V948R) IN COMPLEX WITH 2-[4- (DIFLUOROMETHYL)-6-[2-[4-[[4-(HYDROXYMETHYL)-1-PIPERIDYL]METHYL]PHENYL]ETHYNYL]-7-METHYL-INDAZOL-2-YL]-2-SPIRO[6,7-DIHYDROPYRROLO[1,2-C]IMIDAZOLE-5,1'-CYCLOPROPANE]-1-YL-N-THIAZOL-2-YL-ACETAMIDE",
+  "files": {
+    "receptor": "receptors/benchmark_v2/8A2D_receptor.pdb",
+    "ligand": "receptors/benchmark_v2/8A2D_ligand.sdf",
+    "record": "receptors/benchmark_v2/8A2D.json"
+  }
+}

@@ -40,12 +40,13 @@ def evaluate(pdb_id: str, tmp: Path) -> dict:
     resolution = round(float(st.resolution), 2)
 
     ligs = structure.nonpolymer_ligands(st)
-    qualifying = [(g, n) for g, n in ligs if MIN_HEAVY <= n <= MAX_HEAVY]
+    qualifying = [g for g in ligs if MIN_HEAVY <= g.n_heavy_atoms <= MAX_HEAVY]
     if len(qualifying) != 1:
-        seen = ", ".join(f"{g.label}({n} heavy)" for g, n in ligs) or "none"
+        seen = ", ".join(f"{g.label}({g.n_heavy_atoms} heavy)" for g in ligs) or "none"
         return {"ok": False, "reason": f"{len(qualifying)} drug-like ligand instances with "
                 f"{MIN_HEAVY}-{MAX_HEAVY} heavy atoms (non-excluded HET groups: {seen})"}
-    ligand, n_heavy = qualifying[0]
+    ligand = qualifying[0]
+    n_heavy = ligand.n_heavy_atoms
 
     chain = structure.main_protein_chain(st, ligand)
     coords = structure.ligand_coords(st, ligand)

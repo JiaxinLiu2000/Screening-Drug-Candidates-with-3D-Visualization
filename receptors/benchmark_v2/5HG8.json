@@ -1,0 +1,74 @@
+{
+  "pdb_id": "5HG8",
+  "use": "self-docking: dock this ligand into this receptor, score RMSD vs this SDF",
+  "resolution_angstrom": 1.42,
+  "ligand_code": "634",
+  "ligand_instance": "634/A9001",
+  "ligand_smiles": "CCC(=O)Nc1cccc(Oc2nc(Nc3cnn(C)c3)nc3[nH]ccc23)c1",
+  "ligand_inchikey": "YWNHZBNRKJYHTR-UHFFFAOYSA-N",
+  "ligand_heavy_atoms": 28,
+  "conformation": {
+    "distance_angstrom": 11.19,
+    "state": "inactive (alphaC-out, salt bridge broken)",
+    "lys_seqid": 745,
+    "glu_seqid": 762,
+    "numbering": "precursor"
+  },
+  "state": "inactive",
+  "pocket_source": "cognate ligand 634/A9001 of 5HG8",
+  "pocket_center": [
+    13.527,
+    -4.052,
+    -32.18
+  ],
+  "pocket_box_min": [
+    2.879,
+    -11.906,
+    -38.759
+  ],
+  "pocket_box_max": [
+    22.568,
+    4.908,
+    -21.226
+  ],
+  "pocket_box_size": [
+    19.689,
+    16.814,
+    17.533
+  ],
+  "pocket_box_padding_angstrom": 5.0,
+  "mean_pocket_b_factor": 17.2,
+  "mean_ligand_b_factor": 16.7,
+  "altloc_atoms_in_pocket": 30,
+  "n_residues_within_5A": 20,
+  "contact_residues": [
+    "LEU718",
+    "GLY719",
+    "VAL726",
+    "ALA743",
+    "LYS745",
+    "CYS775",
+    "MET790",
+    "GLN791",
+    "LEU792",
+    "MET793",
+    "PRO794",
+    "PHE795",
+    "GLY796",
+    "CYS797",
+    "LEU799",
+    "ASP800",
+    "ARG841",
+    "LEU844",
+    "THR854",
+    "PHE856"
+  ],
+  "kept_chain": "A",
+  "kept_chain_residues": 300,
+  "title": "EGFR (L858R, T790M, V948R) IN COMPLEX WITH N-[3-({2-[(1-METHYL-1H-PYRAZOL-4-YL)AMINO]-7H-PYRROLO[2,3-D]PYRIMIDIN-4-YL}OXY)PHENYL]PROP-2-ENAMIDE",
+  "files": {
+    "receptor": "receptors/benchmark_v2/5HG8_receptor.pdb",
+    "ligand": "receptors/benchmark_v2/5HG8_ligand.sdf",
+    "record": "receptors/benchmark_v2/5HG8.json"
+  }
+}

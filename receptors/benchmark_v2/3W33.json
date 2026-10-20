@@ -1,0 +1,80 @@
+{
+  "pdb_id": "3W33",
+  "use": "self-docking: dock this ligand into this receptor, score RMSD vs this SDF",
+  "resolution_angstrom": 1.7,
+  "ligand_code": "W19",
+  "ligand_instance": "W19/A1101",
+  "ligand_smiles": "O=C(NCCO)C1=Cc2c(ncnc2Nc2ccc(Oc3cccc4sccc34)c(Cl)c2)NCC1",
+  "ligand_inchikey": "QHUDPFOODLMGQO-UHFFFAOYSA-N",
+  "ligand_heavy_atoms": 35,
+  "conformation": {
+    "distance_angstrom": 15.58,
+    "state": "inactive (alphaC-out, salt bridge broken)",
+    "lys_seqid": 745,
+    "glu_seqid": 762,
+    "numbering": "precursor"
+  },
+  "state": "inactive",
+  "pocket_source": "cognate ligand W19/A1101 of 3W33",
+  "pocket_center": [
+    16.512,
+    33.594,
+    12.245
+  ],
+  "pocket_box_min": [
+    8.087,
+    23.588,
+    1.346
+  ],
+  "pocket_box_max": [
+    26.7,
+    42.091,
+    23.137
+  ],
+  "pocket_box_size": [
+    18.613,
+    18.503,
+    21.791
+  ],
+  "pocket_box_padding_angstrom": 5.0,
+  "mean_pocket_b_factor": 31.7,
+  "mean_ligand_b_factor": 28.6,
+  "altloc_atoms_in_pocket": 0,
+  "n_residues_within_5A": 26,
+  "contact_residues": [
+    "LEU718",
+    "GLY719",
+    "SER720",
+    "VAL726",
+    "ALA743",
+    "ILE744",
+    "LYS745",
+    "MET766",
+    "CYS775",
+    "ARG776",
+    "LEU777",
+    "LEU788",
+    "ILE789",
+    "THR790",
+    "GLN791",
+    "LEU792",
+    "MET793",
+    "GLY796",
+    "CYS797",
+    "LEU844",
+    "THR854",
+    "ASP855",
+    "PHE856",
+    "LEU858",
+    "PHE997",
+    "LEU1001"
+  ],
+  "kept_chain": "A",
+  "kept_chain_residues": 297,
+  "title": "EGFR KINASE DOMAIN COMPLEXED WITH COMPOUND 19B",
+  "files": {
+    "receptor": "receptors/benchmark_v2/3W33_receptor.pdb",
+    "ligand": "receptors/benchmark_v2/3W33_ligand.sdf",
+    "record": "receptors/benchmark_v2/3W33.json"
+  }
+}

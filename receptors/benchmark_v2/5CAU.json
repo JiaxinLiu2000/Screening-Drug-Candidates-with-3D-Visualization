@@ -1,0 +1,74 @@
+{
+  "pdb_id": "5CAU",
+  "use": "self-docking: dock this ligand into this receptor, score RMSD vs this SDF",
+  "resolution_angstrom": 2.25,
+  "ligand_code": "4ZR",
+  "ligand_instance": "4ZR/A1102",
+  "ligand_smiles": "CO[C@@H]1CCN(c2nccc(Nc3cc4c(cn3)nc([C@@H](C)O)n4[C@@H](C)C(F)(F)F)n2)C[C@@H]1F",
+  "ligand_inchikey": "BOPSHQJEVUOWPS-LMOYCYGVSA-N",
+  "ligand_heavy_atoms": 34,
+  "conformation": {
+    "distance_angstrom": 2.79,
+    "state": "active (alphaC-in, salt bridge intact)",
+    "lys_seqid": 745,
+    "glu_seqid": 762,
+    "numbering": "precursor"
+  },
+  "state": "active",
+  "pocket_source": "cognate ligand 4ZR/A1102 of 5CAU",
+  "pocket_center": [
+    -52.075,
+    -0.57,
+    -23.169
+  ],
+  "pocket_box_min": [
+    -61.262,
+    -8.741,
+    -33.344
+  ],
+  "pocket_box_max": [
+    -43.589,
+    7.223,
+    -11.704
+  ],
+  "pocket_box_size": [
+    17.673,
+    15.964,
+    21.64
+  ],
+  "pocket_box_padding_angstrom": 5.0,
+  "mean_pocket_b_factor": 54.9,
+  "mean_ligand_b_factor": 52.9,
+  "altloc_atoms_in_pocket": 0,
+  "n_residues_within_5A": 20,
+  "contact_residues": [
+    "LEU718",
+    "GLY719",
+    "PHE723",
+    "VAL726",
+    "ALA743",
+    "LYS745",
+    "GLU762",
+    "MET766",
+    "CYS775",
+    "MET790",
+    "GLN791",
+    "LEU792",
+    "MET793",
+    "PRO794",
+    "GLY796",
+    "CYS797",
+    "ASP800",
+    "LEU844",
+    "THR854",
+    "ASP855"
+  ],
+  "kept_chain": "A",
+  "kept_chain_residues": 297,
+  "title": "EGFR KINASE DOMAIN MUTANT \"TMLR\" WITH COMPOUND 41B",
+  "files": {
+    "receptor": "receptors/benchmark_v2/5CAU_receptor.pdb",
+    "ligand": "receptors/benchmark_v2/5CAU_ligand.sdf",
+    "record": "receptors/benchmark_v2/5CAU.json"
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "pdb_id": "5UG9",
+  "use": "self-docking: dock this ligand into this receptor, score RMSD vs this SDF",
+  "resolution_angstrom": 1.33,
+  "ligand_code": "8AM",
+  "ligand_instance": "8AM/A9001",
+  "ligand_smiles": "CCC(=O)N[C@@H]1CN(c2nc(Nc3cn(C)nc3OC)c3ncn(C(C)C)c3n2)C[C@H]1F",
+  "ligand_inchikey": "MJLFLAORJNTNDV-CHWSQXEVSA-N",
+  "ligand_heavy_atoms": 32,
+  "conformation": {
+    "distance_angstrom": 10.69,
+    "state": "inactive (alphaC-out, salt bridge broken)",
+    "lys_seqid": 745,
+    "glu_seqid": 762,
+    "numbering": "precursor"
+  },
+  "state": "inactive",
+  "pocket_source": "cognate ligand 8AM/A9001 of 5UG9",
+  "pocket_center": [
+    -13.87,
+    14.934,
+    -26.73
+  ],
+  "pocket_box_min": [
+    -22.976,
+    3.795,
+    -35.941
+  ],
+  "pocket_box_max": [
+    -3.279,
+    24.229,
+    -15.2
+  ],
+  "pocket_box_size": [
+    19.697,
+    20.434,
+    20.741
+  ],
+  "pocket_box_padding_angstrom": 5.0,
+  "mean_pocket_b_factor": 18.1,
+  "mean_ligand_b_factor": 15.5,
+  "altloc_atoms_in_pocket": 16,
+  "n_residues_within_5A": 23,
+  "contact_residues": [
+    "LEU718",
+    "GLY719",
+    "SER720",
+    "PHE723",
+    "VAL726",
+    "LYS728",
+    "ALA743",
+    "LYS745",
+    "CYS775",
+    "MET790",
+    "GLN791",
+    "LEU792",
+    "MET793",
+    "PRO794",
+    "PHE795",
+    "GLY796",
+    "CYS797",
+    "LEU799",
+    "ASP800",
+    "ARG841",
+    "LEU844",
+    "THR854",
+    "PHE856"
+  ],
+  "kept_chain": "A",
+  "kept_chain_residues": 280,
+  "title": "CRYSTAL STRUCTURE OF THE EGFR KINASE DOMAIN (L858R, T790M, V948R) IN COMPLEX WITH A COVALENT INHIBITOR N-[(3R,4R)-4-FLUORO-1-{6-[(3-METHOXY-1-METHYL-1H-PYRAZOL-4-YL)AMINO]-9-(PROPAN-2-YL)-9H-PURIN-2-YL}PYRROLIDIN-3-YL]PROPANAMIDE",
+  "files": {
+    "receptor": "receptors/benchmark_v2/5UG9_receptor.pdb",
+    "ligand": "receptors/benchmark_v2/5UG9_ligand.sdf",
+    "record": "receptors/benchmark_v2/5UG9.json"
+  }
+}

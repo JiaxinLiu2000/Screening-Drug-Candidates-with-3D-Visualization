@@ -81,13 +81,32 @@ def check_shared(path: Path) -> pd.DataFrame:
 
 
 def append_rows(path: Path, new: pd.DataFrame) -> pd.DataFrame:
+    """Replace this dataset's rows in a shared table, preserving other datasets.
+
+    The shared tables gained a ``setting`` column in Phase 3 (Tox21 and this
+    588-molecule hERG are ``standard``; hERG-large is ``full``/``disjoint``), and
+    they now also carry hERG-large rows. This function therefore adapts to the
+    existing schema instead of demanding an exact column match, and preserves
+    every dataset other than its own.
+    """
     old = check_shared(path)
-    if list(old.columns) != list(new.columns):
-        raise RuntimeError(f"{path} columns {list(old.columns)} != {list(new.columns)}")
+    if "setting" in old.columns and "setting" not in new.columns:
+        new = new.copy()
+        new.insert(1, "setting", "standard")
+    missing = set(old.columns) - set(new.columns)
+    extra = set(new.columns) - set(old.columns)
+    if missing or extra:
+        raise RuntimeError(
+            f"{path} schema mismatch: missing from new rows {sorted(missing)}, "
+            f"unexpected in new rows {sorted(extra)}"
+        )
+    new = new[list(old.columns)]
     kept = old[old["dataset"] != DATASET]
-    if not kept["dataset"].eq("Tox21").all():
-        raise RuntimeError(f"{path} contains unexpected datasets: {sorted(kept['dataset'].unique())}")
     out = pd.concat([kept, new], ignore_index=True)
+    # Keep a deterministic dataset order so the file is byte-stable.
+    order = {name: i for i, name in enumerate(["Tox21", DATASET])}
+    out["_order"] = out["dataset"].map(lambda d: order.get(d, len(order)))
+    out = out.sort_values(["_order"], kind="stable").drop(columns="_order")
     out.to_csv(path, index=False, lineterminator="\n")
     return out
 

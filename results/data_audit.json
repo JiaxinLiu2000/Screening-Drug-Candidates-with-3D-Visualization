@@ -1,5 +1,5 @@
 {
-  "n_pass": 38,
+  "n_pass": 50,
   "n_fail": 0,
   "n_skip": 0,
   "checks": [
@@ -67,7 +67,7 @@
       "section": "Classification metrics",
       "name": "row counts per dataset are the full grid",
       "status": "PASS",
-      "detail": "rows per dataset {'Tox21': 120, 'hERG': 10}"
+      "detail": "rows per dataset {'Tox21': 120, 'hERG': 10, 'hERG-large': 20}; per (dataset, setting) {('Tox21', 'standard'): 120, ('hERG', 'standard'): 10, ('hERG-large', 'disjoint'): 10, ('hERG-large', 'full'): 10}"
     },
     {
       "section": "Classification metrics",
@@ -79,7 +79,7 @@
       "section": "Classification metrics",
       "name": "summary mean/std recompute exactly from the per-fit rows",
       "status": "PASS",
-      "detail": "largest absolute discrepancy over 30 summary rows: 2.22e-16"
+      "detail": "largest absolute discrepancy over 38 summary rows: 2.22e-16"
     },
     {
       "section": "Classification metrics",
@@ -223,13 +223,85 @@
       "section": "Environment",
       "name": "dependency lock matches the installed environment exactly",
       "status": "PASS",
-      "detail": "49 pins; installed-but-unpinned none; pinned-but-absent none"
+      "detail": "78 pins; installed-but-unpinned none; pinned-but-absent none"
     },
     {
       "section": "Repository",
       "name": "no raw or processed data is tracked by git",
       "status": "PASS",
       "detail": "tracked data files 0, committed artefacts 148"
+    },
+    {
+      "section": "Phase 3 / KIBA overlap",
+      "name": "verdict band matches the measured median, calibration present",
+      "status": "PASS",
+      "detail": "median 0.2597 -> Weak overlap; within-Tox21 0.6000, within-KIBA 0.7143; ratio recomputes: True"
+    },
+    {
+      "section": "Phase 3 / KIBA overlap",
+      "name": "KIBA molecule count agrees with the binding tables",
+      "status": "PASS",
+      "detail": "overlap report 2030 drugs, binding stats 2030 drugs"
+    },
+    {
+      "section": "Phase 3 / benchmark v2",
+      "name": "self-docking set: files, SDF integrity, distinct chemistry",
+      "status": "PASS",
+      "detail": "20 entries, 20 distinct ligands; problems none"
+    },
+    {
+      "section": "Phase 3 / benchmark v2",
+      "name": "conformation labels and the reported balance agree",
+      "status": "PASS",
+      "detail": "10 active / 10 inactive; matches the report: True"
+    },
+    {
+      "section": "Phase 3 / benchmark v2",
+      "name": "pocket boxes recompute from the cognate ligand",
+      "status": "PASS",
+      "detail": "largest deviation 0.000 A; offenders none"
+    },
+    {
+      "section": "Phase 3 / hERG-large",
+      "name": "split files partition one consistent molecule set",
+      "status": "PASS",
+      "detail": "full {11052} (= 11099 standardized - 47 unlabeled = 11052), disjoint {10691} (= 11052 - 361 shared with Tox21 = 10691); no duplicate keys, no scaffold group spanning subsets"
+    },
+    {
+      "section": "Phase 3 / hERG-large",
+      "name": "Disjoint really shares no InChIKey with Tox21",
+      "status": "PASS",
+      "detail": "disjoint shares 0 InChIKeys with Tox21 (full setting shares 361)"
+    },
+    {
+      "section": "Phase 3 / ESM-2",
+      "name": "protein embedding cache matches the KIBA protein count",
+      "status": "PASS",
+      "detail": "229 proteins x 1280-d from esm2_t33_650M_UR50D; KIBA has 229 proteins; NaN: False"
+    },
+    {
+      "section": "Phase 3 / attribution",
+      "name": "reported coverage recomputes from the per-molecule table",
+      "status": "PASS",
+      "detail": "252 alert-bearing molecules, top-k hit rate 0.317, median enrichment 0.838; missing figures 0"
+    },
+    {
+      "section": "Phase 3 / endpoint reliability",
+      "name": "bootstrap CIs bracket their point estimates",
+      "status": "PASS",
+      "detail": "24 Tox21 rows carry ROC-AUC CIs (roc_auc_ci_lo/roc_auc_ci_hi); point estimates outside their own interval: 0"
+    },
+    {
+      "section": "Phase 3 / endpoint reliability",
+      "name": "flagged endpoints really hold <20 test positives",
+      "status": "PASS",
+      "detail": "9 endpoint/split combinations below 20 test positives recomputed from the metric rows; absent from the report: none"
+    },
+    {
+      "section": "Phase 3 / endpoint reliability",
+      "name": "the penalty CI is consistent with the point estimate",
+      "status": "PASS",
+      "detail": "macro random-minus-scaffold drop 0.0713 recomputed from the summary table and quoted in the Phase 3 reliability report: True"
     }
   ]
 }

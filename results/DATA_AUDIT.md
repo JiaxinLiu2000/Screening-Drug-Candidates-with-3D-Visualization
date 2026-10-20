@@ -1,6 +1,6 @@
 # Data audit
 
-**38 passed, 0 failed, 0 skipped** of 38 checks.
+**50 passed, 0 failed, 0 skipped** of 50 checks.
 
 Produced by `src/15_data_audit.py`. This audit does not re-run the pipeline and does not trust any script's own assertions: it recomputes each quantity from the committed artefacts and checks that independent sources agree — summary statistics against per-fit rows, pocket geometry against ligand coordinates, split partitions against the molecule tables, document text against the source tables, and the dependency lock against the installed environment.
 
@@ -28,9 +28,9 @@ Produced by `src/15_data_audit.py`. This audit does not re-run the pipeline and 
 
 | check | result | measured |
 | --- | --- | --- |
-| row counts per dataset are the full grid | PASS | rows per dataset {'Tox21': 120, 'hERG': 10} |
+| row counts per dataset are the full grid | PASS | rows per dataset {'Tox21': 120, 'hERG': 10, 'hERG-large': 20}; per (dataset, setting) {('Tox21', 'standard'): 120, ('hERG', 'standard'): 10, ('hERG-large', 'disjoint'): 10, ('hERG-large', 'full'): 10} |
 | every AUC is in [0, 1] and fold counts are consistent | PASS | out-of-range AUCs 0, impossible positive counts 0; ROC-AUC range 0.6120-0.9580 |
-| summary mean/std recompute exactly from the per-fit rows | PASS | largest absolute discrepancy over 30 summary rows: 2.22e-16 |
+| summary mean/std recompute exactly from the per-fit rows | PASS | largest absolute discrepancy over 38 summary rows: 2.22e-16 |
 | the macro row is the mean over endpoints, not over fits | PASS | random 0.8324 +/- 0.0181; scaffold 0.7611 +/- 0.0227 |
 
 ## hERG
@@ -89,13 +89,55 @@ Produced by `src/15_data_audit.py`. This audit does not re-run the pipeline and 
 
 | check | result | measured |
 | --- | --- | --- |
-| dependency lock matches the installed environment exactly | PASS | 49 pins; installed-but-unpinned none; pinned-but-absent none |
+| dependency lock matches the installed environment exactly | PASS | 78 pins; installed-but-unpinned none; pinned-but-absent none |
 
 ## Repository
 
 | check | result | measured |
 | --- | --- | --- |
 | no raw or processed data is tracked by git | PASS | tracked data files 0, committed artefacts 148 |
+
+## Phase 3 / KIBA overlap
+
+| check | result | measured |
+| --- | --- | --- |
+| verdict band matches the measured median, calibration present | PASS | median 0.2597 -> Weak overlap; within-Tox21 0.6000, within-KIBA 0.7143; ratio recomputes: True |
+| KIBA molecule count agrees with the binding tables | PASS | overlap report 2030 drugs, binding stats 2030 drugs |
+
+## Phase 3 / benchmark v2
+
+| check | result | measured |
+| --- | --- | --- |
+| self-docking set: files, SDF integrity, distinct chemistry | PASS | 20 entries, 20 distinct ligands; problems none |
+| conformation labels and the reported balance agree | PASS | 10 active / 10 inactive; matches the report: True |
+| pocket boxes recompute from the cognate ligand | PASS | largest deviation 0.000 A; offenders none |
+
+## Phase 3 / hERG-large
+
+| check | result | measured |
+| --- | --- | --- |
+| split files partition one consistent molecule set | PASS | full {11052} (= 11099 standardized - 47 unlabeled = 11052), disjoint {10691} (= 11052 - 361 shared with Tox21 = 10691); no duplicate keys, no scaffold group spanning subsets |
+| Disjoint really shares no InChIKey with Tox21 | PASS | disjoint shares 0 InChIKeys with Tox21 (full setting shares 361) |
+
+## Phase 3 / ESM-2
+
+| check | result | measured |
+| --- | --- | --- |
+| protein embedding cache matches the KIBA protein count | PASS | 229 proteins x 1280-d from esm2_t33_650M_UR50D; KIBA has 229 proteins; NaN: False |
+
+## Phase 3 / attribution
+
+| check | result | measured |
+| --- | --- | --- |
+| reported coverage recomputes from the per-molecule table | PASS | 252 alert-bearing molecules, top-k hit rate 0.317, median enrichment 0.838; missing figures 0 |
+
+## Phase 3 / endpoint reliability
+
+| check | result | measured |
+| --- | --- | --- |
+| bootstrap CIs bracket their point estimates | PASS | 24 Tox21 rows carry ROC-AUC CIs (roc_auc_ci_lo/roc_auc_ci_hi); point estimates outside their own interval: 0 |
+| flagged endpoints really hold <20 test positives | PASS | 9 endpoint/split combinations below 20 test positives recomputed from the metric rows; absent from the report: none |
+| the penalty CI is consistent with the point estimate | PASS | macro random-minus-scaffold drop 0.0713 recomputed from the summary table and quoted in the Phase 3 reliability report: True |
 
 ## Verdict
 

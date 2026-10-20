@@ -1,0 +1,73 @@
+{
+  "pdb_id": "7ZYN",
+  "use": "self-docking: dock this ligand into this receptor, score RMSD vs this SDF",
+  "resolution_angstrom": 2.3,
+  "ligand_code": "0UN",
+  "ligand_instance": "0UN/A1101",
+  "ligand_smiles": "C=CC(=O)Nc1cccc(Oc2nc(Nc3ccc(N4CCN(C)CC4)cc3OC)ncc2Cl)c1",
+  "ligand_inchikey": "ITTRLTNMFYIYPA-UHFFFAOYSA-N",
+  "ligand_heavy_atoms": 35,
+  "conformation": {
+    "distance_angstrom": 2.89,
+    "state": "active (alphaC-in, salt bridge intact)",
+    "lys_seqid": 745,
+    "glu_seqid": 762,
+    "numbering": "precursor"
+  },
+  "state": "active",
+  "pocket_source": "cognate ligand 0UN/A1101 of 7ZYN",
+  "pocket_center": [
+    144.867,
+    -194.32,
+    125.4
+  ],
+  "pocket_box_min": [
+    135.879,
+    -203.658,
+    115.097
+  ],
+  "pocket_box_max": [
+    155.185,
+    -185.141,
+    136.552
+  ],
+  "pocket_box_size": [
+    19.306,
+    18.517,
+    21.455
+  ],
+  "pocket_box_padding_angstrom": 5.0,
+  "mean_pocket_b_factor": 62.4,
+  "mean_ligand_b_factor": 73.8,
+  "altloc_atoms_in_pocket": 0,
+  "n_residues_within_5A": 19,
+  "contact_residues": [
+    "LEU718",
+    "GLY719",
+    "PHE723",
+    "VAL726",
+    "LYS728",
+    "ALA743",
+    "MET790",
+    "GLN791",
+    "LEU792",
+    "MET793",
+    "PRO794",
+    "PHE795",
+    "GLY796",
+    "SER797",
+    "ASP800",
+    "LEU844",
+    "THR854",
+    "ASP855",
+    "LEU1001"
+  ],
+  "kept_chain": "A",
+  "kept_chain_residues": 317,
+  "title": "CRYSTAL STRUCTURE OF EGFR-T790M/C797S IN COMPLEX WITH WZ4002",
+  "files": {
+    "receptor": "receptors/benchmark_v2/7ZYN_receptor.pdb",
+    "ligand": "receptors/benchmark_v2/7ZYN_ligand.sdf",
+    "record": "receptors/benchmark_v2/7ZYN.json"
+  }
+}

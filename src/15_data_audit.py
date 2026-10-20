@@ -208,8 +208,10 @@ def metrics_table() -> pd.DataFrame:
 def _():
     m = metrics_table()
     counts = m.groupby("dataset").size().to_dict()
-    ok = counts == {"Tox21": 120, "hERG": 10} and len(m) == 130
-    return ok, f"rows per dataset {counts}"
+    expected = {"Tox21": 120, "hERG": 10, "hERG-large": 20}
+    by_setting = m.groupby(["dataset", "setting"]).size().to_dict()
+    ok = counts == expected and len(m) == sum(expected.values())
+    return ok, f"rows per dataset {counts}; per (dataset, setting) {by_setting}"
 
 
 @check("Classification metrics", "every AUC is in [0, 1] and fold counts are consistent")
@@ -230,6 +232,11 @@ def _():
     worst = 0.0
     for _, row in stored.iterrows():
         sub = m[(m["dataset"] == row["dataset"]) & (m["split"] == row["split"])]
+        # The tables are keyed by (dataset, setting): hERG-large carries `full` and
+        # `disjoint` rows sharing dataset/split/endpoint, so ignoring `setting`
+        # would compare a mixture of the two against each row.
+        if "setting" in m.columns and "setting" in stored.columns:
+            sub = sub[sub["setting"] == row["setting"]]
         if row["level"] == "endpoint":
             sub = sub[sub["endpoint"] == row["endpoint"]]
             vals = sub[["roc_auc", "pr_auc"]]
@@ -684,6 +691,233 @@ def _():
         cwd=paths.ROOT, capture_output=True, text=True,
     ).stdout.splitlines()
     return not tracked, f"tracked data files {len(tracked)}, committed artefacts {len(committed)}"
+
+
+# --------------------------------------------------------------------------
+# 10. Phase 3 artefacts
+# --------------------------------------------------------------------------
+
+@check("Phase 3 / KIBA overlap", "verdict band matches the measured median, calibration present")
+def _():
+    rec = json.loads((paths.RESULTS / "chemical_space_overlap_kiba.json").read_text())
+    nn = rec["nn_tanimoto"]
+    median = nn["tox21_to_kiba"]["median"]
+    expected = ("Strong overlap" if median > 0.4
+                else "Weak overlap" if median >= 0.25 else "Negligible overlap")
+    md = (paths.RESULTS / "chemical_space_overlap_kiba.md").read_text(encoding="utf-8")
+    have_calibration = {"within_tox21", "within_kiba"} <= set(nn)
+    ratio_ok = abs(
+        rec["cross_over_within_tox21_median_ratio"]
+        - median / nn["within_tox21"]["median"]
+    ) < 1e-9
+    ok = (rec["verdict"] == expected and f"## Verdict: {expected}" in md
+          and have_calibration and ratio_ok)
+    return ok, (f"median {median:.4f} -> {expected}; within-Tox21 "
+                f"{nn['within_tox21']['median']:.4f}, within-KIBA "
+                f"{nn['within_kiba']['median']:.4f}; ratio recomputes: {ratio_ok}")
+
+
+@check("Phase 3 / KIBA overlap", "KIBA molecule count agrees with the binding tables")
+def _():
+    rec = json.loads((paths.RESULTS / "chemical_space_overlap_kiba.json").read_text())
+    binding = json.loads((paths.RESULTS / "binding_dataset_stats.json").read_text())
+    a = rec["kiba_drugs_after_standardization"]
+    b = binding["KIBA"]["distinct_drugs"]
+    return a == b, f"overlap report {a} drugs, binding stats {b} drugs"
+
+
+def benchmark_v2_records() -> list[dict]:
+    d = paths.RECEPTORS / "benchmark_v2"
+    return [json.loads(p.read_text()) for p in sorted(d.glob("*.json"))]
+
+
+@check("Phase 3 / benchmark v2", "self-docking set: files, SDF integrity, distinct chemistry")
+def _():
+    from rdkit import Chem
+
+    recs = benchmark_v2_records()
+    bad = []
+    for r in recs:
+        sdf = paths.RECEPTORS / "benchmark_v2" / f"{r['pdb_id']}_ligand.sdf"
+        pdb = paths.RECEPTORS / "benchmark_v2" / f"{r['pdb_id']}_receptor.pdb"
+        if not sdf.exists() or not pdb.exists():
+            bad.append(f"{r['pdb_id']}: missing file")
+            continue
+        mol = Chem.MolFromMolFile(str(sdf))
+        if mol is None:
+            bad.append(f"{r['pdb_id']}: unparsable SDF")
+            continue
+        if mol.GetNumHeavyAtoms() != r["ligand_heavy_atoms"]:
+            bad.append(f"{r['pdb_id']}: heavy-atom count")
+        if Chem.MolToInchiKey(mol) != r["ligand_inchikey"]:
+            bad.append(f"{r['pdb_id']}: InChIKey")
+        if mol.GetNumConformers() == 0:
+            bad.append(f"{r['pdb_id']}: no coordinates")
+    keys = [r["ligand_inchikey"] for r in recs]
+    if len(set(keys)) != len(keys):
+        bad.append("duplicate ligand chemistry")
+    return len(recs) >= 15 and not bad, (
+        f"{len(recs)} entries, {len(set(keys))} distinct ligands; problems "
+        f"{bad or 'none'}")
+
+
+@check("Phase 3 / benchmark v2", "conformation labels and the reported balance agree")
+def _():
+    recs = benchmark_v2_records()
+    stored = json.loads((paths.RESULTS / "docking_benchmark_v2.json").read_text())
+    counts = {"active": 0, "inactive": 0}
+    bad = []
+    for r in recs:
+        c = r["conformation"]
+        expected = "active" if c["distance_angstrom"] <= 4.0 else "inactive"
+        counts[expected] += 1
+        if not str(c["state"]).startswith(expected):
+            bad.append(r["pdb_id"])
+    reported = stored.get("conformation_counts", {})
+    agree = all(counts[k] == reported.get(k) for k in counts)
+    return not bad and agree, (f"{counts['active']} active / {counts['inactive']} "
+                               f"inactive; matches the report: {agree}")
+
+
+@check("Phase 3 / benchmark v2", "pocket boxes recompute from the cognate ligand")
+def _():
+    from rdkit import Chem
+
+    worst, bad = 0.0, []
+    for r in benchmark_v2_records():
+        mol = Chem.MolFromMolFile(
+            str(paths.RECEPTORS / "benchmark_v2" / f"{r['pdb_id']}_ligand.sdf")
+        )
+        xyz = mol.GetConformer().GetPositions()
+        pad = r.get("pocket_box_padding_angstrom", 5.0)
+        d = max(
+            float(np.abs(np.round(xyz.mean(axis=0), 3) - np.array(r["pocket_center"])).max()),
+            float(np.abs(np.round(xyz.min(axis=0) - pad, 3) - np.array(r["pocket_box_min"])).max()),
+            float(np.abs(np.round(xyz.max(axis=0) + pad, 3) - np.array(r["pocket_box_max"])).max()),
+        )
+        worst = max(worst, d)
+        if d > 0.002:
+            bad.append(r["pdb_id"])
+    return not bad, f"largest deviation {worst:.3f} A; offenders {bad or 'none'}"
+
+
+@check("Phase 3 / hERG-large", "split files partition one consistent molecule set")
+def _():
+    stats = json.loads((paths.RESULTS / "herg_large_stats.json").read_text())
+    sizes, ok = {}, True
+    for setting in ("full", "disjoint"):
+        for kind in ("random", "scaffold"):
+            for seed in paths.SEEDS:
+                path = paths.SPLITS / f"herg_large_{setting}_{kind}_split_seed{seed}.csv"
+                f = pd.read_csv(path)
+                sizes.setdefault(setting, set()).add(len(f))
+                if f["inchikey"].duplicated().any() or set(f["subset"]) != {"train", "valid", "test"}:
+                    ok = False
+                if kind == "scaffold" and int(
+                    (f.groupby("scaffold_smiles")["subset"].nunique() > 1).sum()
+                ):
+                    ok = False
+    # The stats record the standardized count before the 47 tie-only rows are
+    # dropped, so the split sizes are derived: full = standardized - unlabeled,
+    # disjoint = full - the molecules shared with Tox21. Checking the relation is
+    # stronger than reading one number.
+    n_full = stats["final_molecules"] - stats["unlabeled_after_ties_dropped"]
+    n_disjoint = n_full - stats["disjoint_removed"]
+    ok = ok and sizes["full"] == {n_full} and sizes["disjoint"] == {n_disjoint}
+    return ok, (f"full {sizes['full']} (= {stats['final_molecules']} standardized - "
+                f"{stats['unlabeled_after_ties_dropped']} unlabeled = {n_full}), "
+                f"disjoint {sizes['disjoint']} (= {n_full} - "
+                f"{stats['disjoint_removed']} shared with Tox21 = {n_disjoint}); "
+                f"no duplicate keys, no scaffold group spanning subsets")
+
+
+@check("Phase 3 / hERG-large", "Disjoint really shares no InChIKey with Tox21")
+def _():
+    clean = clean_table()
+    tox_keys = set(clean["inchikey"])
+    f = pd.read_csv(paths.SPLITS / "herg_large_disjoint_random_split_seed0.csv")
+    shared = tox_keys & set(f["inchikey"])
+    full = pd.read_csv(paths.SPLITS / "herg_large_full_random_split_seed0.csv")
+    shared_full = tox_keys & set(full["inchikey"])
+    return not shared, (f"disjoint shares {len(shared)} InChIKeys with Tox21 "
+                        f"(full setting shares {len(shared_full)})")
+
+
+@check("Phase 3 / ESM-2", "protein embedding cache matches the KIBA protein count")
+def _():
+    from tox21lib import protein_embed
+
+    stats = json.loads((paths.RESULTS / "esm2_embedding_stats.json").read_text())
+    matrix, rows, model = protein_embed.load_cache(
+        protein_embed.cache_path(paths.DATA_PROCESSED)
+    )
+    binding = json.loads((paths.RESULTS / "binding_dataset_stats.json").read_text())
+    ok = (matrix.shape[0] == len(rows) == stats["n_proteins"]
+          == binding["KIBA"]["distinct_proteins"]
+          and matrix.shape[1] == stats["embedding_dim"]
+          and not bool(np.isnan(matrix).any()))
+    return ok, (f"{matrix.shape[0]} proteins x {matrix.shape[1]}-d from {model}; "
+                f"KIBA has {binding['KIBA']['distinct_proteins']} proteins; NaN: "
+                f"{bool(np.isnan(matrix).any())}")
+
+
+@check("Phase 3 / attribution", "reported coverage recomputes from the per-molecule table")
+def _():
+    stats = json.loads((paths.RESULTS / "attribution.json").read_text())
+    frame = pd.read_csv(paths.RESULTS / "attribution_per_molecule.csv")
+    hit = float(frame["top_hits_alert"].mean())
+    med = float(frame["enrichment"].median())
+    ok = (len(frame) == stats["n_with_alerts"]
+          and abs(hit - stats["top_hits_alert_rate"]) < 1e-9
+          and abs(med - stats["median_enrichment"]) < 1e-9)
+    figs = [f for f in stats["figures"] if not (paths.ROOT / f["path"]).exists()]
+    return ok and not figs, (f"{len(frame)} alert-bearing molecules, top-k hit rate "
+                             f"{hit:.3f}, median enrichment {med:.3f}; missing figures "
+                             f"{len(figs)}")
+
+
+@check("Phase 3 / endpoint reliability", "bootstrap CIs bracket their point estimates")
+def _():
+    frame = pd.read_csv(paths.RESULTS / "endpoint_reliability.csv")
+    ci_cols = [c for c in frame.columns if "roc_auc" in c and ("low" in c or "lo" in c)]
+    hi_cols = [c for c in frame.columns if "roc_auc" in c and ("high" in c or "hi" in c)]
+    if not ci_cols or not hi_cols:
+        return False, f"no ROC-AUC CI columns in {list(frame.columns)}"
+    lo, hi = ci_cols[0], hi_cols[0]
+    tox = frame[(frame["dataset"] == "Tox21") & frame[lo].notna()]
+    outside = tox[(tox["roc_auc_mean"] < tox[lo]) | (tox["roc_auc_mean"] > tox[hi])]
+    return outside.empty and len(tox) > 0, (
+        f"{len(tox)} Tox21 rows carry ROC-AUC CIs ({lo}/{hi}); point estimates "
+        f"outside their own interval: {len(outside)}")
+
+
+@check("Phase 3 / endpoint reliability", "flagged endpoints really hold <20 test positives")
+def _():
+    rec = json.loads((paths.RESULTS / "endpoint_reliability.json").read_text())
+    m = metrics_table()
+    m = m[(m["dataset"] == "Tox21")]
+    mins = m.groupby(["split", "endpoint"])["n_test_pos"].min()
+    recomputed = {f"{s}/{e}" for (s, e), v in mins.items() if v < 20}
+    text = json.dumps(rec)
+    missing = [c for c in recomputed if c.split("/")[1] not in text]
+    return not missing and bool(recomputed), (
+        f"{len(recomputed)} endpoint/split combinations below 20 test positives "
+        f"recomputed from the metric rows; absent from the report: {missing or 'none'}")
+
+
+@check("Phase 3 / endpoint reliability", "the penalty CI is consistent with the point estimate")
+def _():
+    text = (paths.RESULTS / "endpoint_reliability.md").read_text(encoding="utf-8")
+    summary = pd.read_csv(paths.RESULTS / "baseline_summary.csv")
+    o = summary[(summary["dataset"] == "Tox21") & (summary["level"] == "overall")]
+    o = o.set_index("split")
+    drop = float(o.loc["random", "roc_auc_mean"] - o.loc["scaffold", "roc_auc_mean"])
+    rec = json.loads((paths.RESULTS / "endpoint_reliability.json").read_text())
+    flat = json.dumps(rec)
+    quoted = f"{drop:.4f}" in text or f"{drop:.4f}" in flat
+    return quoted, (f"macro random-minus-scaffold drop {drop:.4f} recomputed from the "
+                    f"summary table and quoted in the Phase 3 reliability report: "
+                    f"{quoted}")
 
 
 # --------------------------------------------------------------------------

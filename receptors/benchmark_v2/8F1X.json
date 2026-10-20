@@ -1,0 +1,79 @@
+{
+  "pdb_id": "8F1X",
+  "use": "self-docking: dock this ligand into this receptor, score RMSD vs this SDF",
+  "resolution_angstrom": 2.3,
+  "ligand_code": "R28",
+  "ligand_instance": "R28/A1101",
+  "ligand_smiles": "CCC(=O)Nc1cc(Nc2ncc(C(=O)OC(C)C)c(-c3cn(C)c4ccccc34)n2)c(OC)cc1N(C)CCN(C)C",
+  "ligand_inchikey": "CINKQTDSFCVDKO-UHFFFAOYSA-N",
+  "ligand_heavy_atoms": 43,
+  "conformation": {
+    "distance_angstrom": 2.84,
+    "state": "active (alphaC-in, salt bridge intact)",
+    "lys_seqid": 745,
+    "glu_seqid": 762,
+    "numbering": "precursor"
+  },
+  "state": "active",
+  "pocket_source": "cognate ligand R28/A1101 of 8F1X",
+  "pocket_center": [
+    -0.547,
+    51.401,
+    -19.621
+  ],
+  "pocket_box_min": [
+    -10.684,
+    42.791,
+    -31.918
+  ],
+  "pocket_box_max": [
+    8.681,
+    59.471,
+    -5.249
+  ],
+  "pocket_box_size": [
+    19.365,
+    16.68,
+    26.669
+  ],
+  "pocket_box_padding_angstrom": 5.0,
+  "mean_pocket_b_factor": 65.4,
+  "mean_ligand_b_factor": 64.5,
+  "altloc_atoms_in_pocket": 0,
+  "n_residues_within_5A": 25,
+  "contact_residues": [
+    "LEU718",
+    "GLY719",
+    "PHE723",
+    "VAL726",
+    "LYS728",
+    "ALA743",
+    "ILE744",
+    "LYS745",
+    "GLU762",
+    "CYS775",
+    "LEU788",
+    "THR790",
+    "GLN791",
+    "LEU792",
+    "MET793",
+    "PRO794",
+    "PHE795",
+    "GLY796",
+    "CYS797",
+    "ASP800",
+    "ARG841",
+    "LEU844",
+    "THR854",
+    "ASP855",
+    "LEU1001"
+  ],
+  "kept_chain": "A",
+  "kept_chain_residues": 317,
+  "title": "EGFR KINASE IN COMPLEX WITH MOBOCERTINIB (TAK-788)",
+  "files": {
+    "receptor": "receptors/benchmark_v2/8F1X_receptor.pdb",
+    "ligand": "receptors/benchmark_v2/8F1X_ligand.sdf",
+    "record": "receptors/benchmark_v2/8F1X.json"
+  }
+}

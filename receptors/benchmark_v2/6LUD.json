@@ -1,0 +1,73 @@
+{
+  "pdb_id": "6LUD",
+  "use": "self-docking: dock this ligand into this receptor, score RMSD vs this SDF",
+  "resolution_angstrom": 2.05,
+  "ligand_code": "YY3",
+  "ligand_instance": "YY3/A1101",
+  "ligand_smiles": "C=CC(=O)Nc1cc(Nc2nccc(-c3cn(C)c4ccccc34)n2)c(OC)cc1N(C)CCN(C)C",
+  "ligand_inchikey": "DUYJMQONPNNFPI-UHFFFAOYSA-N",
+  "ligand_heavy_atoms": 37,
+  "conformation": {
+    "distance_angstrom": 3.09,
+    "state": "active (alphaC-in, salt bridge intact)",
+    "lys_seqid": 745,
+    "glu_seqid": 762,
+    "numbering": "precursor"
+  },
+  "state": "active",
+  "pocket_source": "cognate ligand YY3/A1101 of 6LUD",
+  "pocket_center": [
+    -49.731,
+    -0.039,
+    -18.22
+  ],
+  "pocket_box_min": [
+    -58.312,
+    -9.333,
+    -30.094
+  ],
+  "pocket_box_max": [
+    -41.435,
+    9.386,
+    -6.176
+  ],
+  "pocket_box_size": [
+    16.877,
+    18.719,
+    23.918
+  ],
+  "pocket_box_padding_angstrom": 5.0,
+  "mean_pocket_b_factor": 55.2,
+  "mean_ligand_b_factor": 57.6,
+  "altloc_atoms_in_pocket": 0,
+  "n_residues_within_5A": 19,
+  "contact_residues": [
+    "LEU718",
+    "GLY719",
+    "PHE723",
+    "VAL726",
+    "LYS728",
+    "ALA743",
+    "LYS745",
+    "MET790",
+    "GLN791",
+    "LEU792",
+    "MET793",
+    "PRO794",
+    "PHE795",
+    "GLY796",
+    "SER797",
+    "ASP800",
+    "GLU804",
+    "LEU844",
+    "LEU1001"
+  ],
+  "kept_chain": "A",
+  "kept_chain_residues": 310,
+  "title": "CRYSTAL STRUCTURE OF EGFR(L858R/T790M/C797S) IN COMPLEX WITH OSIMERTINIB",
+  "files": {
+    "receptor": "receptors/benchmark_v2/6LUD_receptor.pdb",
+    "ligand": "receptors/benchmark_v2/6LUD_ligand.sdf",
+    "record": "receptors/benchmark_v2/6LUD.json"
+  }
+}

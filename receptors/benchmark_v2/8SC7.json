@@ -1,0 +1,76 @@
+{
+  "pdb_id": "8SC7",
+  "use": "self-docking: dock this ligand into this receptor, score RMSD vs this SDF",
+  "resolution_angstrom": 1.98,
+  "ligand_code": "D0D",
+  "ligand_instance": "D0D/A1103",
+  "ligand_smiles": "C[C@@H](Nc1ncnc2ccc(-c3cnc(Cl)c(NS(C)(=O)=O)c3)cc12)c1ccccc1",
+  "ligand_inchikey": "LPJIZDSOUGHTNB-CQSZACIVSA-N",
+  "ligand_heavy_atoms": 31,
+  "conformation": {
+    "distance_angstrom": 2.69,
+    "state": "active (alphaC-in, salt bridge intact)",
+    "lys_seqid": 745,
+    "glu_seqid": 762,
+    "numbering": "precursor"
+  },
+  "state": "active",
+  "pocket_source": "cognate ligand D0D/A1103 of 8SC7",
+  "pocket_center": [
+    21.682,
+    0.364,
+    51.404
+  ],
+  "pocket_box_min": [
+    9.786,
+    -7.542,
+    41.552
+  ],
+  "pocket_box_max": [
+    33.769,
+    8.894,
+    59.857
+  ],
+  "pocket_box_size": [
+    23.983,
+    16.436,
+    18.305
+  ],
+  "pocket_box_padding_angstrom": 5.0,
+  "mean_pocket_b_factor": 52.1,
+  "mean_ligand_b_factor": 64.9,
+  "altloc_atoms_in_pocket": 0,
+  "n_residues_within_5A": 22,
+  "contact_residues": [
+    "LEU718",
+    "GLY719",
+    "VAL726",
+    "ALA743",
+    "ILE744",
+    "LYS745",
+    "GLU762",
+    "MET766",
+    "LEU788",
+    "ILE789",
+    "THR790",
+    "GLN791",
+    "LEU792",
+    "MET793",
+    "PRO794",
+    "PHE795",
+    "GLY796",
+    "CYS797",
+    "ASP800",
+    "LEU844",
+    "THR854",
+    "ASP855"
+  ],
+  "kept_chain": "A",
+  "kept_chain_residues": 326,
+  "title": "STRUCTURE OF EGFR IN COMPLEX WITH MTX-531",
+  "files": {
+    "receptor": "receptors/benchmark_v2/8SC7_receptor.pdb",
+    "ligand": "receptors/benchmark_v2/8SC7_ligand.sdf",
+    "record": "receptors/benchmark_v2/8SC7.json"
+  }
+}

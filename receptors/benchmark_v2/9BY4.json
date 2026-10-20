@@ -1,0 +1,71 @@
+{
+  "pdb_id": "9BY4",
+  "use": "self-docking: dock this ligand into this receptor, score RMSD vs this SDF",
+  "resolution_angstrom": 2.31,
+  "ligand_code": "Q6K",
+  "ligand_instance": "Q6K/A1302",
+  "ligand_smiles": "CCC(=O)Nc1cc(Nc2nccc(-c3cn(C)c4ccccc34)n2)c(OC)cc1N(C)CCN(C)C",
+  "ligand_inchikey": "UHTBXBRYOKJTAN-UHFFFAOYSA-N",
+  "ligand_heavy_atoms": 37,
+  "conformation": {
+    "distance_angstrom": 2.72,
+    "state": "active (alphaC-in, salt bridge intact)",
+    "lys_seqid": 745,
+    "glu_seqid": 762,
+    "numbering": "precursor"
+  },
+  "state": "active",
+  "pocket_source": "cognate ligand Q6K/A1302 of 9BY4",
+  "pocket_center": [
+    50.625,
+    -0.2,
+    18.679
+  ],
+  "pocket_box_min": [
+    42.316,
+    -9.346,
+    6.816
+  ],
+  "pocket_box_max": [
+    59.156,
+    9.276,
+    30.345
+  ],
+  "pocket_box_size": [
+    16.84,
+    18.622,
+    23.529
+  ],
+  "pocket_box_padding_angstrom": 5.0,
+  "mean_pocket_b_factor": 79.9,
+  "mean_ligand_b_factor": 88.2,
+  "altloc_atoms_in_pocket": 0,
+  "n_residues_within_5A": 17,
+  "contact_residues": [
+    "LEU718",
+    "GLY719",
+    "PHE723",
+    "VAL726",
+    "LYS728",
+    "ALA743",
+    "LYS745",
+    "THR790",
+    "GLN791",
+    "LEU792",
+    "MET793",
+    "PRO794",
+    "PHE795",
+    "GLY796",
+    "CYS797",
+    "ASP800",
+    "LEU844"
+  ],
+  "kept_chain": "A",
+  "kept_chain_residues": 316,
+  "title": "CO-CRYSTAL STRUCTURE OF THE KINASE DOMAIN OF EGFR WITH NON-COVALENT OSIMERTINIB",
+  "files": {
+    "receptor": "receptors/benchmark_v2/9BY4_receptor.pdb",
+    "ligand": "receptors/benchmark_v2/9BY4_ligand.sdf",
+    "record": "receptors/benchmark_v2/9BY4.json"
+  }
+}

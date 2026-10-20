@@ -1,0 +1,125 @@
+{
+  "checkpoint": "data\\processed\\checkpoints\\configA_seed0.pt",
+  "config": "A",
+  "tox_split": "scaffold",
+  "seed": 0,
+  "n_test_molecules": 613,
+  "n_with_alerts": 252,
+  "top_k": 3,
+  "top_hits_alert_rate": 0.31746031746031744,
+  "fraction_enriched_above_1x": 0.39285714285714285,
+  "median_enrichment": 0.8377698337570397,
+  "median_fraction_of_mass_on_alert": 0.09113594466467505,
+  "n_diffuse": 2,
+  "diffuse_threshold": 0.95,
+  "n_off_target": 74,
+  "per_alert": [
+    {
+      "alert": "aromatic_halide",
+      "n": 143,
+      "median_enrichment": 0.7443907640495263,
+      "top_hit_rate": 0.21678321678321677
+    },
+    {
+      "alert": "michael_acceptor",
+      "n": 63,
+      "median_enrichment": 1.1678689689609585,
+      "top_hit_rate": 0.5396825396825397
+    },
+    {
+      "alert": "aromatic_amine",
+      "n": 58,
+      "median_enrichment": 1.027991590069278,
+      "top_hit_rate": 0.41379310344827586
+    },
+    {
+      "alert": "epoxide",
+      "n": 14,
+      "median_enrichment": 1.0113093473797934,
+      "top_hit_rate": 0.5714285714285714
+    },
+    {
+      "alert": "nitroaromatic",
+      "n": 9,
+      "median_enrichment": 1.8173524171741111,
+      "top_hit_rate": 0.8888888888888888
+    },
+    {
+      "alert": "aldehyde",
+      "n": 4,
+      "median_enrichment": 1.1406788138835868,
+      "top_hit_rate": 0.5
+    },
+    {
+      "alert": "para_quinone",
+      "n": 2,
+      "median_enrichment": 0.2599363765726079,
+      "top_hit_rate": 0.0
+    }
+  ],
+  "figures": [
+    {
+      "kind": "success",
+      "path": "figures\\attribution\\example_01_PWAUCHMQEXVFJR.png",
+      "inchikey": "PWAUCHMQEXVFJR-UHFFFAOYSA-N",
+      "alerts": "michael_acceptor",
+      "enrichment": 4.416595942355306
+    },
+    {
+      "kind": "success",
+      "path": "figures\\attribution\\example_02_NSVFSAJIGAJDMR.png",
+      "inchikey": "NSVFSAJIGAJDMR-UHFFFAOYSA-N",
+      "alerts": "michael_acceptor,nitroaromatic",
+      "enrichment": 3.78960768375973
+    },
+    {
+      "kind": "success",
+      "path": "figures\\attribution\\example_03_FMZXNVLFJHCSAF.png",
+      "inchikey": "FMZXNVLFJHCSAF-UHFFFAOYSA-N",
+      "alerts": "michael_acceptor",
+      "enrichment": 3.6509582599936183
+    },
+    {
+      "kind": "success",
+      "path": "figures\\attribution\\example_04_FQVHOULQCKDUCY.png",
+      "inchikey": "FQVHOULQCKDUCY-UHFFFAOYSA-N",
+      "alerts": "aldehyde,epoxide,michael_acceptor",
+      "enrichment": 3.3115842512369835
+    },
+    {
+      "kind": "success",
+      "path": "figures\\attribution\\example_05_SVJMLYUFVDMUHP.png",
+      "inchikey": "SVJMLYUFVDMUHP-UHFFFAOYSA-N",
+      "alerts": "michael_acceptor,nitroaromatic",
+      "enrichment": 3.081603545582659
+    },
+    {
+      "kind": "success",
+      "path": "figures\\attribution\\example_06_MXXWOMGUGJBKIW.png",
+      "inchikey": "MXXWOMGUGJBKIW-UHFFFAOYSA-N",
+      "alerts": "michael_acceptor",
+      "enrichment": 2.8960318536513032
+    },
+    {
+      "kind": "failure",
+      "path": "figures\\attribution\\failure_01_GHKNHBRWJYMSHK.png",
+      "inchikey": "GHKNHBRWJYMSHK-UHFFFAOYSA-N",
+      "alerts": "aromatic_amine,aromatic_halide",
+      "enrichment": 1.3114859326384223
+    },
+    {
+      "kind": "failure",
+      "path": "figures\\attribution\\failure_02_ZLWLKVQCHZSSEL.png",
+      "inchikey": "ZLWLKVQCHZSSEL-UHFFFAOYSA-N",
+      "alerts": "aromatic_halide",
+      "enrichment": 0.49999974100887395
+    },
+    {
+      "kind": "failure",
+      "path": "figures\\attribution\\failure_03_MDLAAYDRRZXJIF.png",
+      "inchikey": "MDLAAYDRRZXJIF-UHFFFAOYSA-N",
+      "alerts": "aromatic_halide",
+      "enrichment": 0.49270354116581255
+    }
+  ]
+}

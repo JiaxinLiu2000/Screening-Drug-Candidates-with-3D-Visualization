@@ -1,0 +1,78 @@
+{
+  "pdb_id": "6JRX",
+  "use": "self-docking: dock this ligand into this receptor, score RMSD vs this SDF",
+  "resolution_angstrom": 2.2,
+  "ligand_code": "9JO",
+  "ligand_instance": "9JO/A1101",
+  "ligand_smiles": "CCC(=O)N[C@H]1CC[C@@H](N2C(=O)N(c3ccccc3Cl)Cc3cnc(Nc4ccc(N5CCN(C)CC5)c(C)c4)nc32)CC1",
+  "ligand_inchikey": "WVLWGBZNXIVAKC-OGLKEZPNSA-N",
+  "ligand_heavy_atoms": 44,
+  "conformation": {
+    "distance_angstrom": 2.6,
+    "state": "active (alphaC-in, salt bridge intact)",
+    "lys_seqid": 745,
+    "glu_seqid": 762,
+    "numbering": "precursor"
+  },
+  "state": "active",
+  "pocket_source": "cognate ligand 9JO/A1101 of 6JRX",
+  "pocket_center": [
+    0.161,
+    49.726,
+    -21.266
+  ],
+  "pocket_box_min": [
+    -7.845,
+    38.503,
+    -34.681
+  ],
+  "pocket_box_max": [
+    8.429,
+    58.809,
+    -7.584
+  ],
+  "pocket_box_size": [
+    16.274,
+    20.306,
+    27.097
+  ],
+  "pocket_box_padding_angstrom": 5.0,
+  "mean_pocket_b_factor": 51.9,
+  "mean_ligand_b_factor": 52.9,
+  "altloc_atoms_in_pocket": 0,
+  "n_residues_within_5A": 24,
+  "contact_residues": [
+    "LEU718",
+    "GLY719",
+    "SER720",
+    "GLY721",
+    "PHE723",
+    "GLY724",
+    "VAL726",
+    "ALA743",
+    "ILE744",
+    "LYS745",
+    "GLU762",
+    "MET766",
+    "LEU788",
+    "MET790",
+    "GLN791",
+    "LEU792",
+    "MET793",
+    "PRO794",
+    "PHE795",
+    "GLY796",
+    "ASP800",
+    "LEU844",
+    "THR854",
+    "ASP855"
+  ],
+  "kept_chain": "A",
+  "kept_chain_residues": 300,
+  "title": "EGFR T790M/C797S IN COMPLEX WITH COMPOUND 6I",
+  "files": {
+    "receptor": "receptors/benchmark_v2/6JRX_receptor.pdb",
+    "ligand": "receptors/benchmark_v2/6JRX_ligand.sdf",
+    "record": "receptors/benchmark_v2/6JRX.json"
+  }
+}
