@@ -485,6 +485,61 @@ def main() -> int:
     add("The five go/no-go decisions these feed are in "
         "[`results/PHASE2_DECISIONS.md`](results/PHASE2_DECISIONS.md).")
     add("")
+    add("## 7c. Phase 3 validation and the shared-encoder experiment")
+    add("")
+    add("Phase 3 re-measured what Phase 2 had got wrong, then ran the project's "
+        "central experiment. Headline numbers, each with its own document:")
+    add("")
+    add("| check | measured result | document |")
+    add("| --- | --- | --- |")
+    phase3 = [
+        ("chemical_space_overlap_kiba.json", "Tox21 vs KIBA overlap (supersedes Davis)",
+         lambda d: f"**{d['verdict']}** — median nearest-neighbour Tanimoto "
+                   f"{d['nn_tanimoto']['tox21_to_kiba']['median']:.4f}, against "
+                   f"within-set {d['nn_tanimoto']['within_tox21']['median']:.4f} "
+                   f"(Tox21) / {d['nn_tanimoto']['within_kiba']['median']:.4f} (KIBA)",
+         "results/chemical_space_overlap_kiba.md"),
+        ("docking_benchmark_v2.json", "Self-docking benchmark (supersedes v1)",
+         lambda d: f"{d['conformation_counts']['active']} active / "
+                   f"{d['conformation_counts']['inactive']} inactive; median pairwise "
+                   f"ligand Tanimoto {d['similarity']['median']:.3f}",
+         "results/docking_benchmark_v2.md"),
+        ("herg_large_stats.json", "hERG-large external check (supersedes 588-molecule)",
+         lambda d: f"{d['full_molecules']} molecules, {d['disjoint_removed']} shared "
+                   f"with Tox21; corroborates the scaffold-split penalty",
+         "results/herg_large_baseline.md"),
+        ("endpoint_reliability.json", "Endpoint reliability (1000x bootstrap)",
+         lambda d: f"penalty CI "
+                   f"[{d['difference_random_minus_scaffold']['roc_auc']['ci'][0]:.4f}, "
+                   f"{d['difference_random_minus_scaffold']['roc_auc']['ci'][1]:.4f}]; "
+                   f"{len(d['flagged'])} endpoint/split combinations below 20 test "
+                   f"positives",
+         "results/endpoint_reliability.md"),
+        ("shared_encoder_ablation.json", "Four-way shared-encoder ablation",
+         lambda d: f"**{d['verdict']}** — sharing from scratch "
+                   f"{d['effect_of_sharing_scratch_tox']:+.4f} toxicity / "
+                   f"{d['effect_of_sharing_scratch_affinity']:+.4f} affinity, "
+                   f"pretrained {d['effect_of_sharing_pretrained_tox']:+.4f} / "
+                   f"{d['effect_of_sharing_pretrained_affinity']:+.4f}",
+         "results/shared_encoder_ablation.md"),
+        ("attribution.json", "Atom attribution + group-masking control",
+         lambda d: f"top-{d['top_k']} atoms hit the alert in "
+                   f"{d['top_hits_alert_rate']:.1%} of {d['n_with_alerts']} molecules; "
+                   f"whole-alert masking beats a random same-size set in "
+                   f"{d['control']['beats_null_rate']:.1%}",
+         "results/attribution.md"),
+    ]
+    for filename, label, render, doc in phase3:
+        path = paths.RESULTS / filename
+        if path.exists():
+            value = render(json.loads(path.read_text(encoding="utf-8")))
+            add(f"| {label} | {value} | [`{doc}`]({doc}) |")
+    add("")
+    add("The six decisions these feed are in "
+        "[`results/PHASE3_DECISIONS.md`](results/PHASE3_DECISIONS.md); the "
+        "data-integrity evidence for every number above is in "
+        "[`VERIFICATION.md`](VERIFICATION.md).")
+    add("")
     add("---")
     add("")
 

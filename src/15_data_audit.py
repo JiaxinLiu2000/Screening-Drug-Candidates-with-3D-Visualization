@@ -1001,6 +1001,101 @@ def _():
                      f"KIBA split and seed; mismatches {bad or 'none'}")
 
 
+@check("Phase 3 / attribution", "the group-masking control agrees with the per-atom result")
+def _():
+    stats = json.loads((paths.RESULTS / "attribution.json").read_text())
+    control = pd.read_csv(paths.RESULTS / "attribution_control.csv")
+    rec = stats.get("control")
+    if rec is None:
+        return False, "attribution.json carries no control block"
+    rate = float(control["beats_null"].mean())
+    med = float(control["percentile_vs_null"].median())
+    consistent = (abs(rate - rec["beats_null_rate"]) < 1e-9
+                  and abs(med - rec["median_percentile_vs_null"]) < 1e-9
+                  and len(control) == rec["n_molecules"])
+    # The two probes must tell the same story where the sample is big enough for
+    # that to mean anything. A small class disagreeing (epoxide, n=14) is a real
+    # measurement about a 3-atom group, not an inconsistency, so it is reported
+    # rather than failed; disagreement on a large class would indicate a bug.
+    per_atom = {r["alert"]: r["median_enrichment"] for r in stats["per_alert"]}
+    per_group = {r["alert"]: r["median_percentile"] for r in rec["per_alert"]}
+    counts = {r["alert"]: r["n"] for r in stats["per_alert"]}
+    shared = set(per_atom) & set(per_group)
+    disagree = [a for a in sorted(shared)
+                if (per_atom[a] > 1.1) != (per_group[a] > 0.6)]
+    serious = [a for a in disagree if counts.get(a, 0) >= 50]
+    detail = ", ".join(f"{a} n={counts.get(a)}" for a in disagree) or "no alert"
+    return consistent and not serious, (
+        f"whole-alert masking beats the random same-size null in {rate:.1%} of "
+        f"{len(control)} molecules (median percentile {med:.2f}); probes disagree on "
+        f"{detail}; none large enough (n>=50) to indicate a bug: {not serious}")
+
+
+@check("Phase 3 / endpoint reliability", "PR-AUC CIs bracket their point estimates too")
+def _():
+    frame = pd.read_csv(paths.RESULTS / "endpoint_reliability.csv")
+    lo = [c for c in frame.columns if "pr_auc" in c and ("low" in c or "lo" in c)]
+    hi = [c for c in frame.columns if "pr_auc" in c and ("high" in c or "hi" in c)]
+    if not lo or not hi:
+        return False, f"no PR-AUC CI columns in {list(frame.columns)}"
+    tox = frame[(frame["dataset"] == "Tox21") & frame[lo[0]].notna()]
+    outside = tox[(tox["pr_auc_mean"] < tox[lo[0]]) | (tox["pr_auc_mean"] > tox[hi[0]])]
+    # Average precision is right-skewed under resampling, so the interval sits
+    # above the point estimate; it must still contain it.
+    return outside.empty and len(tox) > 0, (
+        f"{len(tox)} Tox21 rows with PR-AUC CIs; point estimates outside their own "
+        f"interval: {len(outside)}")
+
+
+@check("Phase 3 / hERG-large", "molecule-count keys are unambiguous and self-consistent")
+def _():
+    stats = json.loads((paths.RESULTS / "herg_large_stats.json").read_text())
+    needed = {"standardized_molecules", "unlabeled_after_ties_dropped",
+              "full_molecules", "disjoint_removed", "disjoint_molecules"}
+    missing = needed - set(stats)
+    if missing:
+        return False, f"missing keys {sorted(missing)}"
+    ok = (stats["full_molecules"]
+          == stats["standardized_molecules"] - stats["unlabeled_after_ties_dropped"]
+          and stats["disjoint_molecules"]
+          == stats["full_molecules"] - stats["disjoint_removed"])
+    return ok, (f"{stats['standardized_molecules']} standardized - "
+                f"{stats['unlabeled_after_ties_dropped']} unlabeled = "
+                f"{stats['full_molecules']} full; - {stats['disjoint_removed']} shared "
+                f"with Tox21 = {stats['disjoint_molecules']} disjoint")
+
+
+@check("Repository", "every source module compiles")
+def _():
+    out = subprocess.run(
+        [sys.executable, "-m", "compileall", "-q", "src"],
+        cwd=paths.ROOT, capture_output=True, text=True,
+    )
+    n = len(list((paths.ROOT / "src").rglob("*.py")))
+    return out.returncode == 0, (
+        f"{n} modules under src/; compileall exit {out.returncode}"
+        + (f"; {out.stdout.strip()[:200]}" if out.returncode else ""))
+
+
+@check("Repository", "ablation checkpoints are newer than the metric table they produced")
+def _():
+    metrics = paths.RESULTS / "shared_encoder_metrics.csv"
+    ckpt_dir = paths.DATA_PROCESSED / "checkpoints"
+    ckpts = sorted(ckpt_dir.glob("config*_seed0.pt"))
+    if not ckpts:
+        return False, f"no checkpoints in {rel(ckpt_dir)}"
+    m = pd.read_csv(metrics)
+    expected = {f"config{c}_seed0.pt" for c in sorted(m["config"].unique())}
+    present = {p.name for p in ckpts}
+    # A checkpoint older than the start of the run that wrote the metrics would be
+    # a leftover from a superseded run, which the attribution stage would read.
+    stale = [p.name for p in ckpts
+             if p.stat().st_mtime < metrics.stat().st_mtime - 24 * 3600]
+    return expected <= present and not stale, (
+        f"{len(present)} checkpoints for configs {sorted(m['config'].unique())}; "
+        f"missing {sorted(expected - present) or 'none'}; stale {stale or 'none'}")
+
+
 # --------------------------------------------------------------------------
 
 def main() -> int:

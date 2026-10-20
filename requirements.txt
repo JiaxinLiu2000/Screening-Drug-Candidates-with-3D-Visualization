@@ -17,13 +17,16 @@
 #     removed in setuptools 81.
 #   - the `dataclasses` backport PyTDC pulls in is deliberately absent: it is a
 #     Python 3.6-only package that shadows the standard library on 3.11.
-#   - torch is the CUDA 12.6 build (`+cu126`); install it from
-#     https://download.pytorch.org/whl/cu126 or with
-#     `uv pip install torch --torch-backend=cu126`. CPU-only machines can
-#     substitute the CPU wheel; nothing else in the lock changes.
+#   - torch is the CUDA 12.6 build (`+cu126`), which is NOT on PyPI. The
+#     --extra-index-url line below makes `pip install --no-deps -r
+#     requirements.txt` resolve it; CPU-only machines can swap that index for
+#     https://download.pytorch.org/whl/cpu and drop the `+cu126` local version
+#     from the torch pin. Nothing else in the lock changes.
 #
 # Regenerate with the freeze of a known-good environment (src/15_data_audit.py
 # checks this file against the installed set in both directions).
+--extra-index-url https://download.pytorch.org/whl/cu126
+
 aiohappyeyeballs==2.7.1
 aiohttp==3.14.5
 aiosignal==1.4.0

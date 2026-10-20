@@ -130,6 +130,55 @@ def diffuseness(values: np.ndarray) -> float:
     return entropy / float(np.log(len(values)))
 
 
+@torch.no_grad()
+def mask_group(model, smiles: str, atom_groups: list[list[int]],
+                device: str = "cpu") -> np.ndarray:
+    """Probability drop when each whole atom group is masked at once.
+
+    Returns an (n_groups, n_endpoints) array of (baseline - masked) probabilities.
+    Single-atom masking understates a substructure whose signal is distributed
+    over several atoms - removing one nitro oxygen still leaves a nitro-like
+    environment - so a group-level control is needed before concluding from a low
+    per-atom enrichment that the model ignores an alert.
+    """
+    from torch_geometric.data import Batch, Data
+
+    model.eval()
+    graph = mol_to_graph(smiles)
+
+    def as_data(x: np.ndarray) -> Data:
+        return Data(
+            x=torch.from_numpy(x),
+            edge_index=torch.from_numpy(graph.edge_index),
+            edge_attr=torch.from_numpy(graph.edge_attr),
+        )
+
+    variants = [as_data(graph.x)]
+    for group in atom_groups:
+        masked = graph.x.copy()
+        masked[list(group)] = 0.0
+        variants.append(as_data(masked))
+
+    batch = Batch.from_data_list(variants).to(device)
+    probs = torch.sigmoid(model.predict_toxicity(batch)).float().cpu().numpy()
+    return probs[0][None, :] - probs[1:]
+
+
+def random_groups(n_atoms: int, size: int, n_draws: int, seed: int,
+                  exclude: list[int] | None = None) -> list[list[int]]:
+    """Seeded random atom sets of the same size, as a null for ``mask_group``.
+
+    Drawing from atoms outside the alert gives the comparison its meaning: "does
+    masking the alert move the prediction more than masking any other n atoms?"
+    """
+    rng = np.random.default_rng(seed)
+    pool = [i for i in range(n_atoms) if not exclude or i not in set(exclude)]
+    if len(pool) < size:
+        return []
+    return [sorted(rng.choice(pool, size=size, replace=False).tolist())
+            for _ in range(n_draws)]
+
+
 def top_atoms(values: np.ndarray, k: int = 3) -> list[int]:
     """Indices of the k most strongly attributed atoms, highest first."""
     return [int(i) for i in np.argsort(-values)[:k]]

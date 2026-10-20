@@ -27,6 +27,22 @@ There is no ground truth for atom attribution, so this is validated qualitativel
 | aldehyde | 4 | 2.29x | 75.0% |
 | para_quinone | 2 | 0.63x | 0.0% |
 
+## Control: is a low enrichment the model's fault or the probe's?
+
+Single-atom masking understates a substructure whose signal spans several atoms. As a control, each alert was masked **as a whole** and compared with 20 seeded random atom sets of the same size drawn from outside it. The alert produces a larger probability drop than the average random set in **46.0%** of 250 molecules (median percentile against the null: 0.50).
+
+| alert | molecules | median percentile vs null | beats null |
+| --- | --- | --- | --- |
+| aromatic_halide | 143 | 0.45 | 43% |
+| michael_acceptor | 61 | 0.65 | 59% |
+| aromatic_amine | 58 | 0.53 | 48% |
+| epoxide | 14 | 0.47 | 57% |
+| nitroaromatic | 9 | 1.00 | 100% |
+| aldehyde | 4 | 0.80 | 75% |
+| para_quinone | 2 | 0.82 | 100% |
+
+Where the two probes disagree, the per-atom number is the less reliable of the two for small groups: masking one atom of a three-atom epoxide leaves a near-identical environment, while masking all three removes a ring. Disagreements (per-atom enrichment > 1.1 but group percentile <= 0.6, or the reverse): epoxide (1.33x per atom vs 0.47 percentile per group, n=14), para_quinone (0.63x per atom vs 0.82 percentile per group, n=2).
+
 ## Annotated examples
 
 Red = removing the atom lowered the prediction (it pushed toxicity up); blue = the opposite. Alert atoms are drawn with a larger highlight radius.

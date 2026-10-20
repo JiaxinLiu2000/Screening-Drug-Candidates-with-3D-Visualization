@@ -1,5 +1,5 @@
 {
-  "n_pass": 54,
+  "n_pass": 59,
   "n_fail": 0,
   "n_skip": 0,
   "checks": [
@@ -229,7 +229,7 @@
       "section": "Repository",
       "name": "no raw or processed data is tracked by git",
       "status": "PASS",
-      "detail": "tracked data files 0, committed artefacts 261"
+      "detail": "tracked data files 0, committed artefacts 264"
     },
     {
       "section": "Phase 3 / KIBA overlap",
@@ -326,6 +326,36 @@
       "name": "neural configurations are evaluated on the committed folds",
       "status": "PASS",
       "detail": "test-fold sizes identical to the random-forest runs for every KIBA split and seed; mismatches none"
+    },
+    {
+      "section": "Phase 3 / attribution",
+      "name": "the group-masking control agrees with the per-atom result",
+      "status": "PASS",
+      "detail": "whole-alert masking beats the random same-size null in 46.0% of 250 molecules (median percentile 0.50); probes disagree on epoxide n=14, para_quinone n=2; none large enough (n>=50) to indicate a bug: True"
+    },
+    {
+      "section": "Phase 3 / endpoint reliability",
+      "name": "PR-AUC CIs bracket their point estimates too",
+      "status": "PASS",
+      "detail": "24 Tox21 rows with PR-AUC CIs; point estimates outside their own interval: 0"
+    },
+    {
+      "section": "Phase 3 / hERG-large",
+      "name": "molecule-count keys are unambiguous and self-consistent",
+      "status": "PASS",
+      "detail": "11099 standardized - 47 unlabeled = 11052 full; - 361 shared with Tox21 = 10691 disjoint"
+    },
+    {
+      "section": "Repository",
+      "name": "every source module compiles",
+      "status": "PASS",
+      "detail": "42 modules under src/; compileall exit 0"
+    },
+    {
+      "section": "Repository",
+      "name": "ablation checkpoints are newer than the metric table they produced",
+      "status": "PASS",
+      "detail": "6 checkpoints for configs ['A', 'B', 'C', 'D', 'E', 'F']; missing none; stale none"
     }
   ]
 }

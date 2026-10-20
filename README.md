@@ -21,12 +21,18 @@ CSV/JSON tables). The four values the proposal asks for are also in
 This README covers setup and method; it quotes only headline figures and defers
 the full tables to `RESULTS.md`.
 
-**Phase 2 (data-foundation validation) is complete; the decisions are in
-[`results/PHASE2_DECISIONS.md`](results/PHASE2_DECISIONS.md).** The headline: the
-shared-encoder premise is **not** supported by the data — the median
-nearest-neighbour Tanimoto between Tox21 and Davis is 0.1667 (negligible overlap)
-— while KIBA (2030 drugs) makes the cold-drug binding evaluation viable where
-Davis (68 drugs, 7 in a cold-drug test fold) never could.
+**Phases 2 and 3 are complete.** Decisions:
+[`results/PHASE2_DECISIONS.md`](results/PHASE2_DECISIONS.md),
+[`results/PHASE3_DECISIONS.md`](results/PHASE3_DECISIONS.md); data integrity:
+[`VERIFICATION.md`](VERIFICATION.md). Phase 3 overturned three Phase 2
+conclusions by measuring them properly: overlap against KIBA's 2030 drugs is
+**0.2597 (weak)**, not Davis's 0.1667 (negligible); active-state EGFR structures
+are **plentiful** (86 of 120 passing entries), so the benchmark is now 10 active
+/ 10 inactive; and the large hERG set **corroborates** the scaffold-split penalty
+(drop 0.0526) where the 588-molecule version had contradicted it. The central
+experiment ran: **shared encoding does not help** — sharing at the default loss
+weight hurts, tuned sharing is neutral, and no configuration beats single-task
+training by more than seed noise.
 
 ## Setup
 
@@ -75,7 +81,26 @@ python src/11_binding_baseline.py  # Davis + KIBA, 3 splits x 5 seeds (~40 min)
 python src/12_herg_baseline.py     # hERG external check, appends to the metric tables
 python src/13_docking_benchmark.py # RCSB query -> 20-structure co-crystal set
 python src/14_phase2_decisions.py  # results/PHASE2_DECISIONS.md
+python src/15_data_audit.py        # cross-artefact integrity checks -> results/DATA_AUDIT.md
+
+# Phase 3 - fix what Phase 2 exposed, then the shared-encoder experiment (GPU)
+python src/16_chem_space_kiba.py       # Tox21 vs KIBA overlap + within-set calibration
+python src/17_docking_benchmark_v2.py  # self-docking benchmark, 10 active / 10 inactive
+python src/18_herg_large.py            # hERG-large (Karim), Full + Disjoint settings
+python src/19_esm_embed.py             # cache frozen ESM-2 embeddings for KIBA proteins
+python src/20_shared_encoder_ablation.py  # 76 runs, ~9 GPU-hours
+python src/21_endpoint_reliability.py  # 1000x bootstrap CIs per endpoint
+python src/22_attribution.py           # atom masking + group-masking control
+python src/23_ablation_report.py       # results/shared_encoder_ablation.md
+python src/24_phase3_decisions.py      # results/PHASE3_DECISIONS.md
+python src/25_verification_report.py   # VERIFICATION.md
 ```
+
+Phase 3 needs a CUDA GPU (developed on an 8 GB RTX 3070 Ti). `requirements.txt`
+pins the CUDA 12.6 torch build and carries the matching `--extra-index-url`;
+CPU-only machines can swap that index for `.../whl/cpu` and drop the `+cu126`
+local version from the torch pin. `19_esm_embed.py` downloads the 650M-parameter
+ESM-2 checkpoint (~2.5 GB) on first run.
 
 ## Layout
 
@@ -86,13 +111,16 @@ splits/              Tox21 random/scaffold index files, scaffolds.csv,
                      herg_*, davis_*, kiba_* index files             (committed)
 receptors/           <ID>_receptor.pdb, <ID>_ligand.sdf,
                      <ID>_pocket.json                                (committed)
-receptors/benchmark/ 20 EGFR co-crystals: receptor, ligand SDF, JSON (committed)
+receptors/benchmark/ 20 EGFR co-crystals, Phase 2 selection         (committed)
+receptors/benchmark_v2/ 20 self-docking entries, 10 active / 10 inactive (committed)
 results/             metric tables, stats JSON, SUMMARY.md,
                      PHASE2_DECISIONS.md and the Phase 2 reports      (committed)
 figures/             viewer.html, screenshots, chemical-space figures (committed)
+data/processed/checkpoints/  reference model weights             (gitignored)
 src/tox21lib/        importable modules: paths, standardize, featurize,
                      splits, structure, datasets, baseline, dti,
-                     properties, rcsb
+                     properties, rcsb, graphs, models, train,
+                     ablation_data, protein_embed, attribution
 src/NN_*.py          numbered drivers
 ```
 

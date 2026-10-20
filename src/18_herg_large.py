@@ -110,11 +110,20 @@ def main() -> int:
         "tdc_name": TDC_NAME,
         "rows_missing_drug_id": int(missing_id.sum()),
         **std_stats,
+        # `final_molecules` comes from the shared standardizer and counts molecules
+        # that survived parsing, deduplication and filtering - including the ones
+        # whose only label was lost to a tied majority vote. Those carry no label,
+        # so they are dropped before splitting. The splits therefore contain
+        # `full_molecules`, not `final_molecules`; both are recorded under
+        # unambiguous names so no downstream reader has to guess which is which.
+        "standardized_molecules": int(std_stats["final_molecules"]),
         "unlabeled_after_ties_dropped": int(std_stats["final_molecules"] - len(clean_full)),
+        "full_molecules": int(len(clean_full)),
         "tox21_molecules": len(tox21),
         "inchikey_overlap_with_tox21": overlap,
         "inchikey_overlap_pct_of_herg": 100.0 * overlap / len(clean_full),
         "disjoint_removed": overlap,
+        "disjoint_molecules": int(len(clean["disjoint"])),
         "settings": {},
     }
 

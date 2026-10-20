@@ -128,6 +128,6 @@
     "splits/herg_large_full_scaffold_split_seed3.csv": "3f362ba53424daf02883e03b39ae0dbadc7f8e805cf02871741963d12b884684",
     "splits/herg_large_full_scaffold_split_seed4.csv": "f7a15afb5c8e50aecd8198a7cd65ff06ad31a4b7405fbb366f509e90c2fd7f42",
     "results/herg_stats.json": "f1db7d86a906790865f5f208a9a78b00a202a8a8e40fec8b22d4b3cd37e74819",
-    "results/herg_large_stats.json": "a1ee030bd9ac2cb140cf2d1d41111c85dc3b060dd692126e8b504f5ad652c9a1"
+    "results/herg_large_stats.json": "c58127658b2022b03ab5920f798f876f1f4f40451631dedad7b63fb8f0ad5ce8"
   }
 }

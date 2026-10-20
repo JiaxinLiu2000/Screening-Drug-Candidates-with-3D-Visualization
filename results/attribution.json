@@ -8,8 +8,8 @@
   "top_k": 3,
   "top_hits_alert_rate": 0.4087301587301587,
   "fraction_enriched_above_1x": 0.4801587301587302,
-  "median_enrichment": 0.9611916021009186,
-  "median_fraction_of_mass_on_alert": 0.12214439137317155,
+  "median_enrichment": 0.961191480569715,
+  "median_fraction_of_mass_on_alert": 0.12214441331521436,
   "n_diffuse": 0,
   "diffuse_threshold": 0.95,
   "n_off_target": 74,
@@ -17,67 +17,117 @@
     {
       "alert": "aromatic_halide",
       "n": 143,
-      "median_enrichment": 0.8262735652931615,
+      "median_enrichment": 0.8262736344154702,
       "top_hit_rate": 0.3776223776223776
     },
     {
       "alert": "michael_acceptor",
       "n": 63,
-      "median_enrichment": 1.1845575747617307,
+      "median_enrichment": 1.1845572772989545,
       "top_hit_rate": 0.5238095238095238
     },
     {
       "alert": "aromatic_amine",
       "n": 58,
-      "median_enrichment": 0.8521166660477555,
+      "median_enrichment": 0.8521165824290355,
       "top_hit_rate": 0.39655172413793105
     },
     {
       "alert": "epoxide",
       "n": 14,
-      "median_enrichment": 1.3344877680018252,
+      "median_enrichment": 1.3344876658737228,
       "top_hit_rate": 0.7857142857142857
     },
     {
       "alert": "nitroaromatic",
       "n": 9,
-      "median_enrichment": 1.9553007096165345,
+      "median_enrichment": 1.955301932566771,
       "top_hit_rate": 0.7777777777777778
     },
     {
       "alert": "aldehyde",
       "n": 4,
-      "median_enrichment": 2.292807595724592,
+      "median_enrichment": 2.2928072248085587,
       "top_hit_rate": 0.75
     },
     {
       "alert": "para_quinone",
       "n": 2,
-      "median_enrichment": 0.6344013211443842,
+      "median_enrichment": 0.6344011057209691,
       "top_hit_rate": 0.0
     }
   ],
+  "control": {
+    "n_null_draws": 20,
+    "n_molecules": 250,
+    "beats_null_rate": 0.46,
+    "median_percentile_vs_null": 0.5,
+    "per_alert": [
+      {
+        "alert": "aromatic_halide",
+        "n": 143,
+        "median_percentile": 0.45,
+        "beats_null_rate": 0.42657342657342656
+      },
+      {
+        "alert": "michael_acceptor",
+        "n": 61,
+        "median_percentile": 0.65,
+        "beats_null_rate": 0.5901639344262295
+      },
+      {
+        "alert": "aromatic_amine",
+        "n": 58,
+        "median_percentile": 0.525,
+        "beats_null_rate": 0.4827586206896552
+      },
+      {
+        "alert": "epoxide",
+        "n": 14,
+        "median_percentile": 0.475,
+        "beats_null_rate": 0.5714285714285714
+      },
+      {
+        "alert": "nitroaromatic",
+        "n": 9,
+        "median_percentile": 1.0,
+        "beats_null_rate": 1.0
+      },
+      {
+        "alert": "aldehyde",
+        "n": 4,
+        "median_percentile": 0.8,
+        "beats_null_rate": 0.75
+      },
+      {
+        "alert": "para_quinone",
+        "n": 2,
+        "median_percentile": 0.825,
+        "beats_null_rate": 1.0
+      }
+    ]
+  },
   "figures": [
     {
       "kind": "success",
       "path": "figures\\attribution\\example_01_PXUIZULXJVRBPC.png",
       "inchikey": "PXUIZULXJVRBPC-UHFFFAOYSA-N",
       "alerts": "aromatic_halide",
-      "enrichment": 6.291366467261486
+      "enrichment": 6.291368829467582
     },
     {
       "kind": "success",
       "path": "figures\\attribution\\example_02_OWNRRUFOJXFKCU.png",
       "inchikey": "OWNRRUFOJXFKCU-UHFFFAOYSA-N",
       "alerts": "aromatic_halide",
-      "enrichment": 5.236721242758806
+      "enrichment": 5.236722674179588
     },
     {
       "kind": "success",
       "path": "figures\\attribution\\example_03_FGXWKSZFVQUSTL.png",
       "inchikey": "FGXWKSZFVQUSTL-UHFFFAOYSA-N",
       "alerts": "aromatic_halide",
-      "enrichment": 5.094223500426749
+      "enrichment": 5.0942199249636095
     },
     {
       "kind": "success",
@@ -91,28 +141,28 @@
       "path": "figures\\attribution\\example_05_KGFYHTZWPPHNLQ.png",
       "inchikey": "KGFYHTZWPPHNLQ-UHFFFAOYSA-N",
       "alerts": "aromatic_halide",
-      "enrichment": 4.538185102441342
+      "enrichment": 4.538184496398265
     },
     {
       "kind": "success",
       "path": "figures\\attribution\\example_06_AKTXOQVMWSFEBQ.png",
       "inchikey": "AKTXOQVMWSFEBQ-UHFFFAOYSA-N",
       "alerts": "michael_acceptor",
-      "enrichment": 4.072256471878284
+      "enrichment": 4.072255328601736
     },
     {
       "kind": "failure",
       "path": "figures\\attribution\\failure_01_NAUWTFJOPJWYOT.png",
       "inchikey": "NAUWTFJOPJWYOT-UHFFFAOYSA-N",
       "alerts": "aromatic_halide",
-      "enrichment": 0.4952597006634937
+      "enrichment": 0.49526032248066465
     },
     {
       "kind": "failure",
       "path": "figures\\attribution\\failure_02_QTANTQQOYSUMLC.png",
       "inchikey": "QTANTQQOYSUMLC-UHFFFAOYSA-O",
       "alerts": "aromatic_amine",
-      "enrichment": 0.4937048149444386
+      "enrichment": 0.49370486154338705
     }
   ]
 }

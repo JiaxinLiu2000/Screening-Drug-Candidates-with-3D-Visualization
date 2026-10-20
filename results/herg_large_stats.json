@@ -14,11 +14,14 @@
     "too_few_heavy_atoms": 6
   },
   "final_molecules": 11099,
+  "standardized_molecules": 11099,
   "unlabeled_after_ties_dropped": 47,
+  "full_molecules": 11052,
   "tox21_molecules": 6143,
   "inchikey_overlap_with_tox21": 361,
   "inchikey_overlap_pct_of_herg": 3.26637712631198,
   "disjoint_removed": 361,
+  "disjoint_molecules": 10691,
   "settings": {
     "full": {
       "molecules": 11052,

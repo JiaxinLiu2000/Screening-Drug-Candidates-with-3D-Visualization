@@ -1,6 +1,6 @@
 # Data audit
 
-**54 passed, 0 failed, 0 skipped** of 54 checks.
+**59 passed, 0 failed, 0 skipped** of 59 checks.
 
 Produced by `src/15_data_audit.py`. This audit does not re-run the pipeline and does not trust any script's own assertions: it recomputes each quantity from the committed artefacts and checks that independent sources agree — summary statistics against per-fit rows, pocket geometry against ligand coordinates, split partitions against the molecule tables, document text against the source tables, and the dependency lock against the installed environment.
 
@@ -95,7 +95,9 @@ Produced by `src/15_data_audit.py`. This audit does not re-run the pipeline and 
 
 | check | result | measured |
 | --- | --- | --- |
-| no raw or processed data is tracked by git | PASS | tracked data files 0, committed artefacts 261 |
+| no raw or processed data is tracked by git | PASS | tracked data files 0, committed artefacts 264 |
+| every source module compiles | PASS | 42 modules under src/; compileall exit 0 |
+| ablation checkpoints are newer than the metric table they produced | PASS | 6 checkpoints for configs ['A', 'B', 'C', 'D', 'E', 'F']; missing none; stale none |
 
 ## Phase 3 / KIBA overlap
 
@@ -118,6 +120,7 @@ Produced by `src/15_data_audit.py`. This audit does not re-run the pipeline and 
 | --- | --- | --- |
 | split files partition one consistent molecule set | PASS | full {11052} (= 11099 standardized - 47 unlabeled = 11052), disjoint {10691} (= 11052 - 361 shared with Tox21 = 10691); no duplicate keys, no scaffold group spanning subsets |
 | Disjoint really shares no InChIKey with Tox21 | PASS | disjoint shares 0 InChIKeys with Tox21 (full setting shares 361) |
+| molecule-count keys are unambiguous and self-consistent | PASS | 11099 standardized - 47 unlabeled = 11052 full; - 361 shared with Tox21 = 10691 disjoint |
 
 ## Phase 3 / ESM-2
 
@@ -130,6 +133,7 @@ Produced by `src/15_data_audit.py`. This audit does not re-run the pipeline and 
 | check | result | measured |
 | --- | --- | --- |
 | reported coverage recomputes from the per-molecule table | PASS | 252 alert-bearing molecules, top-k hit rate 0.409, median enrichment 0.961; missing figures 0 |
+| the group-masking control agrees with the per-atom result | PASS | whole-alert masking beats the random same-size null in 46.0% of 250 molecules (median percentile 0.50); probes disagree on epoxide n=14, para_quinone n=2; none large enough (n>=50) to indicate a bug: True |
 
 ## Phase 3 / endpoint reliability
 
@@ -138,6 +142,7 @@ Produced by `src/15_data_audit.py`. This audit does not re-run the pipeline and 
 | bootstrap CIs bracket their point estimates | PASS | 24 Tox21 rows carry ROC-AUC CIs (roc_auc_ci_lo/roc_auc_ci_hi); point estimates outside their own interval: 0 |
 | flagged endpoints really hold <20 test positives | PASS | 9 endpoint/split combinations below 20 test positives recomputed from the metric rows; absent from the report: none |
 | the penalty CI is consistent with the point estimate | PASS | macro random-minus-scaffold drop 0.0713 recomputed from the summary table and quoted in the Phase 3 reliability report: True |
+| PR-AUC CIs bracket their point estimates too | PASS | 24 Tox21 rows with PR-AUC CIs; point estimates outside their own interval: 0 |
 
 ## Phase 3 / ablation
 
