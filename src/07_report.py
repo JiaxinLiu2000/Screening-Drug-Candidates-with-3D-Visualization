@@ -86,23 +86,29 @@ def environment() -> list[str]:
     return [f"`{name} {version}`" for name, version in rows]
 
 
-def git_commit() -> str:
-    """Short commit, marked `-dirty` when uncommitted changes are present.
+#: Directories whose contents actually determine the numbers in this document.
+PROVENANCE_PATHS = ("src", "results", "splits", "receptors")
 
-    A document generated from a dirty tree cannot honestly cite a commit as its
-    provenance, and a committed document can never contain its own hash, so the
-    dirty marker is the only accurate answer until `07_report.py` is re-run
-    after the commit that includes it.
+
+def git_commit() -> str:
+    """Commit of the last change to the inputs, plus a dirty marker.
+
+    Citing HEAD would never converge: regenerating this file changes the tree,
+    committing it changes HEAD, and the file's own provenance line is then
+    stale again. The inputs under ``PROVENANCE_PATHS`` are what the numbers come
+    from, so the last commit touching those is both stable under a pure
+    regeneration and the honest answer to "which code produced this".
     """
-    try:
+    def git(*args: str) -> str:
         out = subprocess.run(
-            ["git", "describe", "--always", "--dirty", "--abbrev=7"],
-            cwd=paths.ROOT,
-            capture_output=True,
-            text=True,
-            check=True,
+            ["git", *args], cwd=paths.ROOT, capture_output=True, text=True, check=True
         )
         return out.stdout.strip()
+
+    try:
+        commit = git("log", "-1", "--format=%h", "--abbrev=7", "--", *PROVENANCE_PATHS)
+        dirty = git("status", "--porcelain", "--", *PROVENANCE_PATHS)
+        return f"{commit}-dirty" if dirty else commit
     except Exception:  # noqa: BLE001 - report must not depend on git
         return "n/a"
 
