@@ -73,14 +73,21 @@ def artefacts(with_rf: bool) -> dict[str, list[Path]]:
         ),
     }
     if with_rf:
-        groups["Tox21 + hERG metric tables"] = [
+        groups["Tox21 + hERG + hERG-large metric tables"] = [
             paths.RESULTS / "baseline_metrics.csv",
             paths.RESULTS / "baseline_summary.csv",
         ]
         groups["hERG split index files"] = sorted(
-            paths.SPLITS.glob("herg_*_split_seed*.csv")
+            p for p in paths.SPLITS.glob("herg_*_split_seed*.csv")
+            if not p.name.startswith("herg_large_")
         )
-        groups["hERG stats"] = [paths.RESULTS / "herg_stats.json"]
+        groups["hERG-large split index files"] = sorted(
+            paths.SPLITS.glob("herg_large_*_split_seed*.csv")
+        )
+        groups["hERG + hERG-large stats"] = [
+            paths.RESULTS / "herg_stats.json",
+            paths.RESULTS / "herg_large_stats.json",
+        ]
     return groups
 
 
@@ -138,10 +145,10 @@ def main() -> int:
     scripts = ["02_standardize.py", "03_splits.py"]
     if with_rf:
         # 04 rewrites results/baseline_metrics.csv and baseline_summary.csv from
-        # scratch (Tox21 only), so the hERG external check must re-append its rows
-        # immediately afterwards or the committed tables lose them. 12 is
-        # idempotent: it replaces its own hERG rows rather than duplicating them.
-        scripts += ["04_baseline_rf.py", "12_herg_baseline.py"]
+        # scratch (Tox21 only), so every dataset that appends to those tables must
+        # re-append immediately afterwards, in order, or the committed tables lose
+        # rows. Both appenders are idempotent: they replace their own rows.
+        scripts += ["04_baseline_rf.py", "12_herg_baseline.py", "18_herg_large.py"]
     scripts.append("05_egfr_structure.py")
 
     print(f"Re-running {len(scripts)} scripts with {sys.executable}")

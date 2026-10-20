@@ -124,9 +124,18 @@ def main() -> int:
     dis_drop = float(hl.loc[("disjoint", "random"), "roc_auc_mean"]
                      - hl.loc[("disjoint", "scaffold"), "roc_auc_mean"])
     n_full = herg["final_molecules"] - herg["unlabeled_after_ties_dropped"]
+    herg_pos_rate = herg.get("positive_rate") or herg.get("full", {}).get(
+        "positive_rate") or herg.get("settings", {}).get("full", {}).get(
+        "positive_rate")
+    if herg_pos_rate is None:
+        flat = json.dumps(herg)
+        raise SystemExit(
+            "FAILED: no positive_rate in herg_large_stats.json; keys "
+            + ", ".join(sorted(herg))
+        )
     add(f"**Yes — and the small set's contradiction was a sample-size artefact.** The "
         f"Karim hERG set standardizes to {n_full} molecules at a "
-        f"{herg['positive_rate']:.1%} positive rate, sharing only "
+        f"{herg_pos_rate:.1%} positive rate, sharing only "
         f"{herg['disjoint_removed']} InChIKeys with Tox21 "
         f"({herg['disjoint_removed'] / n_full:.1%}). Its random-to-scaffold ROC-AUC "
         f"drop is **{full_drop:.4f}** in the Full setting and **{dis_drop:.4f}** in "
@@ -143,16 +152,14 @@ def main() -> int:
 
     add("## 4. Which endpoints will we decline to interpret, and does 0.0713 survive?")
     add("")
-    flagged = reliability.get("flagged_endpoints") or reliability.get("flagged") or []
+    flagged = reliability.get("flagged", [])
     flag_text = ", ".join(
-        f"{f['split']}/{f['endpoint']} (min {f.get('n_test_pos_min', f.get('min'))})"
+        f"{f['split']}/{f['endpoint']} (min {f['n_test_pos_min']})"
         if isinstance(f, dict) else str(f)
         for f in flagged
     ) or "see results/endpoint_reliability.md"
-    diff = reliability.get("macro_difference") or reliability.get("difference") or {}
-    roc_diff = diff.get("roc_auc", diff)
-    lo = roc_diff.get("ci_low", roc_diff.get("low"))
-    hi = roc_diff.get("ci_high", roc_diff.get("high"))
+    diff = reliability["difference_random_minus_scaffold"]["roc_auc"]
+    lo, hi = diff["ci"]
     ci_text = (f"[{lo:.4f}, {hi:.4f}]" if isinstance(lo, (int, float)) else "see the report")
     add(f"**The penalty survives; nine endpoint/split combinations are flagged.** "
         f"Bootstrapping each test fold 1000 times within every seed (resampling "
@@ -188,9 +195,19 @@ def main() -> int:
         f"configuration D otherwise changes two things at once. The random forest "
         f"floor remains {rf_tox:.4f} macro ROC-AUC on toxicity and Pearson "
         f"{rf_kiba_r:.4f} on KIBA-random. The loss-weight grid is reported in full in "
-        f"`results/shared_encoder_ablation.md`; read it together with the Task 1 "
-        f"overlap figure of {cross:.4f}, which is the distributional context any null "
-        f"result here has to be interpreted against.")
+        f"`results/shared_encoder_ablation.md`, and it matters: the weight-1 cell "
+        f"is the worst case for sharing. The best sweep cells reach "
+        f"{ablation['best_weight_cells']['C_tox']['value']:.4f} toxicity "
+        f"(w={ablation['best_weight_cells']['C_tox']['loss_weight']:g}) and "
+        f"{ablation['best_weight_cells']['C_affinity']['value']:.4f} affinity Pearson "
+        f"(w={ablation['best_weight_cells']['C_affinity']['loss_weight']:g}), both "
+        f"within seed noise of single-task training, on "
+        f"{ablation['best_weight_cells']['C_tox']['seeds']} seeds rather than 5. So "
+        f"the defensible claim is narrower than 'sharing hurts': sharing at the "
+        f"default weight hurts, tuned sharing is neutral, and no cell beats "
+        f"single-task by more than noise. Read it together with the Task 1 overlap "
+        f"figure of {cross:.4f}, which is the distributional context any null result "
+        f"here has to be interpreted against.")
     add("")
 
     add("## 6. Does atom attribution recover known alerts, and where does it fail?")

@@ -36,8 +36,8 @@
         "random": 0.7229180898462744,
         "scaffold": 0.6073907939314251
       },
-      "roc_auc_drop": 0.052573897441070105,
-      "drop_ratio_to_tox21": 0.7375125163926095,
+      "roc_auc_drop": 0.05257389740000007,
+      "drop_ratio_to_tox21": 0.7375125156710147,
       "verdict": "corroborates",
       "nn_tanimoto_gap": 0.11552729591484923
     },
@@ -57,8 +57,8 @@
         "random": 0.7227412574996361,
         "scaffold": 0.6131648132892803
       },
-      "roc_auc_drop": 0.04265314237338669,
-      "drop_ratio_to_tox21": 0.5983430541574163,
+      "roc_auc_drop": 0.04265314230000006,
+      "drop_ratio_to_tox21": 0.5983430530099291,
       "verdict": "corroborates",
       "nn_tanimoto_gap": 0.10957644421035584
     }
@@ -265,8 +265,8 @@
       "scaffold_groups_spanning_subsets": 0
     }
   ],
-  "tox21_drop": 0.0712854307859404,
-  "herg_small_drop": -0.008815785073525095,
+  "tox21_drop": 0.07128543080000005,
+  "herg_small_drop": -0.008815785099999918,
   "tox21_scaffolds_per_molecule": 0.3509685821259971,
   "tox21_nn_tanimoto_gap": 0.14497800000000005
 }

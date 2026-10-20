@@ -1,0 +1,49 @@
+{
+  "verdict": "shared encoding does not help, and the chemical-space measurement explains why",
+  "toxicity_macro_roc_auc": {
+    "A": 0.7688613478956422,
+    "C": 0.6819988074794864,
+    "D": 0.7618634227449604,
+    "E": 0.760285208002543
+  },
+  "affinity_pearson_random": {
+    "B": 0.7310460329055786,
+    "C": 0.6906622648239136,
+    "D": 0.6737200498580933,
+    "F": 0.679128634929657
+  },
+  "effect_of_sharing_scratch_tox": -0.08686254041615582,
+  "effect_of_sharing_scratch_affinity": -0.040383768081664995,
+  "effect_of_sharing_pretrained_tox": 0.001578214742417483,
+  "effect_of_sharing_pretrained_affinity": -0.005408585071563721,
+  "best_weight_cells": {
+    "C_tox": {
+      "value": 0.745307272051531,
+      "loss_weight": 0.1,
+      "seeds": 2
+    },
+    "C_affinity": {
+      "value": 0.7563118040561676,
+      "loss_weight": 0.5,
+      "seeds": 2
+    },
+    "D_tox": {
+      "value": 0.7690913602030138,
+      "loss_weight": 0.1,
+      "seeds": 2
+    },
+    "D_affinity": {
+      "value": 0.6962399780750275,
+      "loss_weight": 0.5,
+      "seeds": 2
+    }
+  },
+  "effect_of_sharing_best_weight_tox": -0.023554075844111177,
+  "effect_of_sharing_best_weight_affinity": 0.025265771150589034,
+  "hurts_at_default_weight": true,
+  "neutral_when_tuned": true,
+  "tox_noise_floor": 0.031049615348342576,
+  "affinity_noise_floor": 0.06584661239121983,
+  "rf_tox_macro_roc_auc": 0.761079526,
+  "n_runs": 76
+}

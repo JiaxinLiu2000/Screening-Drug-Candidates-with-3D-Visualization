@@ -159,13 +159,40 @@ def main() -> int:
     aff_noise = np.nanmax([seed_std("B", "affinity_pearson_r", "random"),
                            seed_std("C", "affinity_pearson_r", "random")])
 
-    shared_helps_tox = (c_tox - a) > tox_noise
-    shared_helps_aff = (c_aff - b_aff) > aff_noise
+    # The sweep is part of the evidence, not decoration: at weight 1 the shared GIN
+    # is clearly worse, but the best-weight cell is a different claim. Judging only
+    # the default weight would report "sharing hurts" when the honest statement is
+    # "sharing at weight 1 hurts; tuned, it is neutral".
+    def best_cell(cfg: str, column: str, higher_better: bool = True):
+        sub = sweep[sweep["config"] == cfg]
+        if sub.empty:
+            return float("nan"), float("nan"), 0
+        grouped = sub.groupby("loss_weight")[column].agg(["mean", "size"])
+        grouped = grouped.dropna()
+        if grouped.empty:
+            return float("nan"), float("nan"), 0
+        row = grouped["mean"].idxmax() if higher_better else grouped["mean"].idxmin()
+        return float(grouped.loc[row, "mean"]), float(row), int(grouped.loc[row, "size"])
+
+    c_tox_best, c_tox_w, c_tox_n = best_cell("C", "tox_macro_roc_auc")
+    c_aff_best, c_aff_w, c_aff_n = best_cell("C", "affinity_pearson_r")
+    d_tox_best, d_tox_w, d_tox_n = best_cell("D", "tox_macro_roc_auc")
+    d_aff_best, d_aff_w, d_aff_n = best_cell("D", "affinity_pearson_r")
+
+    shared_helps_tox = max(c_tox - a, c_tox_best - a) > tox_noise
+    shared_helps_aff = max(c_aff - b_aff, c_aff_best - b_aff) > aff_noise
     pretrained_shared_helps_tox = (
-        (d_tox - e_tox) > tox_noise if not np.isnan(e_tox) else False
+        max(d_tox - e_tox, d_tox_best - e_tox) > tox_noise
+        if not np.isnan(e_tox) else False
     )
     pretrained_shared_helps_aff = (
-        (d_aff - f_aff) > aff_noise if not np.isnan(f_aff) else False
+        max(d_aff - f_aff, d_aff_best - f_aff) > aff_noise
+        if not np.isnan(f_aff) else False
+    )
+
+    hurts_at_default = (a - c_tox) > tox_noise or (b_aff - c_aff) > aff_noise
+    neutral_when_tuned = (
+        abs(c_tox_best - a) <= tox_noise and abs(c_aff_best - b_aff) <= aff_noise
     )
 
     if shared_helps_tox or shared_helps_aff:
@@ -198,10 +225,28 @@ def main() -> int:
     if not np.isnan(e_tox):
         add(f"| **effect of sharing, pretrained (D − E / D − F)** | "
             f"**{d_tox - e_tox:+.4f}** | **{d_aff - f_aff:+.4f}** |")
+    add(f"| shared, from scratch, best loss weight (C @ w={c_tox_w:g} / "
+        f"w={c_aff_w:g}) | {c_tox_best:.4f} | {c_aff_best:.4f} |")
+    add(f"| **effect of sharing at the best weight (C − A / C − B)** | "
+        f"**{c_tox_best - a:+.4f}** | **{c_aff_best - b_aff:+.4f}** |")
     add("")
     add(f"Largest seed-to-seed standard deviation used as the noise floor: "
         f"{tox_noise:.4f} (toxicity macro ROC-AUC), {aff_noise:.4f} (affinity "
         f"Pearson r). A difference is only called an effect if it exceeds that.")
+    add("")
+    add(f"**The default loss weight is doing most of the damage.** At weight 1 the "
+        f"shared GIN is clearly worse than single-task ({c_tox - a:+.4f} toxicity, "
+        f"{c_aff - b_aff:+.4f} affinity), but its best sweep cells reach "
+        f"{c_tox_best:.4f} toxicity (w={c_tox_w:g}, {c_tox_n} seeds) and "
+        f"{c_aff_best:.4f} affinity Pearson (w={c_aff_w:g}, {c_aff_n} seeds), both "
+        f"within the seed noise of the single-task configurations. The accurate "
+        f"statement is therefore: sharing at the default weight hurts; with the "
+        f"weight tuned down it is neutral; at no weight does it beat single-task "
+        f"training by more than seed noise. Sweep cells use fewer seeds than the "
+        f"main comparison, so they are the weaker evidence of the two."
+        if hurts_at_default and neutral_when_tuned else
+        f"Best sweep cells: C reaches {c_tox_best:.4f} toxicity (w={c_tox_w:g}) and "
+        f"{c_aff_best:.4f} affinity Pearson (w={c_aff_w:g}).")
     add("")
     add(f"Chemical-space context (Task 1): the median nearest-neighbour Tanimoto from "
         f"Tox21 to KIBA is {nn['tox21_to_kiba']['median']:.4f} against within-set "
@@ -230,6 +275,20 @@ def main() -> int:
                 "effect_of_sharing_scratch_affinity": c_aff - b_aff,
                 "effect_of_sharing_pretrained_tox": d_tox - e_tox,
                 "effect_of_sharing_pretrained_affinity": d_aff - f_aff,
+                "best_weight_cells": {
+                    "C_tox": {"value": c_tox_best, "loss_weight": c_tox_w,
+                              "seeds": c_tox_n},
+                    "C_affinity": {"value": c_aff_best, "loss_weight": c_aff_w,
+                                   "seeds": c_aff_n},
+                    "D_tox": {"value": d_tox_best, "loss_weight": d_tox_w,
+                              "seeds": d_tox_n},
+                    "D_affinity": {"value": d_aff_best, "loss_weight": d_aff_w,
+                                   "seeds": d_aff_n},
+                },
+                "effect_of_sharing_best_weight_tox": c_tox_best - a,
+                "effect_of_sharing_best_weight_affinity": c_aff_best - b_aff,
+                "hurts_at_default_weight": bool(hurts_at_default),
+                "neutral_when_tuned": bool(neutral_when_tuned),
                 "tox_noise_floor": float(tox_noise),
                 "affinity_noise_floor": float(aff_noise),
                 "rf_tox_macro_roc_auc": float(rf_tox["roc_auc_mean"]),

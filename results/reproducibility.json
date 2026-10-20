@@ -5,6 +5,7 @@
     "03_splits.py",
     "04_baseline_rf.py",
     "12_herg_baseline.py",
+    "18_herg_large.py",
     "05_egfr_structure.py"
   ],
   "environment": {
@@ -16,52 +17,58 @@
     "numpy": "2.4.6",
     "gemmi": "0.7.5"
   },
-  "n_artefacts": 36,
-  "n_identical": 36,
+  "n_artefacts": 57,
+  "n_identical": 57,
   "differing": [],
   "group_failures": [],
   "checks": [
     {
       "artefact": "Tox21 split index files",
       "n_files": 11,
-      "check": "SHA-256 before vs after re-running 02, 03, 04, 12, 05",
+      "check": "SHA-256 before vs after re-running 02, 03, 04, 12, 18, 05",
       "result": "identical (11 files)"
     },
     {
       "artefact": "cleaned molecule table",
       "n_files": 1,
-      "check": "SHA-256 before vs after re-running 02, 03, 04, 12, 05",
+      "check": "SHA-256 before vs after re-running 02, 03, 04, 12, 18, 05",
       "result": "identical (1 file)"
     },
     {
       "artefact": "standardization + split stats",
       "n_files": 5,
-      "check": "SHA-256 before vs after re-running 02, 03, 04, 12, 05",
+      "check": "SHA-256 before vs after re-running 02, 03, 04, 12, 18, 05",
       "result": "identical (5 files)"
     },
     {
       "artefact": "EGFR receptors, ligand SDFs, pocket JSON",
       "n_files": 6,
-      "check": "SHA-256 before vs after re-running 02, 03, 04, 12, 05",
+      "check": "SHA-256 before vs after re-running 02, 03, 04, 12, 18, 05",
       "result": "identical (6 files)"
     },
     {
-      "artefact": "Tox21 + hERG metric tables",
+      "artefact": "Tox21 + hERG + hERG-large metric tables",
       "n_files": 2,
-      "check": "SHA-256 before vs after re-running 02, 03, 04, 12, 05",
+      "check": "SHA-256 before vs after re-running 02, 03, 04, 12, 18, 05",
       "result": "identical (2 files)"
     },
     {
       "artefact": "hERG split index files",
       "n_files": 10,
-      "check": "SHA-256 before vs after re-running 02, 03, 04, 12, 05",
+      "check": "SHA-256 before vs after re-running 02, 03, 04, 12, 18, 05",
       "result": "identical (10 files)"
     },
     {
-      "artefact": "hERG stats",
-      "n_files": 1,
-      "check": "SHA-256 before vs after re-running 02, 03, 04, 12, 05",
-      "result": "identical (1 file)"
+      "artefact": "hERG-large split index files",
+      "n_files": 20,
+      "check": "SHA-256 before vs after re-running 02, 03, 04, 12, 18, 05",
+      "result": "identical (20 files)"
+    },
+    {
+      "artefact": "hERG + hERG-large stats",
+      "n_files": 2,
+      "check": "SHA-256 before vs after re-running 02, 03, 04, 12, 18, 05",
+      "result": "identical (2 files)"
     }
   ],
   "hashes": {
@@ -88,8 +95,8 @@
     "receptors/4HJO_ligand.sdf": "b11a0fa52251f202ea2ca54c892b86481247a7905e993c1f39fe10bcb67331ae",
     "receptors/4HJO_pocket.json": "310b9bc9c17a13d929673a2336237b60fade37450d0cfa76849e26726d8d2c1e",
     "receptors/4HJO_receptor.pdb": "7a5a68eff08859f584b2d3b21fd6542527287be8f6ebb611e77231ad740e6625",
-    "results/baseline_metrics.csv": "a4001c766afb8470985a2fc311157f357e7133d92a1408ebcd77781c74c9880c",
-    "results/baseline_summary.csv": "e5ed38963fb40f927d10a04466ed02259a3affa4c25c25544c68e9fc4dc951ed",
+    "results/baseline_metrics.csv": "f94f69934041360da94a55ebc5f8d5c6318882ad75b8d816c12bafab1552871a",
+    "results/baseline_summary.csv": "f4eea5b355ad3dc0f90e12091dff1c606acffeb19e8c2509af25385b19ab8634",
     "splits/herg_random_split_seed0.csv": "caebd764c17494ce8da4c698d17de34f69fa1c27dbb47b72cb6ca5af04d0d312",
     "splits/herg_random_split_seed1.csv": "e191d6c152abe497148532f21d95d52f3307e338e51a4f7441fe7153687bad4b",
     "splits/herg_random_split_seed2.csv": "fa3ffd53cbd318df555f6ba58e461912ab35e2d068e9d1650431479463d34889",
@@ -100,6 +107,27 @@
     "splits/herg_scaffold_split_seed2.csv": "e7dc8718aeee5ab325c0257b8109491e61789168dae81533603d994b645c4e29",
     "splits/herg_scaffold_split_seed3.csv": "742b1e01b087df09592d2efc1f2508bc987f83c9c4a32439f460f051eba1f0cd",
     "splits/herg_scaffold_split_seed4.csv": "0ab405137aa1de935d6f9862ce6ba30e78f8674bbed71292e8385f549314ca26",
-    "results/herg_stats.json": "f1db7d86a906790865f5f208a9a78b00a202a8a8e40fec8b22d4b3cd37e74819"
+    "splits/herg_large_disjoint_random_split_seed0.csv": "cc514fe0bb00701a55615a1e027fae5abcdf10096f1c6a06d62e5ad6cc8750fb",
+    "splits/herg_large_disjoint_random_split_seed1.csv": "e8c179f4fcdaef9420495fa03fc71c28e6c9de38718c82d4317429e34215b118",
+    "splits/herg_large_disjoint_random_split_seed2.csv": "e83a2e709e7018c400963c2cc01d58e1d38877dbc5aad3fa511c54efc76dcb3f",
+    "splits/herg_large_disjoint_random_split_seed3.csv": "d4e198b55cf3ef2a5724ab69de20f5ab6519d4874105631e22c77f3fdb49002d",
+    "splits/herg_large_disjoint_random_split_seed4.csv": "d230118829d82581d800f8a88e8dc431b63d6eccc1a7c0cdf673dec3003c7037",
+    "splits/herg_large_disjoint_scaffold_split_seed0.csv": "463afd1c204282ab8cf7e559189134c91196ab1ddfc49ce3466915a9c72cd867",
+    "splits/herg_large_disjoint_scaffold_split_seed1.csv": "ec409e0729b5178801b7a28be784b2e75e4686de0642b485b04009bec0ee7316",
+    "splits/herg_large_disjoint_scaffold_split_seed2.csv": "302e192158ff007cf7f1cf9f3719492095d2eaf04b4b795448f69c97b3283f5d",
+    "splits/herg_large_disjoint_scaffold_split_seed3.csv": "df23bfd701ba8479d7c1b71322c2d06e1b2b881a1e8e1dc44b9cc7fb7f810830",
+    "splits/herg_large_disjoint_scaffold_split_seed4.csv": "5b780bcecc4222180e205564d483216b271af1180378cfe659113189b903b170",
+    "splits/herg_large_full_random_split_seed0.csv": "429cad7f43b87a549349b1b4bc813478e1bd4e6e967699e7b1c3f76efa2a4a85",
+    "splits/herg_large_full_random_split_seed1.csv": "2a140bf1adcd9a9a2f7fdc874e5dcc99e10cdf4ae442ad7006bbbf56f2336add",
+    "splits/herg_large_full_random_split_seed2.csv": "404b74686e520b5ab4305bee67d423dc188c71c2cb6dcc55ce4c43fd2cb73366",
+    "splits/herg_large_full_random_split_seed3.csv": "3bac101029813e5d97d74a9b6c47d639ceec265f88832950a99f5c802f14d6bc",
+    "splits/herg_large_full_random_split_seed4.csv": "e5210c37b4ad98e613053831b810e6bd21a31bb4b859f81603c271d4eb09adc3",
+    "splits/herg_large_full_scaffold_split_seed0.csv": "950728c252224d58ff8b029306aeddb9a5642d6a96594bf56b5308fb6c756a0d",
+    "splits/herg_large_full_scaffold_split_seed1.csv": "f4a8d47e91394672d9404e0c9c0dc9087027f16dc7c5a69e75a375ceeee21e79",
+    "splits/herg_large_full_scaffold_split_seed2.csv": "a74681122f4fad2b99b9fe90fe3ed438bfead604cafc66110e5fcbee77b8e934",
+    "splits/herg_large_full_scaffold_split_seed3.csv": "3f362ba53424daf02883e03b39ae0dbadc7f8e805cf02871741963d12b884684",
+    "splits/herg_large_full_scaffold_split_seed4.csv": "f7a15afb5c8e50aecd8198a7cd65ff06ad31a4b7405fbb366f509e90c2fd7f42",
+    "results/herg_stats.json": "f1db7d86a906790865f5f208a9a78b00a202a8a8e40fec8b22d4b3cd37e74819",
+    "results/herg_large_stats.json": "a1ee030bd9ac2cb140cf2d1d41111c85dc3b060dd692126e8b504f5ad652c9a1"
   }
 }

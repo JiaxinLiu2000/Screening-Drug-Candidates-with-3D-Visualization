@@ -1,6 +1,6 @@
 # Data audit
 
-**50 passed, 0 failed, 0 skipped** of 50 checks.
+**54 passed, 0 failed, 0 skipped** of 54 checks.
 
 Produced by `src/15_data_audit.py`. This audit does not re-run the pipeline and does not trust any script's own assertions: it recomputes each quantity from the committed artefacts and checks that independent sources agree — summary statistics against per-fit rows, pocket geometry against ligand coordinates, split partitions against the molecule tables, document text against the source tables, and the dependency lock against the installed environment.
 
@@ -30,7 +30,7 @@ Produced by `src/15_data_audit.py`. This audit does not re-run the pipeline and 
 | --- | --- | --- |
 | row counts per dataset are the full grid | PASS | rows per dataset {'Tox21': 120, 'hERG': 10, 'hERG-large': 20}; per (dataset, setting) {('Tox21', 'standard'): 120, ('hERG', 'standard'): 10, ('hERG-large', 'disjoint'): 10, ('hERG-large', 'full'): 10} |
 | every AUC is in [0, 1] and fold counts are consistent | PASS | out-of-range AUCs 0, impossible positive counts 0; ROC-AUC range 0.6120-0.9580 |
-| summary mean/std recompute exactly from the per-fit rows | PASS | largest absolute discrepancy over 38 summary rows: 2.22e-16 |
+| summary mean/std recompute exactly from the per-fit rows | PASS | largest absolute discrepancy over 38 summary rows: 4.94e-11 |
 | the macro row is the mean over endpoints, not over fits | PASS | random 0.8324 +/- 0.0181; scaffold 0.7611 +/- 0.0227 |
 
 ## hERG
@@ -83,7 +83,7 @@ Produced by `src/15_data_audit.py`. This audit does not re-run the pipeline and 
 | check | result | measured |
 | --- | --- | --- |
 | headline numbers quoted in the markdown match their source tables | PASS | checked 4 headline values across SUMMARY.md, RESULTS.md, PHASE2_DECISIONS.md; mismatches none |
-| reproducibility record reports a complete, all-identical run | PASS | 36/36 identical across 7 groups, scripts 5 |
+| reproducibility record reports a complete, all-identical run | PASS | 57/57 identical across 8 groups, scripts 6 |
 
 ## Environment
 
@@ -95,7 +95,7 @@ Produced by `src/15_data_audit.py`. This audit does not re-run the pipeline and 
 
 | check | result | measured |
 | --- | --- | --- |
-| no raw or processed data is tracked by git | PASS | tracked data files 0, committed artefacts 148 |
+| no raw or processed data is tracked by git | PASS | tracked data files 0, committed artefacts 261 |
 
 ## Phase 3 / KIBA overlap
 
@@ -129,7 +129,7 @@ Produced by `src/15_data_audit.py`. This audit does not re-run the pipeline and 
 
 | check | result | measured |
 | --- | --- | --- |
-| reported coverage recomputes from the per-molecule table | PASS | 252 alert-bearing molecules, top-k hit rate 0.317, median enrichment 0.838; missing figures 0 |
+| reported coverage recomputes from the per-molecule table | PASS | 252 alert-bearing molecules, top-k hit rate 0.409, median enrichment 0.961; missing figures 0 |
 
 ## Phase 3 / endpoint reliability
 
@@ -138,6 +138,15 @@ Produced by `src/15_data_audit.py`. This audit does not re-run the pipeline and 
 | bootstrap CIs bracket their point estimates | PASS | 24 Tox21 rows carry ROC-AUC CIs (roc_auc_ci_lo/roc_auc_ci_hi); point estimates outside their own interval: 0 |
 | flagged endpoints really hold <20 test positives | PASS | 9 endpoint/split combinations below 20 test positives recomputed from the metric rows; absent from the report: none |
 | the penalty CI is consistent with the point estimate | PASS | macro random-minus-scaffold drop 0.0713 recomputed from the summary table and quoted in the Phase 3 reliability report: True |
+
+## Phase 3 / ablation
+
+| check | result | measured |
+| --- | --- | --- |
+| every configuration ran the full seed grid | PASS | main-comparison runs per config {'A': 5, 'B': 15, 'C': 15, 'D': 15, 'E': 5, 'F': 5} (expected {'A': 5, 'B': 15, 'C': 15, 'D': 15, 'E': 5, 'F': 5}); 76 runs in total |
+| reported means recompute from the per-run table | PASS | largest discrepancy between report and per-run means: 0.00e+00 |
+| the verdict follows from the measured effects | PASS | effects: scratch -0.0869/-0.0404, best-weight -0.0236/+0.0253, pretrained +0.0016/-0.0054 against noise floors 0.0310/0.0658 -> "shared encoding does not help, and the chemical-space measurement explains why" |
+| neural configurations are evaluated on the committed folds | PASS | test-fold sizes identical to the random-forest runs for every KIBA split and seed; mismatches none |
 
 ## Verdict
 

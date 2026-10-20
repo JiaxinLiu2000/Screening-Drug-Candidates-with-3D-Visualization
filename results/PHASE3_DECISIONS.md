@@ -1,0 +1,37 @@
+# Phase 3 decisions
+
+Read this before writing the report's discussion. Every number below is measured; the artefact behind each claim is named. Produced by `src/24_phase3_decisions.py`.
+
+## 1. Does the KIBA overlap measurement change the shared-encoder design?
+
+**Yes — the Davis verdict does not survive, and the calibration reference changes how 0.1667 should be read.** Measured against KIBA's 2030 standardized drugs instead of Davis's 68, the median nearest-neighbour Tanimoto from Tox21 rises from 0.1667 to **0.2597**, which lands in the **weak overlap** band (0.25-0.4) rather than the negligible one. 23 InChIKeys are shared outright. The calibration reference cuts the other way, though: the within-set nearest-neighbour medians are 0.6000 for Tox21 and 0.7143 for KIBA, so the cross-set figure is 0.43x the within-Tox21 value. Molecules in each set find much closer neighbours inside their own set, so 0.2597 is not simply the floor of the Morgan metric for any two large diverse sets — the gap is real, just narrower than Davis suggested. Design consequence: keep the shared-encoder experiment, expect modest gains, and report the overlap figure next to the result so a null is not misread as evidence about task relatedness (`results/chemical_space_overlap_kiba.md`).
+
+## 2. Is the rebuilt docking benchmark adequate, and what is the balance?
+
+**Yes, and the Phase 2 worry was an artefact of our own ranking.** Querying the same quality filters and measuring the salt bridge on every entry that passed showed the active population is not scarce: of the entries clearing resolution, ligand-size, pocket-gap and CCD-mapping filters, the majority are active-state — Phase 2's 17/20 inactive came from ranking candidates by resolution alone, because the inactive structures happen to diffract better. The rebuilt set is **10 active / 10 inactive**, each entry self-contained for self-docking: cognate receptor, cognate ligand pose with CCD-derived bond orders, and a pocket box from its own ligand. Ligand diversity holds up: 190 pairs with median Tanimoto 0.171 and 6 pairs above 0.7. One caveat belongs in the report: active entries are systematically lower-resolution with higher pocket B-factors, so any per-state RMSD difference is confounded with site quality and must be reported as such (`results/docking_benchmark_v2.md`).
+
+## 3. Does the large hERG set corroborate the Tox21 penalty?
+
+**Yes — and the small set's contradiction was a sample-size artefact.** The Karim hERG set standardizes to 11052 molecules at a 49.5% positive rate, sharing only 361 InChIKeys with Tox21 (3.3%). Its random-to-scaffold ROC-AUC drop is **0.0526** in the Full setting and **0.0427** in the Disjoint setting, against Tox21's 0.0713 — ratios of 0.74 and 0.60. The 588-molecule version had reported -0.0088, i.e. the scaffold split scoring *higher*, but its test folds held 58-59 molecules and the seed spread was roughly seven times the gap; at 11k molecules the seed spread (0.005-0.016) is far below the drop. Removing the Tox21-shared molecules barely moves the result, so the penalty is not an artefact of dataset overlap. The scaffold-split penalty generalises beyond Tox21 (`results/herg_large_baseline.md`).
+
+## 4. Which endpoints will we decline to interpret, and does 0.0713 survive?
+
+**The penalty survives; nine endpoint/split combinations are flagged.** Bootstrapping each test fold 1000 times within every seed (resampling molecules, not refitting) puts the paired 95% confidence interval on the macro random-minus-scaffold ROC-AUC difference at **[0.0510, 0.0919]**, excluding zero, so the 0.0713 penalty is not a sampling artefact. The endpoints whose test folds hold fewer than 20 positives in at least one seed are: random/NR-AR (min 16), random/NR-AR-LBD (min 14), random/NR-PPAR-gamma (min 11), random/SR-ATAD5 (min 15), scaffold/NR-AR (min 17), scaffold/NR-AR-LBD (min 9), scaffold/NR-ER-LBD (min 12), scaffold/NR-PPAR-gamma (min 17), scaffold/SR-ATAD5 (min 17). Rule we will follow, stated in the report: endpoints below the 20-positive threshold are included in the macro average but not interpreted individually. Note the bootstrap covers test-set sampling only — not retraining variance or split choice (`results/endpoint_reliability.md`).
+
+## 5. Which shared-encoder outcome did we observe?
+
+**Shared encoding does not help, and the chemical-space measurement explains why.** On the Tox21 scaffold split the single-task GIN (A) reaches 0.7689 macro ROC-AUC and the shared GIN (C) 0.6820, a change of -0.0869 against a seed-to-seed noise floor of 0.0310; on KIBA's random split the affinity-only GIN (B) reaches Pearson 0.7310 and C 0.6907 (-0.0404, noise floor 0.0658). With the pretrained encoder the same contrast is +0.0016 (toxicity) and -0.0054 (affinity) against the pretrained single-task controls E and F, which exist precisely because configuration D otherwise changes two things at once. The random forest floor remains 0.7611 macro ROC-AUC on toxicity and Pearson 0.7841 on KIBA-random. The loss-weight grid is reported in full in `results/shared_encoder_ablation.md`, and it matters: the weight-1 cell is the worst case for sharing. The best sweep cells reach 0.7453 toxicity (w=0.1) and 0.7563 affinity Pearson (w=0.5), both within seed noise of single-task training, on 2 seeds rather than 5. So the defensible claim is narrower than 'sharing hurts': sharing at the default weight hurts, tuned sharing is neutral, and no cell beats single-task by more than noise. Read it together with the Task 1 overlap figure of 0.2597, which is the distributional context any null result here has to be interpreted against.
+
+## 6. Does atom attribution recover known alerts, and where does it fail?
+
+**Only for the reactive alerts — the aggregate number hides a real split, and the demo should show the stratification rather than the average.** Across 252 alert-bearing test molecules the median enrichment of attribution mass on alert atoms is 0.96x uniform and the top-3 atoms touch the alert in 40.9% of molecules — unimpressive on its own. Broken down by alert, the electrophilic toxicophores do work: michael_acceptor 1.18x (52% top-k hit, n=63); epoxide 1.33x (79% top-k hit, n=14); nitroaromatic 1.96x (78% top-k hit, n=9); aldehyde 2.29x (75% top-k hit, n=4). The aggregate is dragged down by aromatic_halide 0.83x (n=143); aromatic_amine 0.85x (n=58); para_quinone 0.63x (n=2) — aromatic halides alone account for the largest group, and masking a single halogen barely perturbs the graph. Failure modes are reported with figures: 0 molecules give attribution spread almost uniformly over every atom (normalised entropy above 0.95), and 74 put their top atoms outside the alert while carrying less than half the uniform share of mass on it. Verdict for the demo: ship it for nitroaromatics and Michael acceptors with the enrichment number on screen, and do not claim general atom-level explanation (`results/attribution.md`).
+
+---
+
+## What changed from Phase 2
+
+- Chemical-space overlap: **negligible -> weak overlap** (0.1667 against 68 Davis drugs -> 0.2597 against 2030 KIBA drugs), with within-set calibration added.
+- Docking benchmark: **3/17 active -> 10/10**, restructured for self-docking into cognate receptors.
+- hERG: **diverges -> corroborates** (-0.0088 on 588 molecules -> +0.0526 on 11052).
+- Endpoint reliability: the 0.0713 penalty now carries a paired bootstrap CI of [0.0510, 0.0919].
+

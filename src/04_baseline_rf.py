@@ -59,9 +59,15 @@ def main() -> int:
         ),
     )
     print(f"  [{time.time() - t0:.0f}s for {len(metrics)} fits]")
+
+    # The shared tables are keyed by (dataset, setting); Phase 3 added hERG-large
+    # rows with settings `full`/`disjoint`. This script owns only the Tox21 rows,
+    # so it writes them with `standard` and the later scripts append their own.
+    metrics.insert(1, "setting", "standard")
     metrics.to_csv(paths.RESULTS / "baseline_metrics.csv", index=False)
 
-    summary = baseline.summarize(metrics)
+    summary = baseline.summarize(metrics.drop(columns="setting"))
+    summary.insert(1, "setting", "standard")
     summary.to_csv(paths.RESULTS / "baseline_summary.csv", index=False)
 
     per_endpoint = summary[summary["level"] == "endpoint"]

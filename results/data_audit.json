@@ -1,5 +1,5 @@
 {
-  "n_pass": 50,
+  "n_pass": 54,
   "n_fail": 0,
   "n_skip": 0,
   "checks": [
@@ -79,7 +79,7 @@
       "section": "Classification metrics",
       "name": "summary mean/std recompute exactly from the per-fit rows",
       "status": "PASS",
-      "detail": "largest absolute discrepancy over 38 summary rows: 2.22e-16"
+      "detail": "largest absolute discrepancy over 38 summary rows: 4.94e-11"
     },
     {
       "section": "Classification metrics",
@@ -217,7 +217,7 @@
       "section": "Documents",
       "name": "reproducibility record reports a complete, all-identical run",
       "status": "PASS",
-      "detail": "36/36 identical across 7 groups, scripts 5"
+      "detail": "57/57 identical across 8 groups, scripts 6"
     },
     {
       "section": "Environment",
@@ -229,7 +229,7 @@
       "section": "Repository",
       "name": "no raw or processed data is tracked by git",
       "status": "PASS",
-      "detail": "tracked data files 0, committed artefacts 148"
+      "detail": "tracked data files 0, committed artefacts 261"
     },
     {
       "section": "Phase 3 / KIBA overlap",
@@ -283,7 +283,7 @@
       "section": "Phase 3 / attribution",
       "name": "reported coverage recomputes from the per-molecule table",
       "status": "PASS",
-      "detail": "252 alert-bearing molecules, top-k hit rate 0.317, median enrichment 0.838; missing figures 0"
+      "detail": "252 alert-bearing molecules, top-k hit rate 0.409, median enrichment 0.961; missing figures 0"
     },
     {
       "section": "Phase 3 / endpoint reliability",
@@ -302,6 +302,30 @@
       "name": "the penalty CI is consistent with the point estimate",
       "status": "PASS",
       "detail": "macro random-minus-scaffold drop 0.0713 recomputed from the summary table and quoted in the Phase 3 reliability report: True"
+    },
+    {
+      "section": "Phase 3 / ablation",
+      "name": "every configuration ran the full seed grid",
+      "status": "PASS",
+      "detail": "main-comparison runs per config {'A': 5, 'B': 15, 'C': 15, 'D': 15, 'E': 5, 'F': 5} (expected {'A': 5, 'B': 15, 'C': 15, 'D': 15, 'E': 5, 'F': 5}); 76 runs in total"
+    },
+    {
+      "section": "Phase 3 / ablation",
+      "name": "reported means recompute from the per-run table",
+      "status": "PASS",
+      "detail": "largest discrepancy between report and per-run means: 0.00e+00"
+    },
+    {
+      "section": "Phase 3 / ablation",
+      "name": "the verdict follows from the measured effects",
+      "status": "PASS",
+      "detail": "effects: scratch -0.0869/-0.0404, best-weight -0.0236/+0.0253, pretrained +0.0016/-0.0054 against noise floors 0.0310/0.0658 -> \"shared encoding does not help, and the chemical-space measurement explains why\""
+    },
+    {
+      "section": "Phase 3 / ablation",
+      "name": "neural configurations are evaluated on the committed folds",
+      "status": "PASS",
+      "detail": "test-fold sizes identical to the random-forest runs for every KIBA split and seed; mismatches none"
     }
   ]
 }

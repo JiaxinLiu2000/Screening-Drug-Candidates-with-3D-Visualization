@@ -920,6 +920,87 @@ def _():
                     f"{quoted}")
 
 
+@check("Phase 3 / ablation", "every configuration ran the full seed grid")
+def _():
+    m = pd.read_csv(paths.RESULTS / "shared_encoder_metrics.csv")
+    main = m[(m["loss_weight"].isna()) | (m["loss_weight"] == 1.0)]
+    counts = main.groupby("config").size().to_dict()
+    n_seeds = len(paths.SEEDS)
+    expected = {"A": n_seeds, "B": 3 * n_seeds, "C": 3 * n_seeds, "D": 3 * n_seeds,
+                "E": n_seeds, "F": n_seeds}
+    return counts == expected, (f"main-comparison runs per config {counts} "
+                                f"(expected {expected}); {len(m)} runs in total")
+
+
+@check("Phase 3 / ablation", "reported means recompute from the per-run table")
+def _():
+    rec = json.loads((paths.RESULTS / "shared_encoder_ablation.json").read_text())
+    m = pd.read_csv(paths.RESULTS / "shared_encoder_metrics.csv")
+    main = m[(m["loss_weight"].isna()) | (m["loss_weight"] == 1.0)]
+    worst = 0.0
+    for cfg, value in rec["toxicity_macro_roc_auc"].items():
+        sub = main[main["config"] == cfg]["tox_macro_roc_auc"].dropna()
+        if sub.empty:
+            continue
+        worst = max(worst, abs(float(sub.mean()) - float(value)))
+    for cfg, value in rec["affinity_pearson_random"].items():
+        sub = main[(main["config"] == cfg) & (main["affinity_split"] == "random")]
+        sub = sub["affinity_pearson_r"].dropna()
+        if sub.empty:
+            continue
+        worst = max(worst, abs(float(sub.mean()) - float(value)))
+    return worst < 1e-9, f"largest discrepancy between report and per-run means: {worst:.2e}"
+
+
+@check("Phase 3 / ablation", "the verdict follows from the measured effects")
+def _():
+    rec = json.loads((paths.RESULTS / "shared_encoder_ablation.json").read_text())
+    tox_noise, aff_noise = rec["tox_noise_floor"], rec["affinity_noise_floor"]
+    helps = (
+        max(rec["effect_of_sharing_scratch_tox"],
+            rec["effect_of_sharing_best_weight_tox"]) > tox_noise
+        or max(rec["effect_of_sharing_scratch_affinity"],
+               rec["effect_of_sharing_best_weight_affinity"]) > aff_noise
+    )
+    pretrained_helps = (rec["effect_of_sharing_pretrained_tox"] > tox_noise
+                        or rec["effect_of_sharing_pretrained_affinity"] > aff_noise)
+    expected = ("shared encoding helps regardless of pretraining" if helps
+                else "shared encoding helps only when the encoder is pretrained"
+                if pretrained_helps
+                else "shared encoding does not help, and the chemical-space "
+                     "measurement explains why")
+    return rec["verdict"] == expected, (
+        f"effects: scratch {rec['effect_of_sharing_scratch_tox']:+.4f}/"
+        f"{rec['effect_of_sharing_scratch_affinity']:+.4f}, best-weight "
+        f"{rec['effect_of_sharing_best_weight_tox']:+.4f}/"
+        f"{rec['effect_of_sharing_best_weight_affinity']:+.4f}, pretrained "
+        f"{rec['effect_of_sharing_pretrained_tox']:+.4f}/"
+        f"{rec['effect_of_sharing_pretrained_affinity']:+.4f} against noise floors "
+        f"{tox_noise:.4f}/{aff_noise:.4f} -> \"{expected}\"")
+
+
+@check("Phase 3 / ablation", "neural configurations are evaluated on the committed folds")
+def _():
+    m = pd.read_csv(paths.RESULTS / "shared_encoder_metrics.csv")
+    binding = pd.read_csv(paths.RESULTS / "binding_baseline.csv")
+    bad = []
+    for split in ("random", "cold_drug", "cold_target"):
+        rf_n = binding[(binding["dataset"] == "KIBA") & (binding["split"] == split)]
+        nn_n = m[(m["affinity_split"] == split) & m["affinity_n_test"].notna()]
+        if nn_n.empty:
+            continue
+        for seed in paths.SEEDS:
+            rf_seed = rf_n[rf_n["seed"] == seed]["n_test"]
+            nn_seed = nn_n[nn_n["seed"] == seed]["affinity_n_test"].unique()
+            if rf_seed.empty or len(nn_seed) == 0:
+                continue
+            if int(rf_seed.iloc[0]) != int(nn_seed[0]):
+                bad.append(f"{split}/seed{seed}: RF {int(rf_seed.iloc[0])} vs "
+                           f"neural {int(nn_seed[0])}")
+    return not bad, (f"test-fold sizes identical to the random-forest runs for every "
+                     f"KIBA split and seed; mismatches {bad or 'none'}")
+
+
 # --------------------------------------------------------------------------
 
 def main() -> int:

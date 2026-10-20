@@ -115,7 +115,23 @@ def run_grid(
                     f"mean ROC-AUC={np.mean([r['roc_auc'] for r in done]):.4f}  "
                     f"mean PR-AUC={np.mean([r['pr_auc'] for r in done]):.4f}"
                 )
-    return pd.DataFrame.from_records(records)[METRIC_COLUMNS]
+    return round_metrics(pd.DataFrame.from_records(records)[METRIC_COLUMNS])
+
+
+#: Decimal places the metric tables are written with. sklearn's forests accumulate
+#: per-tree probabilities across threads, so the last bit of a score can differ
+#: between otherwise identical runs; rounding well below any reported precision
+#: (results are quoted to 4 dp) makes the committed tables byte-reproducible
+#: without pretending the 16th digit was ever meaningful.
+METRIC_DECIMALS = 10
+
+
+def round_metrics(frame: pd.DataFrame) -> pd.DataFrame:
+    float_cols = [c for c in frame.columns if frame[c].dtype.kind == "f"]
+    if float_cols:
+        frame = frame.copy()
+        frame[float_cols] = frame[float_cols].round(METRIC_DECIMALS)
+    return frame
 
 
 def summarize(metrics: pd.DataFrame) -> pd.DataFrame:
@@ -152,4 +168,4 @@ def summarize(metrics: pd.DataFrame) -> pd.DataFrame:
     overall.insert(2, "endpoint", f"ALL_{n_endpoints}_MACRO_AVG")
     overall.insert(3, "level", "overall")
 
-    return pd.concat([per_endpoint, overall], ignore_index=True)
+    return round_metrics(pd.concat([per_endpoint, overall], ignore_index=True))
