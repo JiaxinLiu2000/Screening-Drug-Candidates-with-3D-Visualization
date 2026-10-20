@@ -424,7 +424,7 @@ def main() -> int:
 
     audit_path = paths.RESULTS / "data_audit.json"
     if audit_path.exists():
-        audit = load_json("data_audit.json")
+        audit = json.loads(audit_path.read_text(encoding="utf-8"))
         add("")
         add(f"Separately, `src/15_data_audit.py` runs **{len(audit['checks'])} "
             f"cross-artefact integrity checks** that recompute each quantity from the "

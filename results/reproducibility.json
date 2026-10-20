@@ -3,6 +3,8 @@
   "scripts_rerun": [
     "02_standardize.py",
     "03_splits.py",
+    "04_baseline_rf.py",
+    "12_herg_baseline.py",
     "05_egfr_structure.py"
   ],
   "environment": {
@@ -14,34 +16,52 @@
     "numpy": "2.4.6",
     "gemmi": "0.7.5"
   },
-  "n_artefacts": 23,
-  "n_identical": 23,
+  "n_artefacts": 36,
+  "n_identical": 36,
   "differing": [],
   "group_failures": [],
   "checks": [
     {
       "artefact": "Tox21 split index files",
       "n_files": 11,
-      "check": "SHA-256 before vs after re-running 02, 03, 05",
+      "check": "SHA-256 before vs after re-running 02, 03, 04, 12, 05",
       "result": "identical (11 files)"
     },
     {
       "artefact": "cleaned molecule table",
       "n_files": 1,
-      "check": "SHA-256 before vs after re-running 02, 03, 05",
+      "check": "SHA-256 before vs after re-running 02, 03, 04, 12, 05",
       "result": "identical (1 file)"
     },
     {
       "artefact": "standardization + split stats",
       "n_files": 5,
-      "check": "SHA-256 before vs after re-running 02, 03, 05",
+      "check": "SHA-256 before vs after re-running 02, 03, 04, 12, 05",
       "result": "identical (5 files)"
     },
     {
       "artefact": "EGFR receptors, ligand SDFs, pocket JSON",
       "n_files": 6,
-      "check": "SHA-256 before vs after re-running 02, 03, 05",
+      "check": "SHA-256 before vs after re-running 02, 03, 04, 12, 05",
       "result": "identical (6 files)"
+    },
+    {
+      "artefact": "Tox21 + hERG metric tables",
+      "n_files": 2,
+      "check": "SHA-256 before vs after re-running 02, 03, 04, 12, 05",
+      "result": "identical (2 files)"
+    },
+    {
+      "artefact": "hERG split index files",
+      "n_files": 10,
+      "check": "SHA-256 before vs after re-running 02, 03, 04, 12, 05",
+      "result": "identical (10 files)"
+    },
+    {
+      "artefact": "hERG stats",
+      "n_files": 1,
+      "check": "SHA-256 before vs after re-running 02, 03, 04, 12, 05",
+      "result": "identical (1 file)"
     }
   ],
   "hashes": {
@@ -67,6 +87,19 @@
     "receptors/1M17_receptor.pdb": "7896fe429fd08ee58ba60bf751a9525c790fc6e32bcf07048e560f38fe6db123",
     "receptors/4HJO_ligand.sdf": "b11a0fa52251f202ea2ca54c892b86481247a7905e993c1f39fe10bcb67331ae",
     "receptors/4HJO_pocket.json": "310b9bc9c17a13d929673a2336237b60fade37450d0cfa76849e26726d8d2c1e",
-    "receptors/4HJO_receptor.pdb": "7a5a68eff08859f584b2d3b21fd6542527287be8f6ebb611e77231ad740e6625"
+    "receptors/4HJO_receptor.pdb": "7a5a68eff08859f584b2d3b21fd6542527287be8f6ebb611e77231ad740e6625",
+    "results/baseline_metrics.csv": "a4001c766afb8470985a2fc311157f357e7133d92a1408ebcd77781c74c9880c",
+    "results/baseline_summary.csv": "e5ed38963fb40f927d10a04466ed02259a3affa4c25c25544c68e9fc4dc951ed",
+    "splits/herg_random_split_seed0.csv": "caebd764c17494ce8da4c698d17de34f69fa1c27dbb47b72cb6ca5af04d0d312",
+    "splits/herg_random_split_seed1.csv": "e191d6c152abe497148532f21d95d52f3307e338e51a4f7441fe7153687bad4b",
+    "splits/herg_random_split_seed2.csv": "fa3ffd53cbd318df555f6ba58e461912ab35e2d068e9d1650431479463d34889",
+    "splits/herg_random_split_seed3.csv": "77bd98d1797a6e0965fd9dc2794bdcec41576e4e2cc8a12c8aaab70a08a0fd8c",
+    "splits/herg_random_split_seed4.csv": "fa3aa8edebe0b5276d25d1bb2ca7a11d3eb11ce9cc78b1754eb8b0ba0d68916d",
+    "splits/herg_scaffold_split_seed0.csv": "586dad943250d6e6cb1604c598b1d02391b751e8b6e9b4b33b32d9c3e824e931",
+    "splits/herg_scaffold_split_seed1.csv": "cc4db56a8eab048440474204588432f5fdc1d84b968c4967afee86e6d47c143b",
+    "splits/herg_scaffold_split_seed2.csv": "e7dc8718aeee5ab325c0257b8109491e61789168dae81533603d994b645c4e29",
+    "splits/herg_scaffold_split_seed3.csv": "742b1e01b087df09592d2efc1f2508bc987f83c9c4a32439f460f051eba1f0cd",
+    "splits/herg_scaffold_split_seed4.csv": "0ab405137aa1de935d6f9862ce6ba30e78f8674bbed71292e8385f549314ca26",
+    "results/herg_stats.json": "f1db7d86a906790865f5f208a9a78b00a202a8a8e40fec8b22d4b3cd37e74819"
   }
 }

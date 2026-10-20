@@ -229,7 +229,7 @@
       "section": "Repository",
       "name": "no raw or processed data is tracked by git",
       "status": "PASS",
-      "detail": "tracked data files 0, committed artefacts 146"
+      "detail": "tracked data files 0, committed artefacts 148"
     }
   ]
 }

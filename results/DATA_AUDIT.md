@@ -95,7 +95,7 @@ Produced by `src/15_data_audit.py`. This audit does not re-run the pipeline and 
 
 | check | result | measured |
 | --- | --- | --- |
-| no raw or processed data is tracked by git | PASS | tracked data files 0, committed artefacts 146 |
+| no raw or processed data is tracked by git | PASS | tracked data files 0, committed artefacts 148 |
 
 ## Verdict
 
