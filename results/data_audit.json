@@ -229,7 +229,7 @@
       "section": "Repository",
       "name": "no raw or processed data is tracked by git",
       "status": "PASS",
-      "detail": "tracked data files 0, committed artefacts 264"
+      "detail": "tracked data files 0, committed artefacts 265"
     },
     {
       "section": "Phase 3 / KIBA overlap",
@@ -349,7 +349,7 @@
       "section": "Repository",
       "name": "every source module compiles",
       "status": "PASS",
-      "detail": "42 modules under src/; compileall exit 0"
+      "detail": "43 modules under src/; compileall exit 0"
     },
     {
       "section": "Repository",

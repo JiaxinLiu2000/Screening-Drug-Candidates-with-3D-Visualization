@@ -95,8 +95,8 @@ Produced by `src/15_data_audit.py`. This audit does not re-run the pipeline and 
 
 | check | result | measured |
 | --- | --- | --- |
-| no raw or processed data is tracked by git | PASS | tracked data files 0, committed artefacts 264 |
-| every source module compiles | PASS | 42 modules under src/; compileall exit 0 |
+| no raw or processed data is tracked by git | PASS | tracked data files 0, committed artefacts 265 |
+| every source module compiles | PASS | 43 modules under src/; compileall exit 0 |
 | ablation checkpoints are newer than the metric table they produced | PASS | 6 checkpoints for configs ['A', 'B', 'C', 'D', 'E', 'F']; missing none; stale none |
 
 ## Phase 3 / KIBA overlap
