@@ -1,6 +1,6 @@
 # Data audit
 
-**59 passed, 0 failed, 0 skipped** of 59 checks.
+**65 passed, 0 failed, 0 skipped** of 65 checks.
 
 Produced by `src/15_data_audit.py`. This audit does not re-run the pipeline and does not trust any script's own assertions: it recomputes each quantity from the committed artefacts and checks that independent sources agree — summary statistics against per-fit rows, pocket geometry against ligand coordinates, split partitions against the molecule tables, document text against the source tables, and the dependency lock against the installed environment.
 
@@ -89,14 +89,14 @@ Produced by `src/15_data_audit.py`. This audit does not re-run the pipeline and 
 
 | check | result | measured |
 | --- | --- | --- |
-| dependency lock matches the installed environment exactly | PASS | 78 pins; installed-but-unpinned none; pinned-but-absent none |
+| dependency lock matches the installed environment exactly | PASS | 79 pins; installed-but-unpinned none; pinned-but-absent none |
 
 ## Repository
 
 | check | result | measured |
 | --- | --- | --- |
-| no raw or processed data is tracked by git | PASS | tracked data files 0, committed artefacts 265 |
-| every source module compiles | PASS | 43 modules under src/; compileall exit 0 |
+| no raw or processed data is tracked by git | PASS | tracked data files 0, committed artefacts 267 |
+| every source module compiles | PASS | 52 modules under src/; compileall exit 0 |
 | ablation checkpoints are newer than the metric table they produced | PASS | 6 checkpoints for configs ['A', 'B', 'C', 'D', 'E', 'F']; missing none; stale none |
 
 ## Phase 3 / KIBA overlap
@@ -152,6 +152,37 @@ Produced by `src/15_data_audit.py`. This audit does not re-run the pipeline and 
 | reported means recompute from the per-run table | PASS | largest discrepancy between report and per-run means: 0.00e+00 |
 | the verdict follows from the measured effects | PASS | effects: scratch -0.0869/-0.0404, best-weight -0.0236/+0.0253, pretrained +0.0016/-0.0054 against noise floors 0.0310/0.0658 -> "shared encoding does not help, and the chemical-space measurement explains why" |
 | neural configurations are evaluated on the committed folds | PASS | test-fold sizes identical to the random-forest runs for every KIBA split and seed; mismatches none |
+
+## Phase 4 / learning curves
+
+| check | result | measured |
+| --- | --- | --- |
+| curve grid is complete and aggregates recompute | PASS | 60 rows (expected 60); largest discrepancy between report and per-run means 1.11e-16 |
+| subsampling preserved the fold sizes | PASS | train-fold sizes match fraction x full size for every cell; mismatches none |
+
+## Phase 4 / abstention
+
+| check | result | measured |
+| --- | --- | --- |
+| the naive confidence signal really is beaten by random | PASS | recompute discrepancy 5.55e-17; beats-random {'distance_from_half': False, 'forest_agreement': False, 'tanimoto_to_train': True}; best signal tanimoto_to_train |
+
+## Phase 4 / binding follow-ups
+
+| check | result | measured |
+| --- | --- | --- |
+| scaffold-cold split holds out whole scaffolds | PASS | drug leakage none; scaffold-cold Pearson 0.6031 vs identity-cold 0.7324 (harder: True) |
+
+## Phase 4 / self-docking
+
+| check | result | measured |
+| --- | --- | --- |
+| every docked entry has a pose and an RMSD | PASS | 20 entries x 5 seeds = 100 runs (expected 100); missing RMSDs 0 |
+
+## Phase 4 / cold-drug diagnosis
+
+| check | result | measured |
+| --- | --- | --- |
+| control predictors behave as controls must | PASS | global-mean control gives r=0 and CI=0.5 on both splits; problems none |
 
 ## Verdict
 

@@ -1,0 +1,55 @@
+{
+  "by_split": {
+    "random": {
+      "global_mean": {
+        "pooled_pearson": 0.0,
+        "within_protein_pearson": NaN,
+        "ci": 0.5,
+        "rmse": 0.8292450054648193
+      },
+      "protein_mean": {
+        "pooled_pearson": 0.36326997478634176,
+        "within_protein_pearson": NaN,
+        "ci": 0.6829877308123914,
+        "rmse": 0.7727000752583354
+      },
+      "random_forest": {
+        "pooled_pearson": 0.7840700911078508,
+        "within_protein_pearson": 0.6965514317874589,
+        "ci": 0.8240528253228497,
+        "rmse": 0.5215791041139477
+      }
+    },
+    "cold_drug": {
+      "global_mean": {
+        "pooled_pearson": 0.0,
+        "within_protein_pearson": 0.0,
+        "ci": 0.5,
+        "rmse": 0.8341558728586854
+      },
+      "protein_mean": {
+        "pooled_pearson": 0.3665323770236172,
+        "within_protein_pearson": NaN,
+        "ci": 0.6819140725342158,
+        "rmse": 0.7761804985364745
+      },
+      "random_forest": {
+        "pooled_pearson": 0.7324469675841583,
+        "within_protein_pearson": 0.635432145149964,
+        "ci": 0.8042879716608085,
+        "rmse": 0.5708179260965911
+      }
+    }
+  },
+  "frozen_mlp": {
+    "random": {
+      "pooled_pearson": 0.8509622931480407,
+      "within_protein_pearson": 0.7824997067451477
+    },
+    "cold_drug": {
+      "pooled_pearson": 0.5819940686225891,
+      "within_protein_pearson": 0.45348226428031924
+    }
+  },
+  "min_pairs_per_protein": 10
+}

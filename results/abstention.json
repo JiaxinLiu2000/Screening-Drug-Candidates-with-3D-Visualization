@@ -1,0 +1,47 @@
+{
+  "split": "scaffold",
+  "coverages": [
+    1.0,
+    0.9,
+    0.8,
+    0.7,
+    0.6,
+    0.5
+  ],
+  "signals": {
+    "distance_from_half": {
+      "mean_pr_auc_over_coverages": 0.2594347892376974,
+      "pr_auc_at_full_coverage": 0.38061912133182285,
+      "pr_auc_at_50pct_coverage": 0.20788684566087218,
+      "recall_retained_at_50pct": 0.23697123943045115,
+      "positive_rate_kept_at_50pct": 0.045584157903698866
+    },
+    "forest_agreement": {
+      "mean_pr_auc_over_coverages": 0.2576109973431861,
+      "pr_auc_at_full_coverage": 0.38061912133182285,
+      "pr_auc_at_50pct_coverage": 0.2024464686627049,
+      "recall_retained_at_50pct": 0.23500236428125668,
+      "positive_rate_kept_at_50pct": 0.04520982163149032
+    },
+    "random": {
+      "mean_pr_auc_over_coverages": 0.38707094441258727,
+      "pr_auc_at_full_coverage": 0.38061912133182285,
+      "pr_auc_at_50pct_coverage": 0.3983019001207543,
+      "recall_retained_at_50pct": 0.4833499874556551,
+      "positive_rate_kept_at_50pct": 0.09431925435907293
+    },
+    "tanimoto_to_train": {
+      "mean_pr_auc_over_coverages": 0.43272853773371356,
+      "pr_auc_at_full_coverage": 0.38061912133182285,
+      "pr_auc_at_50pct_coverage": 0.49040733650527724,
+      "recall_retained_at_50pct": 0.5376708417834092,
+      "positive_rate_kept_at_50pct": 0.10214258587001773
+    }
+  },
+  "best_signal_by_mean_pr_auc": "tanimoto_to_train",
+  "beats_random": {
+    "distance_from_half": false,
+    "forest_agreement": false,
+    "tanimoto_to_train": true
+  }
+}

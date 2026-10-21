@@ -1,0 +1,84 @@
+{
+  "B1": {
+    "n_estimators": 100,
+    "committed_setting": "sqrt",
+    "by_split": {
+      "random": {
+        "0.1": {
+          "pearson_mean": 0.814420147049638,
+          "pearson_std": 0.0035763255275984792,
+          "ci_mean": 0.8384412360725213,
+          "within_protein_mean": 0.7294936187060668
+        },
+        "0.3": {
+          "pearson_mean": 0.821858473020529,
+          "pearson_std": 0.002566119722260262,
+          "ci_mean": 0.841989724503826,
+          "within_protein_mean": 0.7373788871374297
+        },
+        "sqrt": {
+          "pearson_mean": 0.7840700911078506,
+          "pearson_std": 0.004447796406276156,
+          "ci_mean": 0.8240528237758896,
+          "within_protein_mean": 0.6965514317874589
+        }
+      },
+      "cold_drug": {
+        "0.1": {
+          "pearson_mean": 0.7336182815815593,
+          "pearson_std": 0.028402580996658326,
+          "ci_mean": 0.8029337239146377,
+          "within_protein_mean": 0.6282035103219761
+        },
+        "0.3": {
+          "pearson_mean": 0.7288737590329645,
+          "pearson_std": 0.02848202088589191,
+          "ci_mean": 0.7990236288543455,
+          "within_protein_mean": 0.6155340957614533
+        },
+        "sqrt": {
+          "pearson_mean": 0.7324469675841583,
+          "pearson_std": 0.030461548375157597,
+          "ci_mean": 0.8042879692244217,
+          "within_protein_mean": 0.635432145149964
+        }
+      }
+    }
+  },
+  "B3": {
+    "pearson_mean": 0.6031077469070703,
+    "pearson_std": 0.015980417155681787,
+    "ci_mean": 0.7464299924796857,
+    "within_protein_mean": 0.5017015890341908,
+    "n_test_drugs_mean": 203.0,
+    "analogue_distance": {
+      "0": {
+        "n_test_drugs": 203,
+        "median": 0.4936708860759494,
+        "fraction_above_0.8": 0.08374384236453201
+      },
+      "1": {
+        "n_test_drugs": 203,
+        "median": 0.47435897435897434,
+        "fraction_above_0.8": 0.07389162561576355
+      },
+      "2": {
+        "n_test_drugs": 203,
+        "median": 0.43037974683544306,
+        "fraction_above_0.8": 0.08374384236453201
+      },
+      "3": {
+        "n_test_drugs": 203,
+        "median": 0.5,
+        "fraction_above_0.8": 0.054187192118226604
+      },
+      "4": {
+        "n_test_drugs": 203,
+        "median": 0.45569620253164556,
+        "fraction_above_0.8": 0.059113300492610835
+      }
+    },
+    "committed_cold_drug_pearson": 0.7324468000000001,
+    "committed_random_pearson": 0.7840702
+  }
+}

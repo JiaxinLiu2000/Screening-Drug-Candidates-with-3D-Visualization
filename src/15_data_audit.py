@@ -1097,6 +1097,114 @@ def _():
 
 
 # --------------------------------------------------------------------------
+# 11. Phase 4 artefacts
+# --------------------------------------------------------------------------
+
+@check("Phase 4 / learning curves", "curve grid is complete and aggregates recompute")
+def _():
+    rec = json.loads((paths.RESULTS / "learning_curves.json").read_text())
+    frame = pd.read_csv(paths.RESULTS / "learning_curves.csv")
+    n_expected = len(rec["fractions"]) * len(rec["seeds"]) * 2 * len(rec["tasks"])
+    worst = 0.0
+    for task, t in rec["tasks"].items():
+        for frac, cell in t["by_fraction"].items():
+            for model, v in cell.items():
+                sub = frame[(frame["task"] == task) & (frame["model"] == model)
+                            & (np.isclose(frame["fraction"], float(frac)))]["value"]
+                worst = max(worst, abs(float(sub.mean()) - v["mean"]))
+    return len(frame) == n_expected and worst < 1e-9, (
+        f"{len(frame)} rows (expected {n_expected}); largest discrepancy between "
+        f"report and per-run means {worst:.2e}")
+
+
+@check("Phase 4 / learning curves", "subsampling preserved the fold sizes")
+def _():
+    frame = pd.read_csv(paths.RESULTS / "learning_curves.csv")
+    bad = []
+    for (task, seed), g in frame.groupby(["task", "seed"]):
+        full = g[np.isclose(g["fraction"], 1.0)]["n_train"].unique()
+        if len(full) != 1 or full[0] != g["n_train_full"].iloc[0]:
+            bad.append(f"{task}/seed{seed}")
+        for _, row in g.iterrows():
+            expected = max(1, int(round(row["n_train_full"] * row["fraction"])))
+            if abs(row["n_train"] - expected) > 1:
+                bad.append(f"{task}/seed{seed}/frac{row['fraction']}")
+    return not bad, (f"train-fold sizes match fraction x full size for every cell; "
+                     f"mismatches {sorted(set(bad)) or 'none'}")
+
+
+@check("Phase 4 / abstention", "the naive confidence signal really is beaten by random")
+def _():
+    rec = json.loads((paths.RESULTS / "abstention.json").read_text())
+    frame = pd.read_csv(paths.RESULTS / "abstention.csv")
+    worst = 0.0
+    for signal, v in rec["signals"].items():
+        sub = frame[(frame["signal"] == signal) & np.isclose(frame["coverage"], 0.5)]
+        worst = max(worst, abs(float(sub["pr_auc"].mean()) - v["pr_auc_at_50pct_coverage"]))
+    beats = rec["beats_random"]
+    # The headline claim of that section: the two score-based signals lose to a
+    # random ordering and the distance-based one wins. If this flips, the text is
+    # wrong and must be regenerated.
+    expected = (not beats["distance_from_half"] and not beats["forest_agreement"]
+                and beats["tanimoto_to_train"])
+    return worst < 1e-9 and expected, (
+        f"recompute discrepancy {worst:.2e}; beats-random {beats}; "
+        f"best signal {rec['best_signal_by_mean_pr_auc']}")
+
+
+@check("Phase 4 / binding follow-ups", "scaffold-cold split holds out whole scaffolds")
+def _():
+    bad = []
+    for seed in paths.SEEDS:
+        f = pd.read_csv(paths.SPLITS / f"kiba_scaffold_cold_drug_seed{seed}.csv")
+        tr = set(f.loc[f["subset"] == "train", "inchikey"])
+        te = set(f.loc[f["subset"] == "test", "inchikey"])
+        if tr & te:
+            bad.append(f"seed{seed}: {len(tr & te)} drugs leak")
+    rec = json.loads((paths.RESULTS / "binding_followups.json").read_text())
+    harder = rec["B3"]["pearson_mean"] < rec["B3"]["committed_cold_drug_pearson"]
+    return not bad and harder, (
+        f"drug leakage {bad or 'none'}; scaffold-cold Pearson "
+        f"{rec['B3']['pearson_mean']:.4f} vs identity-cold "
+        f"{rec['B3']['committed_cold_drug_pearson']:.4f} (harder: {harder})")
+
+
+@check("Phase 4 / self-docking", "every docked entry has a pose and an RMSD")
+def _():
+    path = paths.RESULTS / "self_docking.json"
+    if not path.exists():
+        return None, "self_docking.json absent; the docking stage was not run"
+    rec = json.loads(path.read_text())
+    frame = pd.read_csv(paths.RESULTS / "self_docking.csv")
+    n_entries = len(rec["per_entry"])
+    expected = n_entries * len(paths.SEEDS)
+    rmsd_col = next((c for c in frame.columns if "rmsd" in c.lower()), None)
+    if rmsd_col is None:
+        return False, f"no RMSD column in {list(frame.columns)}"
+    missing = int(frame[rmsd_col].isna().sum())
+    return len(frame) == expected and missing == 0, (
+        f"{n_entries} entries x {len(paths.SEEDS)} seeds = {len(frame)} runs "
+        f"(expected {expected}); missing RMSDs {missing}")
+
+
+@check("Phase 4 / cold-drug diagnosis", "control predictors behave as controls must")
+def _():
+    rec = json.loads((paths.RESULTS / "cold_drug_diagnosis.json").read_text())
+    bad = []
+    for split, preds in rec["by_split"].items():
+        g = preds["global_mean"]
+        # A constant prediction must give zero correlation and a coin-flip CI; if
+        # it does not, the metric implementation itself is wrong.
+        if abs(g["pooled_pearson"]) > 1e-9 or abs(g["ci"] - 0.5) > 1e-9:
+            bad.append(f"{split}: global-mean r={g['pooled_pearson']:.4f} "
+                       f"CI={g['ci']:.4f}")
+        if preds["random_forest"]["pooled_pearson"] <= preds["protein_mean"]["pooled_pearson"]:
+            bad.append(f"{split}: forest does not beat the protein-mean control")
+    return not bad, (f"global-mean control gives r=0 and CI=0.5 on both splits; "
+                     f"problems {bad or 'none'}")
+
+
+# --------------------------------------------------------------------------
 
 def main() -> int:
     print(f"Running {len(CHECKS)} integrity checks...\n")

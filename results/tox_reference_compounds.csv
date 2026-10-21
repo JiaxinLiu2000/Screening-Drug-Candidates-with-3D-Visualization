@@ -1,0 +1,15 @@
+name,endpoint,expected_active,basis_literature_not_measured_by_us,pubchem_cid,canonical_smiles,inchikey,n_heavy_atoms,within_training_size_filter,in_tox21_set,in_scaffold_train_fold_seed0,tox21_measured_label,predicted_probability,prediction_matches_expectation,external_check
+benzo[a]pyrene,NR-AhR,1,classical aryl hydrocarbon receptor agonist; PAH positive control,2336,c1ccc2c(c1)cc1ccc3cccc4ccc2c1c34,FMMWHPNWAFZXNH-UHFFFAOYSA-N,20,True,True,True,1.0,1.0,True,False
+3-methylcholanthrene,NR-AhR,1,prototypical AhR agonist used to induce CYP1A1,1674,Cc1ccc2cc3c(ccc4ccccc43)c3c2c1CC3,PPQNQXQZIWHJRB-UHFFFAOYSA-N,21,True,True,False,1.0,0.716,True,True
+beta-naphthoflavone,NR-AhR,1,standard AhR agonist,2361,O=c1cc(-c2ccccc2)oc2ccc3ccccc3c12,OUGIDAPQYNCXRA-UHFFFAOYSA-N,21,True,True,False,1.0,0.792,True,True
+17beta-estradiol,NR-ER,1,endogenous estrogen receptor agonist,5757,CC12CCC3c4ccc(O)cc4CCC3C1CCC2O,VOXZDWNPVJITMN-UHFFFAOYSA-N,20,True,True,True,1.0,1.0,True,False
+diethylstilbestrol,NR-ER,1,"synthetic estrogen, potent ER agonist",448537,CCC(=C(CC)c1ccc(O)cc1)c1ccc(O)cc1,RGLYKWWBQGJZGM-UHFFFAOYSA-N,20,True,True,True,1.0,0.996,True,False
+bisphenol A,NR-ER,1,well-documented weak estrogenic activity,6623,CC(C)(c1ccc(O)cc1)c1ccc(O)cc1,IISBACLAFKSPIT-UHFFFAOYSA-N,17,True,True,True,1.0,0.994,True,False
+flutamide,NR-AR,1,androgen receptor antagonist; active in the AR assay,3397,CC(C)C(=O)Nc1ccc([N+](=O)[O-])c(C(F)(F)F)c1,MKXKFYHWDHIYRV-UHFFFAOYSA-N,19,True,True,True,0.0,0.194,False,False
+rotenone,SR-MMP,1,mitochondrial complex I inhibitor; collapses membrane potential,6758,C=C(C)C1Cc2c(ccc3c2OC2COc4cc(OC)c(OC)cc4C2C3=O)O1,JUVIOZPCNVVQFO-UHFFFAOYSA-N,29,True,True,False,,0.346,False,True
+"2,4-dinitrophenol",SR-MMP,1,classical mitochondrial uncoupler,1493,O=[N+]([O-])c1ccc(O)c([N+](=O)[O-])c1,UFBJCMHMOXMLKC-UHFFFAOYSA-N,13,True,True,True,1.0,0.992,True,False
+carbonyl cyanide 4-(trifluoromethoxy)phenylhydrazone,SR-MMP,1,"FCCP, protonophore uncoupler",3330,N#CC(C#N)=NNc1ccc(OC(F)(F)F)cc1,BMZRVOVNUMQTIN-UHFFFAOYSA-N,18,True,False,False,,0.41,False,True
+tert-butylhydroquinone,SR-ARE,1,"Nrf2/ARE pathway activator, standard oxidative-stress positive control",16043,CC(C)(C)c1cc(O)ccc1O,BGNXCDMCOKJUMV-UHFFFAOYSA-N,12,True,True,True,1.0,0.966,True,False
+D-glucose,NR-AhR,0,"metabolite, expected inactive (negative control)",5793,OCC1OC(O)C(O)C(O)C1O,WQZGKKKJIJFFOK-UHFFFAOYSA-N,12,True,True,True,0.0,0.0,True,False
+citric acid,NR-ER,0,"metabolite, expected inactive (negative control)",311,O=C(O)CC(O)(CC(=O)O)C(=O)O,KRKNYBCHXYNGOX-UHFFFAOYSA-N,13,True,True,True,0.0,0.0187,True,False
+cyclohexanol,SR-MMP,0,"simple alcohol, expected inactive (negative control)",7966,OC1CCCCC1,HPXRVTGHNJAIIH-UHFFFAOYSA-N,7,False,False,False,,0.936,False,True

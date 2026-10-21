@@ -1,0 +1,361 @@
+{
+  "reference_compounds": {
+    "n": 14,
+    "n_scored": 14,
+    "n_external": 5,
+    "match_rate_all": 0.7142857142857143,
+    "match_rate_external": 0.4,
+    "rows": [
+      {
+        "name": "benzo[a]pyrene",
+        "endpoint": "NR-AhR",
+        "expected_active": 1,
+        "basis_literature_not_measured_by_us": "classical aryl hydrocarbon receptor agonist; PAH positive control",
+        "pubchem_cid": 2336,
+        "canonical_smiles": "c1ccc2c(c1)cc1ccc3cccc4ccc2c1c34",
+        "inchikey": "FMMWHPNWAFZXNH-UHFFFAOYSA-N",
+        "n_heavy_atoms": 20,
+        "within_training_size_filter": true,
+        "in_tox21_set": true,
+        "in_scaffold_train_fold_seed0": true,
+        "tox21_measured_label": 1.0,
+        "predicted_probability": 1.0,
+        "prediction_matches_expectation": true,
+        "external_check": false
+      },
+      {
+        "name": "3-methylcholanthrene",
+        "endpoint": "NR-AhR",
+        "expected_active": 1,
+        "basis_literature_not_measured_by_us": "prototypical AhR agonist used to induce CYP1A1",
+        "pubchem_cid": 1674,
+        "canonical_smiles": "Cc1ccc2cc3c(ccc4ccccc43)c3c2c1CC3",
+        "inchikey": "PPQNQXQZIWHJRB-UHFFFAOYSA-N",
+        "n_heavy_atoms": 21,
+        "within_training_size_filter": true,
+        "in_tox21_set": true,
+        "in_scaffold_train_fold_seed0": false,
+        "tox21_measured_label": 1.0,
+        "predicted_probability": 0.716,
+        "prediction_matches_expectation": true,
+        "external_check": true
+      },
+      {
+        "name": "beta-naphthoflavone",
+        "endpoint": "NR-AhR",
+        "expected_active": 1,
+        "basis_literature_not_measured_by_us": "standard AhR agonist",
+        "pubchem_cid": 2361,
+        "canonical_smiles": "O=c1cc(-c2ccccc2)oc2ccc3ccccc3c12",
+        "inchikey": "OUGIDAPQYNCXRA-UHFFFAOYSA-N",
+        "n_heavy_atoms": 21,
+        "within_training_size_filter": true,
+        "in_tox21_set": true,
+        "in_scaffold_train_fold_seed0": false,
+        "tox21_measured_label": 1.0,
+        "predicted_probability": 0.792,
+        "prediction_matches_expectation": true,
+        "external_check": true
+      },
+      {
+        "name": "17beta-estradiol",
+        "endpoint": "NR-ER",
+        "expected_active": 1,
+        "basis_literature_not_measured_by_us": "endogenous estrogen receptor agonist",
+        "pubchem_cid": 5757,
+        "canonical_smiles": "CC12CCC3c4ccc(O)cc4CCC3C1CCC2O",
+        "inchikey": "VOXZDWNPVJITMN-UHFFFAOYSA-N",
+        "n_heavy_atoms": 20,
+        "within_training_size_filter": true,
+        "in_tox21_set": true,
+        "in_scaffold_train_fold_seed0": true,
+        "tox21_measured_label": 1.0,
+        "predicted_probability": 1.0,
+        "prediction_matches_expectation": true,
+        "external_check": false
+      },
+      {
+        "name": "diethylstilbestrol",
+        "endpoint": "NR-ER",
+        "expected_active": 1,
+        "basis_literature_not_measured_by_us": "synthetic estrogen, potent ER agonist",
+        "pubchem_cid": 448537,
+        "canonical_smiles": "CCC(=C(CC)c1ccc(O)cc1)c1ccc(O)cc1",
+        "inchikey": "RGLYKWWBQGJZGM-UHFFFAOYSA-N",
+        "n_heavy_atoms": 20,
+        "within_training_size_filter": true,
+        "in_tox21_set": true,
+        "in_scaffold_train_fold_seed0": true,
+        "tox21_measured_label": 1.0,
+        "predicted_probability": 0.996,
+        "prediction_matches_expectation": true,
+        "external_check": false
+      },
+      {
+        "name": "bisphenol A",
+        "endpoint": "NR-ER",
+        "expected_active": 1,
+        "basis_literature_not_measured_by_us": "well-documented weak estrogenic activity",
+        "pubchem_cid": 6623,
+        "canonical_smiles": "CC(C)(c1ccc(O)cc1)c1ccc(O)cc1",
+        "inchikey": "IISBACLAFKSPIT-UHFFFAOYSA-N",
+        "n_heavy_atoms": 17,
+        "within_training_size_filter": true,
+        "in_tox21_set": true,
+        "in_scaffold_train_fold_seed0": true,
+        "tox21_measured_label": 1.0,
+        "predicted_probability": 0.994,
+        "prediction_matches_expectation": true,
+        "external_check": false
+      },
+      {
+        "name": "flutamide",
+        "endpoint": "NR-AR",
+        "expected_active": 1,
+        "basis_literature_not_measured_by_us": "androgen receptor antagonist; active in the AR assay",
+        "pubchem_cid": 3397,
+        "canonical_smiles": "CC(C)C(=O)Nc1ccc([N+](=O)[O-])c(C(F)(F)F)c1",
+        "inchikey": "MKXKFYHWDHIYRV-UHFFFAOYSA-N",
+        "n_heavy_atoms": 19,
+        "within_training_size_filter": true,
+        "in_tox21_set": true,
+        "in_scaffold_train_fold_seed0": true,
+        "tox21_measured_label": 0.0,
+        "predicted_probability": 0.194,
+        "prediction_matches_expectation": false,
+        "external_check": false
+      },
+      {
+        "name": "rotenone",
+        "endpoint": "SR-MMP",
+        "expected_active": 1,
+        "basis_literature_not_measured_by_us": "mitochondrial complex I inhibitor; collapses membrane potential",
+        "pubchem_cid": 6758,
+        "canonical_smiles": "C=C(C)C1Cc2c(ccc3c2OC2COc4cc(OC)c(OC)cc4C2C3=O)O1",
+        "inchikey": "JUVIOZPCNVVQFO-UHFFFAOYSA-N",
+        "n_heavy_atoms": 29,
+        "within_training_size_filter": true,
+        "in_tox21_set": true,
+        "in_scaffold_train_fold_seed0": false,
+        "tox21_measured_label": NaN,
+        "predicted_probability": 0.346,
+        "prediction_matches_expectation": false,
+        "external_check": true
+      },
+      {
+        "name": "2,4-dinitrophenol",
+        "endpoint": "SR-MMP",
+        "expected_active": 1,
+        "basis_literature_not_measured_by_us": "classical mitochondrial uncoupler",
+        "pubchem_cid": 1493,
+        "canonical_smiles": "O=[N+]([O-])c1ccc(O)c([N+](=O)[O-])c1",
+        "inchikey": "UFBJCMHMOXMLKC-UHFFFAOYSA-N",
+        "n_heavy_atoms": 13,
+        "within_training_size_filter": true,
+        "in_tox21_set": true,
+        "in_scaffold_train_fold_seed0": true,
+        "tox21_measured_label": 1.0,
+        "predicted_probability": 0.992,
+        "prediction_matches_expectation": true,
+        "external_check": false
+      },
+      {
+        "name": "carbonyl cyanide 4-(trifluoromethoxy)phenylhydrazone",
+        "endpoint": "SR-MMP",
+        "expected_active": 1,
+        "basis_literature_not_measured_by_us": "FCCP, protonophore uncoupler",
+        "pubchem_cid": 3330,
+        "canonical_smiles": "N#CC(C#N)=NNc1ccc(OC(F)(F)F)cc1",
+        "inchikey": "BMZRVOVNUMQTIN-UHFFFAOYSA-N",
+        "n_heavy_atoms": 18,
+        "within_training_size_filter": true,
+        "in_tox21_set": false,
+        "in_scaffold_train_fold_seed0": false,
+        "tox21_measured_label": NaN,
+        "predicted_probability": 0.41,
+        "prediction_matches_expectation": false,
+        "external_check": true
+      },
+      {
+        "name": "tert-butylhydroquinone",
+        "endpoint": "SR-ARE",
+        "expected_active": 1,
+        "basis_literature_not_measured_by_us": "Nrf2/ARE pathway activator, standard oxidative-stress positive control",
+        "pubchem_cid": 16043,
+        "canonical_smiles": "CC(C)(C)c1cc(O)ccc1O",
+        "inchikey": "BGNXCDMCOKJUMV-UHFFFAOYSA-N",
+        "n_heavy_atoms": 12,
+        "within_training_size_filter": true,
+        "in_tox21_set": true,
+        "in_scaffold_train_fold_seed0": true,
+        "tox21_measured_label": 1.0,
+        "predicted_probability": 0.966,
+        "prediction_matches_expectation": true,
+        "external_check": false
+      },
+      {
+        "name": "D-glucose",
+        "endpoint": "NR-AhR",
+        "expected_active": 0,
+        "basis_literature_not_measured_by_us": "metabolite, expected inactive (negative control)",
+        "pubchem_cid": 5793,
+        "canonical_smiles": "OCC1OC(O)C(O)C(O)C1O",
+        "inchikey": "WQZGKKKJIJFFOK-UHFFFAOYSA-N",
+        "n_heavy_atoms": 12,
+        "within_training_size_filter": true,
+        "in_tox21_set": true,
+        "in_scaffold_train_fold_seed0": true,
+        "tox21_measured_label": 0.0,
+        "predicted_probability": 0.0,
+        "prediction_matches_expectation": true,
+        "external_check": false
+      },
+      {
+        "name": "citric acid",
+        "endpoint": "NR-ER",
+        "expected_active": 0,
+        "basis_literature_not_measured_by_us": "metabolite, expected inactive (negative control)",
+        "pubchem_cid": 311,
+        "canonical_smiles": "O=C(O)CC(O)(CC(=O)O)C(=O)O",
+        "inchikey": "KRKNYBCHXYNGOX-UHFFFAOYSA-N",
+        "n_heavy_atoms": 13,
+        "within_training_size_filter": true,
+        "in_tox21_set": true,
+        "in_scaffold_train_fold_seed0": true,
+        "tox21_measured_label": 0.0,
+        "predicted_probability": 0.0187,
+        "prediction_matches_expectation": true,
+        "external_check": false
+      },
+      {
+        "name": "cyclohexanol",
+        "endpoint": "SR-MMP",
+        "expected_active": 0,
+        "basis_literature_not_measured_by_us": "simple alcohol, expected inactive (negative control)",
+        "pubchem_cid": 7966,
+        "canonical_smiles": "OC1CCCCC1",
+        "inchikey": "HPXRVTGHNJAIIH-UHFFFAOYSA-N",
+        "n_heavy_atoms": 7,
+        "within_training_size_filter": false,
+        "in_tox21_set": false,
+        "in_scaffold_train_fold_seed0": false,
+        "tox21_measured_label": NaN,
+        "predicted_probability": 0.936,
+        "prediction_matches_expectation": false,
+        "external_check": true
+      }
+    ]
+  },
+  "calibration": {
+    "n_bins": 10,
+    "binning": "equal-width over [0, 1]",
+    "pooled": {
+      "random": {
+        "n": 29987,
+        "ece": 0.06015731766147312,
+        "brier": 0.06107511616490187,
+        "mean_predicted": 0.14439382014588303,
+        "observed_rate": 0.0842365024844099
+      },
+      "scaffold": {
+        "n": 27736,
+        "ece": 0.06453481510172185,
+        "brier": 0.07274704866114015,
+        "mean_predicted": 0.1571220663275655,
+        "observed_rate": 0.09258725122584367
+      }
+    },
+    "per_fit_mean_ece": {
+      "random": 0.06528648670149374,
+      "scaffold": 0.07215126973324087
+    },
+    "per_fit_mean_ece_isotonic": {
+      "random": 0.025242237794042832,
+      "scaffold": 0.02528524459928617
+    },
+    "per_fit_mean_brier_isotonic": {
+      "random": 0.0574109246167654,
+      "scaffold": 0.07090363078428741
+    },
+    "selective_prediction": [
+      {
+        "split": "random",
+        "rejected_fraction": 0.1,
+        "n_kept": 26988,
+        "macro_roc_auc": 0.8098301247723138,
+        "accuracy": 0.9558692752334371,
+        "positive_rate_kept": 0.059989625018526754,
+        "positive_rate_rejected": 0.302434144714905
+      },
+      {
+        "split": "random",
+        "rejected_fraction": 0.2,
+        "n_kept": 23989,
+        "macro_roc_auc": 0.792565994369589,
+        "accuracy": 0.9684021843344867,
+        "positive_rate_kept": 0.047021551544457876,
+        "positive_rate_rejected": 0.23307769256418806
+      },
+      {
+        "split": "random",
+        "rejected_fraction": 0.5,
+        "n_kept": 14993,
+        "macro_roc_auc": 0.7686671578385241,
+        "accuracy": 0.9813913159474421,
+        "positive_rate_kept": 0.02994730874408057,
+        "positive_rate_rejected": 0.1385220754968654
+      },
+      {
+        "split": "scaffold",
+        "rejected_fraction": 0.1,
+        "n_kept": 24962,
+        "macro_roc_auc": 0.7252825802607655,
+        "accuracy": 0.9429132281067222,
+        "positive_rate_kept": 0.06433779344603797,
+        "positive_rate_rejected": 0.3467916366258111
+      },
+      {
+        "split": "scaffold",
+        "rejected_fraction": 0.2,
+        "n_kept": 22188,
+        "macro_roc_auc": 0.7049778434622263,
+        "accuracy": 0.956372814133766,
+        "positive_rate_kept": 0.048674959437533805,
+        "positive_rate_rejected": 0.26820475847152125
+      },
+      {
+        "split": "scaffold",
+        "rejected_fraction": 0.5,
+        "n_kept": 13868,
+        "macro_roc_auc": 0.6698929471054694,
+        "accuracy": 0.9758436688779925,
+        "positive_rate_kept": 0.027256994519757716,
+        "positive_rate_rejected": 0.15791750793192963
+      }
+    ]
+  },
+  "variance_decomposition": {
+    "penalty_point_estimate": 0.0712854307733333,
+    "per_seed_differences": {
+      "0": 0.05422707093333334,
+      "1": 0.08977607978333313,
+      "2": 0.03577611548333337,
+      "3": 0.0834744082333333,
+      "4": 0.09317347943333332
+    },
+    "seed_sd": 0.02510707599099042,
+    "seed_sem": 0.011228225726421496,
+    "bootstrap_ci": [
+      0.051002,
+      0.091878
+    ],
+    "bootstrap_sd_implied": 0.010427551020408165,
+    "combined_sd": 0.01532340932190643,
+    "combined_ci": [
+      0.04125154850239669,
+      0.1013193130442699
+    ],
+    "excludes_zero": true,
+    "method": "per-seed macro differences give the split-choice component; the bootstrap percentile interval gives the test-set sampling component as an implied sigma = (hi - lo) / (2 * 1.96); the two are treated as independent so the variances add, and the combined interval is mean +/- 1.96 * sqrt(boot_sd^2 + seed_sem^2)"
+  }
+}

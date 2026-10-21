@@ -1,0 +1,28 @@
+{
+  "comparison": {
+    "cold_drug": {
+      "frozen_mlp": 0.5819940686225891,
+      "frozen_mlp_std": 0.048269688041923796,
+      "random_forest": 0.7324468000000001,
+      "best_trained_encoder": 0.5832278887430827,
+      "within_protein_frozen_mlp": 0.45348226428031924
+    },
+    "cold_target": {
+      "frozen_mlp": 0.5000805914402008,
+      "frozen_mlp_std": 0.05318066924809639,
+      "random_forest": 0.591748,
+      "best_trained_encoder": 0.5955660382906596,
+      "within_protein_frozen_mlp": 0.6944198608398438
+    },
+    "random": {
+      "frozen_mlp": 0.8509622931480407,
+      "frozen_mlp_std": 0.0043216713425157744,
+      "random_forest": 0.7840702,
+      "best_trained_encoder": 0.6936392456293106,
+      "within_protein_frozen_mlp": 0.7824997067451477
+    }
+  },
+  "published_otter_kiba_random_pearson": 0.852,
+  "n_runs": 15,
+  "protein_model": "esm2_t33_650M_UR50D"
+}
