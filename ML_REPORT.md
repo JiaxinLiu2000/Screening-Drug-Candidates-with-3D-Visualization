@@ -2,7 +2,7 @@
 
 A supervised-learning study on molecular data. The application is virtual screening, but the questions are machine-learning questions: does a learned representation beat a fixed one, how much does that answer depend on training-set size, what happens under distribution shift, and can the model tell us when not to trust it.
 
-- commit `496f498-dirty`; 65/65 integrity checks pass; 57/57 artefacts reproduce byte-identically
+- commit `f079aac`; 65/65 integrity checks pass; 57/57 artefacts reproduce byte-identically
 - 76 neural training runs (8.7 GPU-hours) plus 60 learning-curve fits
 
 ## 1. The two prediction problems
