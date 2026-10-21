@@ -34,6 +34,13 @@ experiment ran: **shared encoding does not help** — sharing at the default los
 weight hurts, tuned sharing is neutral, and no configuration beats single-task
 training by more than seed noise.
 
+## Start here
+
+**[`FINAL_REPORT.md`](FINAL_REPORT.md)** - the consolidated write-up: what was
+trained, what was measured, the five findings and the limits of each. Every
+number in it is generated from a committed artefact by `src/37_final_report.py`,
+and an audit check fails if any of them stops agreeing with its source.
+
 ## Setup
 
 ```bash

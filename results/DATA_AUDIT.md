@@ -1,6 +1,6 @@
 # Data audit
 
-**67 passed, 0 failed, 0 skipped** of 67 checks.
+**68 passed, 0 failed, 0 skipped** of 68 checks.
 
 Produced by `src/15_data_audit.py`. This audit does not re-run the pipeline and does not trust any script's own assertions: it recomputes each quantity from the committed artefacts and checks that independent sources agree — summary statistics against per-fit rows, pocket geometry against ligand coordinates, split partitions against the molecule tables, document text against the source tables, and the dependency lock against the installed environment.
 
@@ -95,8 +95,8 @@ Produced by `src/15_data_audit.py`. This audit does not re-run the pipeline and 
 
 | check | result | measured |
 | --- | --- | --- |
-| no raw or processed data is tracked by git | PASS | tracked data files 0, committed artefacts 294 |
-| every source module compiles | PASS | 54 modules under src/; compileall exit 0 |
+| no raw or processed data is tracked by git | PASS | tracked data files 0, committed artefacts 299 |
+| every source module compiles | PASS | 55 modules under src/; compileall exit 0 |
 | ablation checkpoints are newer than the metric table they produced | PASS | 6 checkpoints for configs ['A', 'B', 'C', 'D', 'E', 'F']; missing none; stale none |
 
 ## Phase 3 / KIBA overlap
@@ -195,6 +195,12 @@ Produced by `src/15_data_audit.py`. This audit does not re-run the pipeline and 
 | check | result | measured |
 | --- | --- | --- |
 | the tuned baseline is recomputed, not overwritten | PASS | 30 tuned fits; report-vs-per-fit discrepancy 0.00e+00; tuning gain per split [0.0378, -0.0036, 0.052]; committed untuned table still has no max_features column: True |
+
+## FINAL_REPORT.md
+
+| check | result | measured |
+| --- | --- | --- |
+| headline numbers agree with their artefacts | PASS | 176 lines; absent headline values none; hand-written placement claim present: False |
 
 ## Verdict
 

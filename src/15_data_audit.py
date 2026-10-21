@@ -1255,6 +1255,32 @@ def _():
         f"table still has no max_features column: {untouched}")
 
 
+@check("FINAL_REPORT.md", "headline numbers agree with their artefacts")
+def _():
+    path = paths.ROOT / "FINAL_REPORT.md"
+    if not path.exists():
+        return None, "FINAL_REPORT.md absent; run src/37_final_report.py"
+    text = path.read_text(encoding="utf-8")
+    tuned = json.loads((paths.RESULTS / "tuned_floor.json").read_text())
+    mod = json.loads((paths.RESULTS / "modality_ablation.json").read_text())
+    dock = json.loads((paths.RESULTS / "self_docking.json").read_text())
+    # A report generated from artefacts should never be able to disagree with
+    # them, so this check exists to catch a hand-edit that bypassed the generator.
+    want = {
+        "tuned KIBA-random forest":
+            f"{tuned['kiba_by_split']['random']['rf_tuned_0.3']:.4f}",
+        "cold-target shuffle cost":
+            f"{mod['by_split']['cold_target']['shuffle_cost']:+.4f}",
+        "docking top-pose success":
+            f"{dock['overall']['success_rate_all_runs']:.1%}",
+    }
+    missing = {k: v for k, v in want.items() if v not in text}
+    stale = "sits between" in text  # the placement sentence before it was derived
+    return not missing and not stale, (
+        f"{len(text.splitlines())} lines; absent headline values "
+        f"{missing or 'none'}; hand-written placement claim present: {stale}")
+
+
 # --------------------------------------------------------------------------
 
 def main() -> int:
