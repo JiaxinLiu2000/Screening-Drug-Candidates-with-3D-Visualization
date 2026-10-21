@@ -1,0 +1,101 @@
+{
+  "modes": [
+    "both",
+    "drug_only",
+    "protein_only",
+    "shuffled_protein"
+  ],
+  "splits": [
+    "random",
+    "cold_drug",
+    "cold_target"
+  ],
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "by_split": {
+    "random": {
+      "both": {
+        "pearson_mean": 0.8513575990994772,
+        "pearson_std": 0.005686335564771445,
+        "within_protein": 0.7833671569824219,
+        "share_of_full_model": 1.0
+      },
+      "drug_only": {
+        "pearson_mean": 0.6051503817240397,
+        "pearson_std": 0.004720756375056716,
+        "within_protein": 0.5582096974054972,
+        "share_of_full_model": 0.7108063431443344
+      },
+      "protein_only": {
+        "pearson_mean": 0.32357338070869446,
+        "pearson_std": 0.003989519109451671,
+        "within_protein": NaN,
+        "share_of_full_model": 0.38006753102451185
+      },
+      "shuffled_protein": {
+        "pearson_mean": 0.8046781818072001,
+        "pearson_std": 0.0014447441095352934,
+        "within_protein": 0.7155824303627014,
+        "share_of_full_model": 0.9451706106321807
+      },
+      "shuffle_cost": 0.04667941729227709
+    },
+    "cold_drug": {
+      "both": {
+        "pearson_mean": 0.5838305155436198,
+        "pearson_std": 0.0664437953338471,
+        "within_protein": 0.45644386609395343,
+        "share_of_full_model": 1.0
+      },
+      "drug_only": {
+        "pearson_mean": 0.255218967795372,
+        "pearson_std": 0.03304720941826238,
+        "within_protein": 0.24116558829943338,
+        "share_of_full_model": 0.43714564586904303
+      },
+      "protein_only": {
+        "pearson_mean": 0.3296346167723338,
+        "pearson_std": 0.008933724193747028,
+        "within_protein": NaN,
+        "share_of_full_model": 0.5646066932034247
+      },
+      "shuffled_protein": {
+        "pearson_mean": 0.5600748360157013,
+        "pearson_std": 0.0728958527239589,
+        "within_protein": 0.4315742750962575,
+        "share_of_full_model": 0.9593106579812826
+      },
+      "shuffle_cost": 0.02375567952791846
+    },
+    "cold_target": {
+      "both": {
+        "pearson_mean": 0.4793567955493927,
+        "pearson_std": 0.06185327492505687,
+        "within_protein": 0.6939128041267395,
+        "share_of_full_model": 1.0
+      },
+      "drug_only": {
+        "pearson_mean": 0.5720227758089701,
+        "pearson_std": 0.03693177069437829,
+        "within_protein": 0.5656615296999613,
+        "share_of_full_model": 1.193313166976954
+      },
+      "protein_only": {
+        "pearson_mean": 0.13024926682313284,
+        "pearson_std": 0.060133171184762406,
+        "within_protein": NaN,
+        "share_of_full_model": 0.27171674216875064
+      },
+      "shuffled_protein": {
+        "pearson_mean": 0.2243794947862625,
+        "pearson_std": 0.062116061311845265,
+        "within_protein": 0.5075458586215973,
+        "share_of_full_model": 0.46808451839949466
+      },
+      "shuffle_cost": 0.2549773007631302
+    }
+  }
+}

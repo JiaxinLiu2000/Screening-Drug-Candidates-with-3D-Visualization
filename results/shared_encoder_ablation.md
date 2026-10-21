@@ -65,6 +65,10 @@ The full grid is reported, not only the best cell. The weight multiplies the aff
 
 **shared encoding does not help, and the chemical-space measurement explains why.**
 
+> **Read this with `ML_REPORT.md` sections 2 and 4.** Phase 4 found that a model with no learnable molecular encoder at all - frozen ESM-2 plus Morgan fingerprints into an MLP - reaches Pearson 0.8510 on KIBA-random, against 0.6936 for the best encoder trained here. The verdict above is therefore a statement about *these* encoders, not about neural methods in general.
+
+> **The random-forest floor quoted below is the untuned one.** Tuning a single hyperparameter (`max_features` from `sqrt` to 0.3) moves it from 0.7841 to 0.8219 Pearson on KIBA-random, which is larger than most architecture differences measured here. Every neural-vs-floor margin in this file is against the weaker floor.
+
 | comparison | toxicity macro ROC-AUC | affinity Pearson r (random split) |
 | --- | --- | --- |
 | single-task, from scratch (A / B) | 0.7689 | 0.7310 |

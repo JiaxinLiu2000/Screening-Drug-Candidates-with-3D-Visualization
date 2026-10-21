@@ -300,6 +300,108 @@ def main() -> int:
 
     # ---------------- 6. abstention ----------------
     sig = abstention["signals"]
+    # ---------------- 5c. modality ablation ----------------
+    mod_path = paths.RESULTS / "modality_ablation.json"
+    if mod_path.exists():
+        mod = json.loads(mod_path.read_text(encoding="utf-8"))
+        add("### 5c. Which input is the affinity model actually using?")
+        add("")
+        add("The protein-mean control in 5b showed that knowing only the protein is "
+            "already worth a third of a correlation. A modality ablation finishes the "
+            "question: the same MLP is trained four ways on identical folds, with one "
+            "input block zeroed (which keeps the parameter count fixed), plus a "
+            "control in which each protein gets another protein's embedding.")
+        add("")
+        header = "| split | " + " | ".join(m.replace("_", " ") for m in mod["modes"])
+        add(header + " | cost of shuffling |")
+        add("| --- " * (len(mod["modes"]) + 2) + "|")
+        for split, cells in mod["by_split"].items():
+            values = " | ".join(f"{cells[m]['pearson_mean']:.4f}" for m in mod["modes"])
+            add(f"| {split} | {values} | {cells['shuffle_cost']:+.4f} |")
+        add("")
+        rnd = mod["by_split"]["random"]
+        rnd = mod["by_split"]["random"]
+        ct = mod["by_split"]["cold_target"]
+        cd = mod["by_split"]["cold_drug"]
+        add(f"Two results here, and the second one was not expected.")
+        add("")
+        add(f"**The protein channel is mostly an identity key, not biology.** On the "
+            f"random split, replacing every protein's ESM-2 embedding with a different "
+            f"protein's - a one-to-one relabelling that destroys all biological "
+            f"similarity structure while preserving the ability to tell proteins apart "
+            f"- costs only {rnd['shuffle_cost']:+.4f} Pearson "
+            f"({rnd['both']['pearson_mean']:.4f} to "
+            f"{rnd['shuffled_protein']['pearson_mean']:.4f}). On cold-drug it costs "
+            f"{cd['shuffle_cost']:+.4f}. A 650M-parameter protein language model is "
+            f"earning almost nothing beyond 'which protein is this', because with every "
+            f"protein seen in training a lookup table suffices.")
+        add("")
+        add(f"**Except where generalisation actually requires it.** On the cold-target "
+            f"split, where test proteins were never seen in training, shuffling costs "
+            f"{ct['shuffle_cost']:+.4f} - five times the random-split penalty. An "
+            f"arbitrary key cannot transfer to an unseen protein; a biological "
+            f"embedding can. So the value of the pretrained protein representation is "
+            f"invisible on the split the field reports most often and only appears "
+            f"under the shift it was supposed to handle.")
+        add("")
+        add(f"**And on cold-target, adding the protein input actively hurts.** The "
+            f"drug-only model scores {ct['drug_only']['pearson_mean']:.4f} against "
+            f"{ct['both']['pearson_mean']:.4f} for the full model - removing an entire "
+            f"input modality *improves* the result by "
+            f"{ct['drug_only']['pearson_mean'] - ct['both']['pearson_mean']:+.4f}. The "
+            f"head learns to lean on protein features that do not transfer, so for "
+            f"unseen targets it would be better off ignoring the protein altogether. "
+            f"This is a concrete instance of a general lesson: **more input "
+            f"information is only an advantage when the training and test "
+            f"distributions share it.**")
+        add("")
+        add("(`protein_only` has no within-protein correlation by construction: with "
+            "the drug block zeroed every molecule against a given protein receives an "
+            "identical prediction, so the within-protein correlation is undefined "
+            "rather than zero. It is reported as such rather than silently filled in.)")
+        add("")
+
+    # ---------------- 5d. the tuned floor ----------------
+    tuned_path = paths.RESULTS / "tuned_floor.json"
+    if tuned_path.exists():
+        tu = json.loads(tuned_path.read_text(encoding="utf-8"))
+        add("### 5d. Every margin in this project, re-measured against a tuned floor")
+        add("")
+        add(f"Section 4 showed the baseline was under-tuned. Because every "
+            f"neural-vs-baseline margin was computed against the weaker forest, the "
+            f"whole comparison was re-run at `max_features={tu['tuned_max_features']}` "
+            f"on the same folds. The committed `binding_baseline.csv` is left as the "
+            f"record of the untuned run so the difference stays visible.")
+        add("")
+        add("| KIBA split | RF untuned (`sqrt`) | RF tuned | frozen MLP | MLP lead vs "
+            "untuned | MLP lead vs tuned |")
+        add("| --- | --- | --- | --- | --- | --- |")
+        for split, v in tu["kiba_by_split"].items():
+            add(f"| {split} | {v['rf_untuned_sqrt']:.4f} | {v['rf_tuned_0.3']:.4f} "
+                f"| {v['frozen_mlp']:.4f} | {v['mlp_lead_over_untuned_rf']:+.4f} "
+                f"| {v['mlp_lead_over_tuned_rf']:+.4f} |")
+        add("")
+        curve = tu["learning_curve_kiba"]
+        add("And the learning curve of section 2, against both floors:")
+        add("")
+        add("| training fraction | MLP lead vs untuned RF | MLP lead vs tuned RF |")
+        add("| --- | --- | --- |")
+        for frac, v in curve.items():
+            add(f"| {float(frac):.0%} | {v['mlp_lead_over_untuned']:+.4f} "
+                f"| {v['mlp_lead_over_tuned']:+.4f} |")
+        add("")
+        full = curve[str(max(float(f) for f in curve))]
+        add(f"**The qualitative conclusion of section 2 survives but the magnitude "
+            f"does not.** At full data the frozen MLP's lead drops from "
+            f"{full['mlp_lead_over_untuned']:+.4f} against the untuned forest to "
+            f"{full['mlp_lead_over_tuned']:+.4f} against the tuned one. The pretrained "
+            f"representation still wins at every training-set size, but roughly half "
+            f"of the headline gap was baseline tuning rather than representation "
+            f"quality. This is the single most important methodological lesson in the "
+            f"project: **a margin against an untuned baseline measures the tuning as "
+            f"much as the model.**")
+        add("")
+
     add("## 6. Knowing when not to answer")
     add("")
     add("A classifier that can abstain is more useful than one that cannot, but the "

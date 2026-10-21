@@ -176,6 +176,21 @@ def main() -> int:
 
     add("## 5. Which shared-encoder outcome did we observe?")
     add("")
+    frozen_path = paths.RESULTS / "frozen_baseline.json"
+    tuned_path = paths.RESULTS / "tuned_floor.json"
+    if frozen_path.exists() and tuned_path.exists():
+        fr = json.loads(frozen_path.read_text(encoding="utf-8"))["comparison"]["random"]
+        tu = json.loads(tuned_path.read_text(encoding="utf-8"))["kiba_by_split"]["random"]
+        add(f"> **Superseded in part by Phase 4 - see `ML_REPORT.md` sections 2 and 4 "
+            f"before quoting this answer.** Two measurements narrow it. (a) A frozen "
+            f"ESM-2 + Morgan MLP, with no learnable molecular encoder, reaches Pearson "
+            f"{fr['frozen_mlp']:.4f} on KIBA-random where our best trained encoder "
+            f"reaches {fr['best_trained_encoder']:.4f} - so this is a result about our "
+            f"encoders. (b) The random-forest floor used throughout was untuned: "
+            f"`max_features` alone moves it from {tu['rf_untuned_sqrt']:.4f} to "
+            f"{tu['rf_tuned_0.3']:.4f}, so every margin quoted against it is "
+            f"overstated.")
+        add("")
     tox_means = ablation["toxicity_macro_roc_auc"]
     aff_means = ablation["affinity_pearson_random"]
     add(f"**{ablation['verdict'].capitalize()}.** On the Tox21 scaffold split the "

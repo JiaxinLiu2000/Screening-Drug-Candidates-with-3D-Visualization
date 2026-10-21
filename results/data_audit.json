@@ -1,5 +1,5 @@
 {
-  "n_pass": 65,
+  "n_pass": 67,
   "n_fail": 0,
   "n_skip": 0,
   "checks": [
@@ -229,7 +229,7 @@
       "section": "Repository",
       "name": "no raw or processed data is tracked by git",
       "status": "PASS",
-      "detail": "tracked data files 0, committed artefacts 267"
+      "detail": "tracked data files 0, committed artefacts 294"
     },
     {
       "section": "Phase 3 / KIBA overlap",
@@ -349,7 +349,7 @@
       "section": "Repository",
       "name": "every source module compiles",
       "status": "PASS",
-      "detail": "52 modules under src/; compileall exit 0"
+      "detail": "54 modules under src/; compileall exit 0"
     },
     {
       "section": "Repository",
@@ -392,6 +392,18 @@
       "name": "control predictors behave as controls must",
       "status": "PASS",
       "detail": "global-mean control gives r=0 and CI=0.5 on both splits; problems none"
+    },
+    {
+      "section": "Phase 4 / modality ablation",
+      "name": "aggregates recompute and the control behaves",
+      "status": "PASS",
+      "detail": "36 runs (expected 36); report-vs-per-run discrepancy 5.55e-17; splits where an ablated model BEAT the full model {'cold_target': 0.0927}; shuffle cost per split {'random': 0.0467, 'cold_drug': 0.0238, 'cold_target': 0.255}"
+    },
+    {
+      "section": "Phase 4 / tuned floor",
+      "name": "the tuned baseline is recomputed, not overwritten",
+      "status": "PASS",
+      "detail": "30 tuned fits; report-vs-per-fit discrepancy 0.00e+00; tuning gain per split [0.0378, -0.0036, 0.052]; committed untuned table still has no max_features column: True"
     }
   ]
 }

@@ -1204,6 +1204,57 @@ def _():
                      f"problems {bad or 'none'}")
 
 
+@check("Phase 4 / modality ablation", "aggregates recompute and the control behaves")
+def _():
+    path = paths.RESULTS / "modality_ablation.json"
+    if not path.exists():
+        return None, "modality_ablation.json absent; the ablation was not run"
+    rec = json.loads(path.read_text())
+    frame = pd.read_csv(paths.RESULTS / "modality_ablation.csv")
+    expected = len(rec["modes"]) * len(rec["splits"]) * len(rec["seeds"])
+    worst = 0.0
+    for split, cells in rec["by_split"].items():
+        for mode in rec["modes"]:
+            sub = frame[(frame["split"] == split) & (frame["mode"] == mode)]["pearson_r"]
+            worst = max(worst, abs(float(sub.mean()) - cells[mode]["pearson_mean"]))
+    # Splits where removing an input *improved* the model. That is a real
+    # outcome, not a defect, so it is surfaced rather than failed on - but it has
+    # to be surfaced, because it changes how the "both" column must be read.
+    hurt = {s: round(max(c["drug_only"]["pearson_mean"],
+                         c["protein_only"]["pearson_mean"])
+                     - c["both"]["pearson_mean"], 4)
+            for s, c in rec["by_split"].items()
+            if c["both"]["pearson_mean"] < max(c["drug_only"]["pearson_mean"],
+                                               c["protein_only"]["pearson_mean"])}
+    return len(frame) == expected and worst < 1e-9, (
+        f"{len(frame)} runs (expected {expected}); report-vs-per-run discrepancy "
+        f"{worst:.2e}; splits where an ablated model BEAT the full model "
+        f"{hurt or 'none'}; shuffle cost per split "
+        f"{ {s: round(c['shuffle_cost'], 4) for s, c in rec['by_split'].items()} }")
+
+
+@check("Phase 4 / tuned floor", "the tuned baseline is recomputed, not overwritten")
+def _():
+    path = paths.RESULTS / "tuned_floor.json"
+    if not path.exists():
+        return None, "tuned_floor.json absent; the correction was not run"
+    rec = json.loads(path.read_text())
+    tuned = pd.read_csv(paths.RESULTS / "binding_baseline_tuned.csv")
+    committed = pd.read_csv(paths.RESULTS / "binding_baseline.csv")
+    # The untuned record must still be intact: the correction adds a file, it
+    # does not rewrite history.
+    untouched = set(committed["split"].unique()) and "max_features" not in committed.columns
+    worst = 0.0
+    for split, v in rec["kiba_by_split"].items():
+        sub = tuned[(tuned["dataset"] == "KIBA") & (tuned["split"] == split)]["pearson_r"]
+        worst = max(worst, abs(float(sub.mean()) - v["rf_tuned_0.3"]))
+    gains = [v["tuning_gain"] for v in rec["kiba_by_split"].values()]
+    return worst < 1e-9 and untouched, (
+        f"{len(tuned)} tuned fits; report-vs-per-fit discrepancy {worst:.2e}; "
+        f"tuning gain per split {[round(g, 4) for g in gains]}; committed untuned "
+        f"table still has no max_features column: {untouched}")
+
+
 # --------------------------------------------------------------------------
 
 def main() -> int:

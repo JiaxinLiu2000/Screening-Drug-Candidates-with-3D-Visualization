@@ -1,0 +1,86 @@
+{
+  "tuned_max_features": 0.3,
+  "committed_max_features": "sqrt",
+  "n_estimators": 100,
+  "kiba_by_split": {
+    "random": {
+      "rf_untuned_sqrt": 0.7840702,
+      "rf_tuned_0.3": 0.821858473020529,
+      "tuning_gain": 0.037788273020528895,
+      "frozen_mlp": 0.8509622931480407,
+      "best_trained_encoder": 0.6936392456293106,
+      "mlp_lead_over_untuned_rf": 0.06689209314804068,
+      "mlp_lead_over_tuned_rf": 0.02910382012751178
+    },
+    "cold_drug": {
+      "rf_untuned_sqrt": 0.7324468000000001,
+      "rf_tuned_0.3": 0.7288737590329645,
+      "tuning_gain": -0.00357304096703559,
+      "frozen_mlp": 0.5819940686225891,
+      "best_trained_encoder": 0.5832278887430827,
+      "mlp_lead_over_untuned_rf": -0.150452731377411,
+      "mlp_lead_over_tuned_rf": -0.1468796904103754
+    },
+    "cold_target": {
+      "rf_untuned_sqrt": 0.591748,
+      "rf_tuned_0.3": 0.6437722520456923,
+      "tuning_gain": 0.052024252045692276,
+      "frozen_mlp": 0.5000805914402008,
+      "best_trained_encoder": 0.5955660382906596,
+      "mlp_lead_over_untuned_rf": -0.09166740855979927,
+      "mlp_lead_over_tuned_rf": -0.14369166060549154
+    }
+  },
+  "davis_by_split": {
+    "random": {
+      "rf_untuned_sqrt": 0.677283,
+      "rf_tuned_0.3": 0.7034400809542836
+    },
+    "cold_drug": {
+      "rf_untuned_sqrt": 0.45300340000000006,
+      "rf_tuned_0.3": 0.46342452819125074
+    },
+    "cold_target": {
+      "rf_untuned_sqrt": 0.580908,
+      "rf_tuned_0.3": 0.5935178642102164
+    }
+  },
+  "learning_curve_kiba": {
+    "0.05": {
+      "rf_untuned": 0.5473566329952608,
+      "rf_tuned": 0.5805227150918328,
+      "frozen_mlp": 0.586290180683136,
+      "mlp_lead_over_untuned": 0.03893354768787516,
+      "mlp_lead_over_tuned": 0.005767465591303145
+    },
+    "0.1": {
+      "rf_untuned": 0.6080956612276346,
+      "rf_tuned": 0.639969640374581,
+      "frozen_mlp": 0.6500979661941528,
+      "mlp_lead_over_untuned": 0.042002304966518245,
+      "mlp_lead_over_tuned": 0.010128325819571793
+    },
+    "0.25": {
+      "rf_untuned": 0.6841674535070194,
+      "rf_tuned": 0.7211194806486381,
+      "frozen_mlp": 0.7428953250249227,
+      "mlp_lead_over_untuned": 0.058727871517903374,
+      "mlp_lead_over_tuned": 0.02177584437628466
+    },
+    "0.5": {
+      "rf_untuned": 0.7377329753761891,
+      "rf_tuned": 0.7757269855513581,
+      "frozen_mlp": 0.8000110983848572,
+      "mlp_lead_over_untuned": 0.062278123008668085,
+      "mlp_lead_over_tuned": 0.024284112833499072
+    },
+    "1.0": {
+      "rf_untuned": 0.7867314771999832,
+      "rf_tuned": 0.8226991165940524,
+      "frozen_mlp": 0.8513575990994772,
+      "mlp_lead_over_untuned": 0.06462612189949402,
+      "mlp_lead_over_tuned": 0.028658482505424798
+    }
+  },
+  "note": "binding_baseline.csv is left untouched as the record of the untuned baseline; these rows are the tuned re-measurement"
+}

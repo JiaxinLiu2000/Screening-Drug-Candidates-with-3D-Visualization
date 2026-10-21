@@ -1,0 +1,16 @@
+task,model,seed,fraction,n_train,metric,value,secondary
+kiba_random,random_forest_tuned,0,0.05,4688,pearson_r,0.571357912871553,0.743451741181439
+kiba_random,random_forest_tuned,0,0.1,9375,pearson_r,0.6370638611645882,0.7631394966493364
+kiba_random,random_forest_tuned,0,0.25,23438,pearson_r,0.7199361799878029,0.7926549084411089
+kiba_random,random_forest_tuned,0,0.5,46877,pearson_r,0.7747301072630823,0.8166569255811761
+kiba_random,random_forest_tuned,0,1.0,93754,pearson_r,0.8244798467087041,0.8420476344642117
+kiba_random,random_forest_tuned,1,0.05,4688,pearson_r,0.5824353071909951,0.7498320755008002
+kiba_random,random_forest_tuned,1,0.1,9375,pearson_r,0.633116622102598,0.7695032311213453
+kiba_random,random_forest_tuned,1,0.25,23438,pearson_r,0.7219228852776646,0.7977365483579095
+kiba_random,random_forest_tuned,1,0.5,46877,pearson_r,0.7798383873412666,0.8219125657487814
+kiba_random,random_forest_tuned,1,1.0,93754,pearson_r,0.8241098031204469,0.8446408234497128
+kiba_random,random_forest_tuned,2,0.05,4688,pearson_r,0.5877749252129504,0.744146098394673
+kiba_random,random_forest_tuned,2,0.1,9375,pearson_r,0.6497284378565567,0.7671068911695003
+kiba_random,random_forest_tuned,2,0.25,23438,pearson_r,0.7214993766804466,0.792859065368876
+kiba_random,random_forest_tuned,2,0.5,46877,pearson_r,0.7726124620497257,0.8143765037144516
+kiba_random,random_forest_tuned,2,1.0,93754,pearson_r,0.819507699953006,0.8392474566990971

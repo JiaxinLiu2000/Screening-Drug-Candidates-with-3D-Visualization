@@ -2,7 +2,7 @@
 
 A supervised-learning study on molecular data. The application is virtual screening, but the questions are machine-learning questions: does a learned representation beat a fixed one, how much does that answer depend on training-set size, what happens under distribution shift, and can the model tell us when not to trust it.
 
-- commit `f079aac`; 65/65 integrity checks pass; 57/57 artefacts reproduce byte-identically
+- commit `f079aac-dirty`; 66/67 integrity checks pass; 57/57 artefacts reproduce byte-identically
 - 76 neural training runs (8.7 GPU-hours) plus 60 learning-curve fits
 
 ## 1. The two prediction problems
@@ -99,6 +99,48 @@ Section 2 showed the frozen-embedding MLP beating the forest on KIBA-random by a
 Knowing nothing but which protein a pair involves already yields pooled Pearson 0.3665 and a concordance index of 0.6819, so a pooled number on this task is partly a measure of between-protein variance and should never be quoted alone. Controlling for that, the forest still carries real molecule-level signal (within-protein 0.6354) and carries **more** of it than the MLP (0.4535) - the reverse of the random-split ordering.
 
 **This is the most interesting modelling result in the project.** The two models are not ranked; they are good at different things. The frozen representation plus MLP interpolates better - it exploits a dense, well-covered input space and improves as that space fills in. The forest extrapolates better - when the test molecules are chemotypes it has never seen, an axis-aligned ensemble over substructure counts degrades more gracefully than a smooth function fitted in a learned embedding space. Which model is 'better' is therefore a question about the deployment regime, and a benchmark that only reports a random split cannot distinguish the two.
+
+### 5c. Which input is the affinity model actually using?
+
+The protein-mean control in 5b showed that knowing only the protein is already worth a third of a correlation. A modality ablation finishes the question: the same MLP is trained four ways on identical folds, with one input block zeroed (which keeps the parameter count fixed), plus a control in which each protein gets another protein's embedding.
+
+| split | both | drug only | protein only | shuffled protein | cost of shuffling |
+| --- | --- | --- | --- | --- | --- |
+| random | 0.8514 | 0.6052 | 0.3236 | 0.8047 | +0.0467 |
+| cold_drug | 0.5838 | 0.2552 | 0.3296 | 0.5601 | +0.0238 |
+| cold_target | 0.4794 | 0.5720 | 0.1302 | 0.2244 | +0.2550 |
+
+Two results here, and the second one was not expected.
+
+**The protein channel is mostly an identity key, not biology.** On the random split, replacing every protein's ESM-2 embedding with a different protein's - a one-to-one relabelling that destroys all biological similarity structure while preserving the ability to tell proteins apart - costs only +0.0467 Pearson (0.8514 to 0.8047). On cold-drug it costs +0.0238. A 650M-parameter protein language model is earning almost nothing beyond 'which protein is this', because with every protein seen in training a lookup table suffices.
+
+**Except where generalisation actually requires it.** On the cold-target split, where test proteins were never seen in training, shuffling costs +0.2550 - five times the random-split penalty. An arbitrary key cannot transfer to an unseen protein; a biological embedding can. So the value of the pretrained protein representation is invisible on the split the field reports most often and only appears under the shift it was supposed to handle.
+
+**And on cold-target, adding the protein input actively hurts.** The drug-only model scores 0.5720 against 0.4794 for the full model - removing an entire input modality *improves* the result by +0.0927. The head learns to lean on protein features that do not transfer, so for unseen targets it would be better off ignoring the protein altogether. This is a concrete instance of a general lesson: **more input information is only an advantage when the training and test distributions share it.**
+
+(`protein_only` has no within-protein correlation by construction: with the drug block zeroed every molecule against a given protein receives an identical prediction, so the within-protein correlation is undefined rather than zero. It is reported as such rather than silently filled in.)
+
+### 5d. Every margin in this project, re-measured against a tuned floor
+
+Section 4 showed the baseline was under-tuned. Because every neural-vs-baseline margin was computed against the weaker forest, the whole comparison was re-run at `max_features=0.3` on the same folds. The committed `binding_baseline.csv` is left as the record of the untuned run so the difference stays visible.
+
+| KIBA split | RF untuned (`sqrt`) | RF tuned | frozen MLP | MLP lead vs untuned | MLP lead vs tuned |
+| --- | --- | --- | --- | --- | --- |
+| random | 0.7841 | 0.8219 | 0.8510 | +0.0669 | +0.0291 |
+| cold_drug | 0.7324 | 0.7289 | 0.5820 | -0.1505 | -0.1469 |
+| cold_target | 0.5917 | 0.6438 | 0.5001 | -0.0917 | -0.1437 |
+
+And the learning curve of section 2, against both floors:
+
+| training fraction | MLP lead vs untuned RF | MLP lead vs tuned RF |
+| --- | --- | --- |
+| 5% | +0.0389 | +0.0058 |
+| 10% | +0.0420 | +0.0101 |
+| 25% | +0.0587 | +0.0218 |
+| 50% | +0.0623 | +0.0243 |
+| 100% | +0.0646 | +0.0287 |
+
+**The qualitative conclusion of section 2 survives but the magnitude does not.** At full data the frozen MLP's lead drops from +0.0646 against the untuned forest to +0.0287 against the tuned one. The pretrained representation still wins at every training-set size, but roughly half of the headline gap was baseline tuning rather than representation quality. This is the single most important methodological lesson in the project: **a margin against an untuned baseline measures the tuning as much as the model.**
 
 ## 6. Knowing when not to answer
 

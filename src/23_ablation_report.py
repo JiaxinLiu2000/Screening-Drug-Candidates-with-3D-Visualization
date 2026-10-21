@@ -248,6 +248,30 @@ def main() -> int:
     add("")
     add(f"**{verdict}.**")
     add("")
+    # Phase 4 measured two things that qualify this verdict. Linking them from
+    # here matters because this file is quoted as a result on its own.
+    frozen_path = paths.RESULTS / "frozen_baseline.json"
+    tuned_path = paths.RESULTS / "tuned_floor.json"
+    if frozen_path.exists():
+        fr = json.loads(frozen_path.read_text(encoding="utf-8"))["comparison"]["random"]
+        add(f"> **Read this with `ML_REPORT.md` sections 2 and 4.** Phase 4 found that "
+            f"a model with no learnable molecular encoder at all - frozen ESM-2 plus "
+            f"Morgan fingerprints into an MLP - reaches Pearson "
+            f"{fr['frozen_mlp']:.4f} on KIBA-random, against "
+            f"{fr['best_trained_encoder']:.4f} for the best encoder trained here. The "
+            f"verdict above is therefore a statement about *these* encoders, not about "
+            f"neural methods in general.")
+        add("")
+    if tuned_path.exists():
+        tu = json.loads(tuned_path.read_text(encoding="utf-8"))["kiba_by_split"]["random"]
+        add(f"> **The random-forest floor quoted below is the untuned one.** Tuning a "
+            f"single hyperparameter (`max_features` from `sqrt` to "
+            f"{json.loads(tuned_path.read_text(encoding='utf-8'))['tuned_max_features']}) "
+            f"moves it from {tu['rf_untuned_sqrt']:.4f} to {tu['rf_tuned_0.3']:.4f} "
+            f"Pearson on KIBA-random, which is larger than most architecture "
+            f"differences measured here. Every neural-vs-floor margin in this file is "
+            f"against the weaker floor.")
+        add("")
     add("| comparison | toxicity macro ROC-AUC | affinity Pearson r (random split) |")
     add("| --- | --- | --- |")
     add(f"| single-task, from scratch (A / B) | {a:.4f} | {b_aff:.4f} |")
