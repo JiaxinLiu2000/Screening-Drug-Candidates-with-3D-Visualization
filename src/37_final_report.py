@@ -9,7 +9,6 @@ baseline. Chemistry is the subject matter, not the contribution.
 from __future__ import annotations
 
 import json
-import subprocess
 import sys
 from pathlib import Path
 
@@ -20,25 +19,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from tox21lib import paths  # noqa: E402
 
-PROVENANCE = ("src", "results", "splits", "receptors")
-
-
 def load(name: str) -> dict:
     path = paths.RESULTS / name
     if not path.exists():
         raise SystemExit(f"FAILED: {path} missing - run the pipeline first")
     return json.loads(path.read_text(encoding="utf-8"))
-
-
-def commit() -> str:
-    try:
-        def git(*a: str) -> str:
-            return subprocess.run(["git", *a], cwd=paths.ROOT, capture_output=True,
-                                  text=True, check=True).stdout.strip()
-        c = git("log", "-1", "--format=%h", "--abbrev=7", "--", *PROVENANCE)
-        return f"{c}-dirty" if git("status", "--porcelain", "--", *PROVENANCE) else c
-    except Exception:  # noqa: BLE001
-        return "n/a"
 
 
 def main() -> int:
@@ -85,7 +70,7 @@ def main() -> int:
     add("")
     add("*A machine-learning study. The data is chemical; the questions are not.*")
     add("")
-    add(f"Commit `{commit()}` · {audit['n_pass']}/{len(audit['checks'])} integrity "
+    add(f"{audit['n_pass']}/{len(audit['checks'])} integrity "
         f"checks pass · {repro['n_identical']}/{repro['n_artefacts']} artefacts "
         f"reproduce byte-identically · {len(neural)} neural training runs "
         f"({neural['train_seconds'].sum() / 3600:.1f} GPU-hours) plus {len(lc)} "
@@ -239,13 +224,20 @@ def main() -> int:
     lit_ci = {r["method"]: r["ci"] for r in external["literature"]["KIBA"] if r["ci"]}
     below = [m for m, c in lit_ci.items() if c > our_ci]
     above = [m for m, c in lit_ci.items() if c < our_ci]
+    our_mse = float(ours["rmse"].pow(2).mean())
+    lit_mse = {r["method"]: r["mse"] for r in external["literature"]["KIBA"] if r["mse"]}
+    mse_worse = sorted(m for m, v in lit_mse.items() if v < our_mse)
     add(f"Protocols differ from ours, so these are reference points rather than a "
         f"leaderboard we have entered. Placement, computed from the table: our tuned "
         f"forest ({our_ci:.4f}) is above {' and '.join(m.split(' (')[0] for m in above)} "
         f"and below {' and '.join(m.split(' (')[0] for m in below)}. Note what that "
         f"ordering means - tuning one hyperparameter moved a plain random forest past "
         f"a published gradient-boosting method, which is the same lesson as Finding 2. "
-        f"We did not reach the state of the art and do not claim to.")
+        f"That placement is on concordance index only: on MSE we are behind "
+        f"{' and '.join(m.split(' (')[0] for m in mse_worse)} "
+        f"({our_mse:.4f} against {min(lit_mse.values()):.3f} at best), so the ranking "
+        f"depends on which metric is quoted. We did not reach the state of the art and "
+        f"do not claim to.")
     add("")
 
     # ================= 4 findings =================

@@ -2,7 +2,7 @@
 
 *A machine-learning study. The data is chemical; the questions are not.*
 
-Commit `56e9559-dirty` · 68/68 integrity checks pass · 57/57 artefacts reproduce byte-identically · 76 neural training runs (8.7 GPU-hours) plus 60 learning-curve fits and 100 docking runs
+68/68 integrity checks pass · 57/57 artefacts reproduce byte-identically · 76 neural training runs (8.7 GPU-hours) plus 60 learning-curve fits and 100 docking runs
 
 ## Abstract
 
@@ -73,7 +73,7 @@ The scaffold-split penalty on Tox21 is 0.0713 macro ROC-AUC. Bootstrapping test 
 | GraphDTA (GIN) | 0.891 | 0.139 | — |
 | frozen ESM-1b + Morgan-2048, MLP head | — | — | 0.852 |
 
-Protocols differ from ours, so these are reference points rather than a leaderboard we have entered. Placement, computed from the table: our tuned forest (0.8420) is above KronRLS and SimBoost and below DeepDTA and GraphDTA. Note what that ordering means - tuning one hyperparameter moved a plain random forest past a published gradient-boosting method, which is the same lesson as Finding 2. We did not reach the state of the art and do not claim to.
+Protocols differ from ours, so these are reference points rather than a leaderboard we have entered. Placement, computed from the table: our tuned forest (0.8420) is above KronRLS and SimBoost and below DeepDTA and GraphDTA. Note what that ordering means - tuning one hyperparameter moved a plain random forest past a published gradient-boosting method, which is the same lesson as Finding 2. That placement is on concordance index only: on MSE we are behind DeepDTA and GraphDTA and SimBoost (0.2297 against 0.139 at best), so the ranking depends on which metric is quoted. We did not reach the state of the art and do not claim to.
 
 ## 4. What we actually learned
 
