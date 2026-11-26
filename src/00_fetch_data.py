@@ -91,16 +91,31 @@ def check_receptors() -> dict:
 
 
 def check_embeddings() -> dict:
-    import numpy as np
+    """Report both copies: the one the pipeline reads and the one that ships.
 
-    npz = paths.ROOT / "models" / "protein_embeddings.npz"
-    if not npz.exists():
-        return {"present": False,
-                "note": "run src/38_export_models.py, or src/19_esm_embed.py to "
-                        "regenerate from the 2.5 GB ESM-2 weights"}
-    with np.load(npz) as handle:
-        return {"present": True, "n_proteins": len(handle.files),
-                "dim": int(handle[handle.files[0]].shape[0])}
+    `src/19_esm_embed.py` writes to data/processed/ and every training script
+    reads from there; `src/38_export_models.py` copies it into models/ for
+    distribution. A fresh clone has the second but not the first, so reporting
+    only one of them gives the wrong answer in one of the two situations.
+    """
+    from tox21lib import protein_embed
+
+    out: dict = {}
+    for label, npz in (("pipeline_copy", protein_embed.cache_path(paths.DATA_PROCESSED)),
+                       ("shipped_copy", paths.ROOT / "models" / "protein_embeddings.npz")):
+        if not npz.exists():
+            out[label] = {"present": False, "path": str(npz.relative_to(paths.ROOT))}
+            continue
+        matrix, rows, model_name = protein_embed.load_cache(npz)
+        out[label] = {"present": True, "path": str(npz.relative_to(paths.ROOT)),
+                      "n_proteins": len(rows), "dim": int(matrix.shape[1]),
+                      "model": model_name}
+    if not out["pipeline_copy"]["present"] and out["shipped_copy"]["present"]:
+        out["note"] = ("training scripts read data/processed/; copy the shipped file "
+                       "there, or regenerate with src/19_esm_embed.py (2.5 GB download)")
+    elif not out["shipped_copy"]["present"]:
+        out["note"] = "run src/38_export_models.py to build models/"
+    return out
 
 
 def main() -> int:

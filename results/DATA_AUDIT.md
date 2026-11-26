@@ -207,7 +207,7 @@ Produced by `src/15_data_audit.py`. This audit does not re-run the pipeline and 
 | check | result | measured |
 | --- | --- | --- |
 | shipped models load, verify and honour their contract | PASS | 3 models + 229 protein embeddings; problems: none |
-| the served affinity model reproduces its training metric | PASS | standardisation present for 1280 dims: True; recorded test Pearson 0.8487; units: KIBA score as distributed by TDC (observed range |
+| serving paths reproduce the metrics their models were trained to | PASS | 11720 held-out pairs; affinity_frozen_mlp served 0.8487 vs trained 0.8487; multitask_gin served 0.6834 vs trained 0.6834; largest gap 9.14e-08 |
 
 ## Verdict
 

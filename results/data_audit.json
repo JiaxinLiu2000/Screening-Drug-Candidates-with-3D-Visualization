@@ -419,9 +419,9 @@
     },
     {
       "section": "Models",
-      "name": "the served affinity model reproduces its training metric",
+      "name": "serving paths reproduce the metrics their models were trained to",
       "status": "PASS",
-      "detail": "standardisation present for 1280 dims: True; recorded test Pearson 0.8487; units: KIBA score as distributed by TDC (observed range"
+      "detail": "11720 held-out pairs; affinity_frozen_mlp served 0.8487 vs trained 0.8487; multitask_gin served 0.6834 vs trained 0.6834; largest gap 9.14e-08"
     }
   ]
 }

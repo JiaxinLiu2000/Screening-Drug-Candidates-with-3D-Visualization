@@ -44,7 +44,7 @@
   },
   "protein_embeddings": {
     "file": "protein_embeddings.npz",
-    "model": "facebook/esm2_t33_650M_UR50D",
+    "model": "esm2_t33_650M_UR50D",
     "pooling": "mean over residues, last layer",
     "n_proteins": 229,
     "dim": 1280,

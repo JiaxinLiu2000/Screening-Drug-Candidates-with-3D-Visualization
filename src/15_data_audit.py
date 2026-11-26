@@ -1310,28 +1310,67 @@ def _():
         f"protein embeddings; problems: {problems or 'none'}")
 
 
-@check("Models", "the served affinity model reproduces its training metric")
+@check("Models", "serving paths reproduce the metrics their models were trained to")
 def _():
+    """The decisive check on the serving layer.
+
+    A model that loads is not a model that serves: the frozen MLP standardises
+    its protein block before training, and feeding raw ESM-2 vectors instead
+    still runs, still looks plausible, and scores 0.48 instead of 0.85. So both
+    shipped affinity paths are scored on their full held-out split and compared
+    against the metric recorded when they were trained. The two paths differ -
+    fingerprints vs molecular graphs, standardised vs raw embeddings - so this
+    covers graph conversion and protein row mapping as well.
+    """
+    if not paths.CLEAN_PARQUET.exists():
+        return None, "KIBA data absent (gitignored); run src/00_fetch_data.py to check"
     reg_path = paths.ROOT / "models" / "registry.json"
     if not reg_path.exists():
         return None, "models/registry.json absent"
-    import torch
 
-    ck = torch.load(paths.ROOT / "models" / "affinity_frozen_mlp.pt",
-                    map_location="cpu", weights_only=False)
-    pre = ck.get("preprocessing", {})
-    # The serving path must apply the same protein standardisation as training.
-    # Without it the model still runs and still looks plausible, scoring 0.48
-    # instead of 0.85 - so the statistics travelling with the weights is the
-    # thing being checked here.
-    mean = np.asarray(pre.get("protein_mean", []), dtype=np.float32)
-    std = np.asarray(pre.get("protein_std", []), dtype=np.float32)
-    dim = ck["architecture"]["protein_dim"]
-    ok = mean.shape == (dim,) and std.shape == (dim,) and bool((std > 0).all())
-    recorded = ck["metadata"]["metrics"]["pearson_r"]
-    return ok and recorded > 0.80, (
-        f"standardisation present for {dim} dims: {ok}; recorded test Pearson "
-        f"{recorded:.4f}; units: {ck['metadata']['units'][:48]}")
+    from scipy.stats import pearsonr
+
+    from tox21lib import datasets, dti
+    from tox21lib.model_io import load_model
+
+    raw = datasets.load_dti("KIBA")
+    clean, _ = datasets.unique_molecules(raw)
+    pairs, _ = dti.build_pairs(raw, clean)
+    smiles = dict(zip(clean["inchikey"], clean["canonical_smiles"]))
+    subsets = (pd.read_csv(paths.SPLITS / "kiba_random_seed0.csv")
+               .sort_values("pair_index")["subset"].to_numpy())
+    test = pairs[subsets == "test"]
+    mols = [smiles[k] for k in test["inchikey"]]
+    prots = list(test["target_id"])
+    truth = test["affinity"].to_numpy()
+
+    ablation = pd.read_csv(paths.RESULTS / "shared_encoder_metrics.csv")
+    row = ablation[(ablation["config"] == "C") & (ablation["seed"] == 0)
+                   & (ablation["affinity_split"] == "random")
+                   & (ablation["loss_weight"] == 1.0)]
+    frozen_ckpt = json.loads((paths.RESULTS / "frozen_baseline.json").read_text())
+
+    served = {
+        "affinity_frozen_mlp": (
+            float(pearsonr(truth, load_model("affinity_frozen_mlp")
+                           .predict(mols, prots))[0]),
+            # seed 0 alone, so compare against the seed-0 export metric rather
+            # than the five-seed mean the report quotes
+            float(json.loads((paths.ROOT / "models" / "registry.json").read_text())
+                  ["models"]["affinity_frozen_mlp"]["metrics"]["pearson_r"]),
+        ),
+        "multitask_gin": (
+            float(pearsonr(truth, load_model("multitask_gin")
+                           .predict_affinity(mols, prots))[0]),
+            float(row["affinity_pearson_r"].iloc[0]),
+        ),
+    }
+    worst = max(abs(a - b) for a, b in served.values())
+    return worst < 1e-4, (
+        f"{len(test)} held-out pairs; "
+        + "; ".join(f"{k} served {a:.4f} vs trained {b:.4f}"
+                    for k, (a, b) in served.items())
+        + f"; largest gap {worst:.2e}")
 
 
 # --------------------------------------------------------------------------

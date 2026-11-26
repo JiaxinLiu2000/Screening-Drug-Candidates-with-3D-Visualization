@@ -40,7 +40,7 @@ import torch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from tox21lib import ablation_data, model_io, paths  # noqa: E402
+from tox21lib import ablation_data, model_io, paths, protein_embed  # noqa: E402
 
 SOURCE_CHECKPOINTS = paths.DATA_PROCESSED / "checkpoints"
 OUT = paths.ROOT / "models"
@@ -166,9 +166,8 @@ def export_affinity(device: str) -> dict:
     # That transform is part of the model's input contract, so it ships with the
     # weights; a consumer feeding raw ESM-2 vectors would otherwise get plausible
     # but badly wrong numbers (measured: Pearson 0.48 instead of 0.85).
-    raw_matrix, _, _ = __import__("tox21lib.protein_embed", fromlist=["x"]).load_cache(
-        __import__("tox21lib.protein_embed", fromlist=["x"]).cache_path(
-            paths.DATA_PROCESSED))
+    raw_matrix, _, _ = protein_embed.load_cache(
+        protein_embed.cache_path(paths.DATA_PROCESSED))
     raw_matrix = raw_matrix.astype(np.float32)
     prot_mean = raw_matrix.mean(axis=0)
     prot_std = raw_matrix.std(axis=0) + 1e-6
@@ -241,12 +240,12 @@ def main() -> int:
 
     # The embeddings are 1.1 MB but need a 2.5 GB model download to regenerate,
     # so they ship with the repository.
-    src_npz = paths.DATA_PROCESSED / "esm2_t33_650M_UR50D.npz"
+    src_npz = protein_embed.cache_path(paths.DATA_PROCESSED)
     if not src_npz.exists():
         raise SystemExit(f"FAILED: {src_npz} missing; run src/19_esm_embed.py")
     (OUT / "protein_embeddings.npz").write_bytes(src_npz.read_bytes())
-    with np.load(OUT / "protein_embeddings.npz", allow_pickle=True) as handle:
-        n_prot, dim = handle["embeddings"].shape
+    matrix, _, embed_model = protein_embed.load_cache(OUT / "protein_embeddings.npz")
+    n_prot, dim = matrix.shape
 
     registry = {
         "format_version": model_io.FORMAT_VERSION,
@@ -254,7 +253,7 @@ def main() -> int:
         "models": {},
         "protein_embeddings": {
             "file": "protein_embeddings.npz",
-            "model": "facebook/esm2_t33_650M_UR50D",
+            "model": embed_model,
             "pooling": "mean over residues, last layer",
             "n_proteins": int(n_prot), "dim": int(dim),
             "sha256": model_io.sha256(OUT / "protein_embeddings.npz"),

@@ -369,10 +369,7 @@ def load_protein_embeddings() -> dict[str, np.ndarray]:
             f"{npz} missing; it is committed with the repository, so a fresh "
             f"clone should have it. Regenerate with src/19_esm_embed.py "
             f"(downloads a 2.5 GB model).")
-    with np.load(npz, allow_pickle=True) as handle:
-        ids = [str(x) for x in handle["ids"]]
-        matrix = handle["embeddings"]
-    if len(ids) != matrix.shape[0]:
-        raise ModelContractError(
-            f"{npz.name} holds {len(ids)} ids for {matrix.shape[0]} embedding rows")
-    return dict(zip(ids, matrix))
+    from . import protein_embed
+
+    matrix, rows, _ = protein_embed.load_cache(npz)
+    return {accession: matrix[row] for accession, row in rows.items()}
