@@ -1,5 +1,5 @@
 {
-  "n_pass": 68,
+  "n_pass": 70,
   "n_fail": 0,
   "n_skip": 0,
   "checks": [
@@ -349,7 +349,7 @@
       "section": "Repository",
       "name": "every source module compiles",
       "status": "PASS",
-      "detail": "55 modules under src/; compileall exit 0"
+      "detail": "58 modules under src/; compileall exit 0"
     },
     {
       "section": "Repository",
@@ -410,6 +410,18 @@
       "name": "headline numbers agree with their artefacts",
       "status": "PASS",
       "detail": "176 lines; absent headline values none; hand-written placement claim present: False"
+    },
+    {
+      "section": "Models",
+      "name": "shipped models load, verify and honour their contract",
+      "status": "PASS",
+      "detail": "3 models + 229 protein embeddings; problems: none"
+    },
+    {
+      "section": "Models",
+      "name": "the served affinity model reproduces its training metric",
+      "status": "PASS",
+      "detail": "standardisation present for 1280 dims: True; recorded test Pearson 0.8487; units: KIBA score as distributed by TDC (observed range"
     }
   ]
 }

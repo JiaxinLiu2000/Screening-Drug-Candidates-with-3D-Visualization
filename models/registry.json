@@ -1,0 +1,53 @@
+{
+  "format_version": 1,
+  "generated_by": "src/38_export_models.py",
+  "models": {
+    "toxicity_gin": {
+      "file": "toxicity_gin.pt",
+      "task": "toxicity",
+      "description": "12-endpoint Tox21 classifier, GIN trained from scratch",
+      "metrics": {
+        "tox_macro_roc_auc_scaffold": 0.8099004839830255,
+        "tox_macro_pr_auc_scaffold": 0.4272467785770029,
+        "split": "scaffold",
+        "seed": 0
+      },
+      "sha256": "1f07f4170f1522e45667b8ffc0a6826b6dd5d1ec8f5a33b7d3e0b15282e4ab2a",
+      "bytes": 5084197
+    },
+    "multitask_gin": {
+      "file": "multitask_gin.pt",
+      "task": "multitask",
+      "description": "shared GIN encoder with toxicity and affinity heads",
+      "metrics": {
+        "tox_macro_roc_auc_scaffold": 0.6670802812639932,
+        "affinity_pearson_r_random": 0.6834069490432739,
+        "affinity_ci_random": 0.7757594036502475,
+        "seed": 0
+      },
+      "sha256": "ab558a3d7f813148f172fec7381d2b9c641d713196d3302613ffe7a1a5b39441",
+      "bytes": 9812085
+    },
+    "affinity_frozen_mlp": {
+      "file": "affinity_frozen_mlp.pt",
+      "task": "affinity",
+      "description": "frozen ESM-2 650M + Morgan fingerprint -> MLP; the project's strongest affinity model",
+      "metrics": {
+        "pearson_r": 0.8486969470977783,
+        "ci": 0.8281684781191204,
+        "rmse": 0.4406835436820984,
+        "five_seed_mean_pearson": 0.8509622931480407
+      },
+      "sha256": "99a51c6ddce32e8482cbd406e287a3fd1686a86673960826fcff399c6293ac61",
+      "bytes": 15763813
+    }
+  },
+  "protein_embeddings": {
+    "file": "protein_embeddings.npz",
+    "model": "facebook/esm2_t33_650M_UR50D",
+    "pooling": "mean over residues, last layer",
+    "n_proteins": 229,
+    "dim": 1280,
+    "sha256": "8a1545e5b37fc4bde713464703cd55fb863d996b77afd8412057470f584e2463"
+  }
+}

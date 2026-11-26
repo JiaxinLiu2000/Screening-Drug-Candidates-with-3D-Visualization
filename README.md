@@ -63,6 +63,40 @@ Verified by building a throwaway venv from this lock and importing `tdc`,
 `rdkit`, `sklearn`, `gemmi` — one RDKit, stdlib `dataclasses`, 12 endpoints
 resolved.
 
+## Predict without training anything
+
+Trained models and the 229 ESM-2 protein embeddings are committed (32 MB), so a
+fresh clone can predict immediately — no dataset download, no GPU, no model
+weights to fetch:
+
+```python
+import sys; sys.path.insert(0, "src")
+from tox21lib.model_io import load_model
+
+tox = load_model("toxicity_gin")
+print(tox.predict_frame(["CCO", "O=[N+]([O-])c1ccccc1"]))   # 12 named columns
+
+aff = load_model("affinity_frozen_mlp")
+print(aff.predict(["CC(=O)Oc1ccccc1C(=O)O"], ["P00533"]))    # EGFR, KIBA score
+```
+
+Verified end-to-end: the serving path reproduces the training-time metric
+exactly (Pearson **0.8487** on all 11,720 held-out KIBA pairs, against 0.8487 at
+training time). See [`models/README.md`](models/README.md) for the full list, the
+output contract, and how to drop in a replacement model.
+
+## Reproduce the results
+
+Raw data (~320 MB) is not committed. Fetch it, then run the pipeline:
+
+```bash
+python src/00_fetch_data.py            # Tox21, hERG, KIBA, Davis from TDC
+python src/00_fetch_data.py --check    # report what is present, download nothing
+```
+
+This does **not** download the 2.5 GB ESM-2 weights: the embeddings this project
+needs ship with the repository. Pass `--with-esm` to regenerate them yourself.
+
 ## Run the pipeline
 
 Scripts are numbered and run in order; each is a thin driver over the importable

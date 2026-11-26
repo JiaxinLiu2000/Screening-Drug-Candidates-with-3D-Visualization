@@ -34,6 +34,7 @@ from scipy.stats import pearsonr, spearmanr
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from tox21lib import datasets, dti, featurize, paths, protein_embed, train  # noqa: E402
+from tox21lib.models import ConcatMLP  # noqa: E402
 
 SPLITS = ("random", "cold_drug", "cold_target")
 EPOCHS = 100
@@ -42,27 +43,6 @@ BATCH = 1024
 LR = 1e-3
 HIDDEN = (1024, 512)
 DROPOUT = 0.1
-
-
-class ConcatMLP(nn.Module):
-    """Otter's 'simplified downstream model': concatenate, then an MLP.
-
-    Their paper notes a convolutional head over frozen embeddings scored *worse*
-    than plain concatenation, so the simple version is the right one to copy.
-    """
-
-    def __init__(self, drug_dim: int, protein_dim: int) -> None:
-        super().__init__()
-        layers: list[nn.Module] = []
-        in_dim = drug_dim + protein_dim
-        for width in HIDDEN:
-            layers += [nn.Linear(in_dim, width), nn.ReLU(), nn.Dropout(DROPOUT)]
-            in_dim = width
-        layers.append(nn.Linear(in_dim, 1))
-        self.net = nn.Sequential(*layers)
-
-    def forward(self, drug: torch.Tensor, protein: torch.Tensor) -> torch.Tensor:
-        return self.net(torch.cat([drug, protein], dim=-1)).squeeze(-1)
 
 
 def build_tables(device: str):

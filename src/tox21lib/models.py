@@ -187,3 +187,29 @@ def masked_bce(logits: torch.Tensor, targets: torch.Tensor,
 
 def count_parameters(model: nn.Module) -> int:
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
+
+
+class ConcatMLP(nn.Module):
+    """Otter's 'simplified downstream model': concatenate, then an MLP.
+
+    Their paper notes a convolutional head over frozen embeddings scored *worse*
+    than plain concatenation, so the simple version is the right one to copy.
+
+    Lives here rather than in the driver script because both the training driver
+    (src/27) and the model loader (tox21lib.model_io) need the exact same module
+    tree - a second definition drifts and then refuses to load its own weights.
+    """
+
+    def __init__(self, drug_dim: int, protein_dim: int, *,
+                 hidden: tuple[int, ...] = (1024, 512), dropout: float = 0.1) -> None:
+        super().__init__()
+        layers: list[nn.Module] = []
+        in_dim = drug_dim + protein_dim
+        for width in hidden:
+            layers += [nn.Linear(in_dim, width), nn.ReLU(), nn.Dropout(dropout)]
+            in_dim = width
+        layers.append(nn.Linear(in_dim, 1))
+        self.net = nn.Sequential(*layers)
+
+    def forward(self, drug: torch.Tensor, protein: torch.Tensor) -> torch.Tensor:
+        return self.net(torch.cat([drug, protein], dim=-1)).squeeze(-1)

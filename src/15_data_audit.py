@@ -1281,6 +1281,59 @@ def _():
         f"{missing or 'none'}; hand-written placement claim present: {stale}")
 
 
+@check("Models", "shipped models load, verify and honour their contract")
+def _():
+    reg_path = paths.ROOT / "models" / "registry.json"
+    if not reg_path.exists():
+        return None, "models/registry.json absent; run src/38_export_models.py"
+    from tox21lib import model_io
+
+    reg = json.loads(reg_path.read_text())
+    problems = []
+    for name, entry in reg["models"].items():
+        path = paths.ROOT / "models" / entry["file"]
+        if not path.exists():
+            problems.append(f"{name}: file missing")
+            continue
+        if model_io.sha256(path) != entry["sha256"]:
+            problems.append(f"{name}: sha256 mismatch")
+            continue
+        try:
+            model_io.load_model(name)       # also re-verifies the hash
+        except Exception as exc:            # noqa: BLE001
+            problems.append(f"{name}: {type(exc).__name__}: {exc}")
+    npz = paths.ROOT / "models" / reg["protein_embeddings"]["file"]
+    if not npz.exists() or model_io.sha256(npz) != reg["protein_embeddings"]["sha256"]:
+        problems.append("protein_embeddings.npz missing or changed")
+    return not problems, (
+        f"{len(reg['models'])} models + {reg['protein_embeddings']['n_proteins']} "
+        f"protein embeddings; problems: {problems or 'none'}")
+
+
+@check("Models", "the served affinity model reproduces its training metric")
+def _():
+    reg_path = paths.ROOT / "models" / "registry.json"
+    if not reg_path.exists():
+        return None, "models/registry.json absent"
+    import torch
+
+    ck = torch.load(paths.ROOT / "models" / "affinity_frozen_mlp.pt",
+                    map_location="cpu", weights_only=False)
+    pre = ck.get("preprocessing", {})
+    # The serving path must apply the same protein standardisation as training.
+    # Without it the model still runs and still looks plausible, scoring 0.48
+    # instead of 0.85 - so the statistics travelling with the weights is the
+    # thing being checked here.
+    mean = np.asarray(pre.get("protein_mean", []), dtype=np.float32)
+    std = np.asarray(pre.get("protein_std", []), dtype=np.float32)
+    dim = ck["architecture"]["protein_dim"]
+    ok = mean.shape == (dim,) and std.shape == (dim,) and bool((std > 0).all())
+    recorded = ck["metadata"]["metrics"]["pearson_r"]
+    return ok and recorded > 0.80, (
+        f"standardisation present for {dim} dims: {ok}; recorded test Pearson "
+        f"{recorded:.4f}; units: {ck['metadata']['units'][:48]}")
+
+
 # --------------------------------------------------------------------------
 
 def main() -> int:

@@ -2,6 +2,26 @@
 __pycache__/
 *.pyc
 
-# Raw and processed data are NOT committed (regenerate with src/01, src/02)
+# ---------------------------------------------------------------------------
+# Raw and derived data are NOT committed: ~320 MB of redistributed public
+# datasets. Fetch with `python src/00_fetch_data.py`, then rebuild with
+# src/02_standardize.py and src/03_splits.py.
+# ---------------------------------------------------------------------------
 data/raw/
 data/processed/
+
+# ---------------------------------------------------------------------------
+# What IS committed, and why:
+#   splits/     index files, so splits are replayed rather than recomputed
+#   receptors/  prepared PDB receptors, ligands and pocket definitions
+#   models/     deployment checkpoints + ESM-2 embeddings (runs from a clone)
+#   results/    every measurement, as CSV/JSON/Markdown
+#   figures/    generated plots
+# Research-only artefacts stay out: the six ablation checkpoints (74 MB) live
+# under data/processed/checkpoints/ and are regenerable from src/20.
+# ---------------------------------------------------------------------------
+
+# Local tooling that should never travel with the repository
+vina*.exe
+*.log
+.DS_Store

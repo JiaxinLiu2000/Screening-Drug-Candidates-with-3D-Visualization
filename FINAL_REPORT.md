@@ -2,7 +2,7 @@
 
 *A machine-learning study. The data is chemical; the questions are not.*
 
-68/68 integrity checks pass · 57/57 artefacts reproduce byte-identically · 76 neural training runs (8.7 GPU-hours) plus 60 learning-curve fits and 100 docking runs
+70/70 integrity checks pass · 57/57 artefacts reproduce byte-identically · 76 neural training runs (8.7 GPU-hours) plus 60 learning-curve fits and 100 docking runs
 
 ## Abstract
 
@@ -143,7 +143,7 @@ The four-way ablation plus pretrained single-task controls concluded **shared en
 ## 6. Reproducibility
 
 - **57/57 artefacts byte-identical** after re-running 6 scripts from a clean environment, including all 120 Tox21 forest fits.
-- **68/68 integrity checks** that recompute each quantity from the artefact it derives from rather than trusting any script's own assertions. A check matching nothing fails rather than passing vacuously.
+- **70/70 integrity checks** that recompute each quantity from the artefact it derives from rather than trusting any script's own assertions. A check matching nothing fails rather than passing vacuously.
 - Every split committed as an index file; every seed explicit; dependencies pinned as a complete `--no-deps` lock; every prompt logged.
 - Two sources of run-to-run drift were found and removed rather than tolerated: thread-order nondeterminism in forest probabilities (metric tables are written at 10 decimal places) and a script-ordering bug where re-running the Tox21 grid silently dropped appended hERG rows.
 
