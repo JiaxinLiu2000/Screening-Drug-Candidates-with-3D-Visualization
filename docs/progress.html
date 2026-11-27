@@ -291,7 +291,18 @@ Meeko 没有对应模板。我们自己清洗过的 EGFR 受体不会碰到,所�
   <li><b>最后:</b>报告定稿后再录视频(第 4 项),顺手补 prompt 日志(第 7 项)。</li>
 </ol>
 
-<div class="note warn">
+<div class="note err">
+<b>DiffDock:对比脚本已写好并通过检查,但这台机器装不下它的镜像——实测两次。</b>
+它钉死了与本项目冲突的环境(Python 3.9.18 / torch 1.13.1+cu117,对本项目的 3.11.17 / 2.14.1+cu126),
+只能走官方容器;而该容器的构建阶段是 CUDA 11.7 devel 基础镜像 + 完整 conda 环境 + openfold 编译。
+两次构建各消耗 <b>20 GB 以上</b>中间层仍未完成(28 GB → 8.2 GB,随后 25 GB → 4.8 GB),
+为保护当时正在写结果的实验而主动中止。
+<br>根因不在本项目:整盘 931 GB <b>已用 919 GB</b>,而本仓库只占 5.9 GB。
+<br><b>如实报告为「未运行」,不估算、不用替代方法顶替。</b>腾出约 40 GB 后即可直接跑
+<code>src/42_diffdock_compare.py</code>。
+</div>
+
+<div class="note warn" style="display:none">
 <b>DiffDock 已排到两个实验之后,不与它们并行。</b>
 原因是实测出来的:它的官方镜像基于 CUDA 11.7 devel + 完整 conda 环境 + openfold 编译,
 构建过程把磁盘从 <b>28 GB 压到 8.2 GB</b> 且远未完成。磁盘耗尽今天已经毁掉过两次实验,

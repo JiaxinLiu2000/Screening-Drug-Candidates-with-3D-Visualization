@@ -448,13 +448,20 @@ svg{display:block}
         结合强度跑在最后,所以每轮结束时,<b>共享的部分几乎只被它调过</b>。</p>
       </div>
     </div>
-    <div class="note">
+    <div class="note" style="font-size:17px">
       这解释了那个不对称:<b>从零训练的模型会「忘掉」毒性,而预训练模型的学习率低 50 倍,几乎不动。</b>
-      <br><span class="small">所以首先要修的不是算法,是训练循环本身。
-      我们实现了四种修法(把两个梯度真正加在一起、梯度投影 PCGrad、软参数共享、任务专属适配层)。</span>
+      所以首先要修的不是算法,<b>是训练循环本身</b>。
     </div>
-    <div class="slide-foot"><span class="pill run">完整对照实验进行中</span>
-      七个对照臂 × 3 个随机种子的最终数字尚未产出,本页只报告已确认的机制与现象。</div>
+    <div class="note warnbox" style="font-size:16.5px;margin-top:2px">
+      <b>七个对照臂 × 3 个种子已跑完:</b>只调换任务顺序回收 <b>+0.1036</b>(p=0.014),
+      真正把两个梯度相加回收 <b>+0.1110</b>(p=0.011)——<b>都没动架构</b>。
+      教授点名的三种修法叠加上去<b>均无可测收益</b>:PCGrad −0.0242(p=0.34)、
+      软共享 +0.0104(p=0.67)、适配器 −0.0118(p=0.62),全在种子波动内。
+      梯度冲突真实存在(39.0% 的步数)但<b>不是病因</b>:PCGrad 正是在修这些步,结果没改善。
+    </div>
+    <div class="slide-foot">毒性为 Tox21 骨架切分,亲和力为 KIBA 随机切分。
+      只看毒性会选错:换顺序把毒性救回来,却把亲和力从 0.7094 砸到 0.5563——
+      损害只是转移到了另一个任务。</div>
   </div>
   <div class="pagenum"></div>
 </section>
@@ -494,8 +501,14 @@ svg{display:block}
         (pKd/pKi,范围 2.00–11.92,中位数 6.42),也是<b>第一次有外部验证集</b>。</div>
       </div>
     </div>
-    <div class="slide-foot"><span class="pill run">完整对接实验进行中</span>
-      428+85 个复合物的命中率尚未产出,本页只报告样本量与多样性的扩大。</div>
+    <div class="note warnbox" style="font-size:17px;margin-top:4px">
+      <b>513 个复合物已跑完:</b>首位命中 <b>52.8%</b>、九选优 <b>78.5%</b>(对比原 20 个单靶点结构的 41.0% / 76.0%),
+      物理合法性 <b>98.4%</b>。
+      <b>而且看到了单靶点永远看不到的东西:</b>Astex 62.3% vs PoseBusters 50.8%,同一套流程。
+    </div>
+    <div class="slide-foot">分母必须交代:66 个未产出位姿中,<b>61 个是口袋闸门主动排除</b>(无法参数化的残基就在结合位点里),
+      只有 5 个是真正的准备失败。实测被排除者的配体反而略小(23.3 vs 25.3 重原子),而大配体更难命中
+      (p=0.024),所以排除是把命中率<b>压低</b>而非抬高。</div>
   </div>
   <div class="pagenum"></div>
 </section>
