@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>双目标药物候选筛选 · 课程展示</title>
+<style>
+:root{
+  --fg:#15181d; --muted:#67707d; --bd:#dfe3ea; --bg:#fff; --surf:#f6f8fb;
+  --accent:#1d4ed8; --ok:#047857; --warn:#b45309; --err:#b4231c; --soft:#eef3ff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#2a2f3a;overflow:hidden}
+body{font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",-apple-system,sans-serif;color:var(--fg)}
+
+#deck{position:relative;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center}
+.slide{
+  position:absolute;width:1280px;height:720px;background:var(--bg);
+  padding:52px 64px;display:none;flex-direction:column;
+  transform-origin:center center;box-shadow:0 10px 50px rgba(0,0,0,.45);
+}
+.slide.on{display:flex}
+
+h1{font-size:50px;line-height:1.2;letter-spacing:-.02em}
+h2{font-size:36px;line-height:1.25;letter-spacing:-.01em;margin-bottom:6px}
+h3{font-size:21px;color:var(--accent);margin-bottom:8px}
+p,li{font-size:21px;line-height:1.6}
+.lead{font-size:25px;line-height:1.55}
+.muted{color:var(--muted)}
+.small{font-size:17px;line-height:1.5}
+.tiny{font-size:14px;line-height:1.45;color:var(--muted)}
+.ok{color:var(--ok)}.warn{color:var(--warn)}.err{color:var(--err)}
+b,strong{font-weight:700}
+.kicker{font-size:15px;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:14px}
+.body{flex:1;display:flex;flex-direction:column;justify-content:center;gap:16px;min-height:0}
+.row{display:flex;gap:30px;align-items:center}
+.row.top{align-items:flex-start}
+.col{flex:1;min-width:0}
+ul{padding-left:26px}
+li{margin:7px 0}
+.note{background:var(--surf);border-left:5px solid var(--accent);padding:14px 20px;font-size:19px;line-height:1.55}
+.note.warnbox{border-color:var(--warn);background:#fff8ee}
+.note.errbox{border-color:var(--err);background:#fff4f3}
+table{border-collapse:collapse;width:100%;font-size:18px}
+th,td{border:1px solid var(--bd);padding:7px 12px;text-align:left}
+th{background:var(--surf);font-weight:700;font-size:16px}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+.big{font-size:74px;font-weight:700;letter-spacing:-.03em;line-height:1}
+.bignum{display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 10px}
+.bignum .cap{font-size:15px;color:var(--muted);text-align:center}
+.cards{display:flex;gap:16px}
+.card{flex:1;border:1px solid var(--bd);border-radius:9px;padding:16px 18px;background:var(--surf)}
+.card h4{font-size:19px;margin-bottom:6px}
+.pagenum{position:absolute;right:26px;bottom:18px;font-size:13px;color:var(--muted)}
+.slide-foot{font-size:14px;color:var(--muted);border-top:1px solid var(--bd);padding-top:9px;margin-top:10px}
+img.shot{max-width:100%;max-height:100%;border:1px solid var(--bd);border-radius:6px;display:block}
+svg{display:block}
+.hint{position:fixed;left:14px;bottom:12px;color:#aeb6c4;font-size:12px;z-index:5}
+.pill{display:inline-block;font-size:14px;padding:2px 10px;border-radius:11px;border:1px solid var(--bd);background:#fff;color:var(--muted)}
+.pill.run{border-color:#e3c48f;background:#fff6e8;color:var(--warn)}
+</style>
+
+<div id="deck">
+
+<!-- 1 封面 -->
+<section class="slide on">
+  <div class="body" style="justify-content:center;gap:22px">
+    <div class="kicker">CS 6140 机器学习 · 期末课程项目 · 2 人小组</div>
+    <h1>同时按「结合强度」和「毒性」<br>两个标准筛选候选分子</h1>
+    <p class="lead muted" style="max-width:940px">
+      ——并回答一个纯机器学习的问题:<b style="color:var(--fg)">当测试样本和训练样本长得不像时,
+      模型会退化多少,它自己能不能察觉?</b>
+    </p>
+    <div style="display:flex;gap:40px;margin-top:14px">
+      <div><div class="small"><b>Jiaxin Liu</b></div><div class="tiny">MS Artificial Intelligence</div></div>
+      <div><div class="small"><b>Zhenyu Wang</b></div><div class="tiny">MS Computer Science</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 2 问题 -->
+<section class="slide">
+  <div class="kicker">问题</div>
+  <h2>为什么要同时看两件事</h2>
+  <div class="body">
+    <p class="lead">研发一款新药,要从<b>几百万个候选分子</b>里挑出少数几个真正拿去做实验。
+    挑错的代价极高,所以要先用计算方法筛一轮。</p>
+
+    <svg viewBox="0 0 1150 230" width="100%" height="230" aria-label="筛选漏斗示意">
+      <defs><marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+        <path d="M0,0 L9,4.5 L0,9 Z" fill="#67707d"/></marker></defs>
+      <rect x="10" y="60" width="200" height="95" rx="8" fill="#f6f8fb" stroke="#dfe3ea"/>
+      <text x="110" y="100" font-size="20" text-anchor="middle" font-weight="700">几百万个</text>
+      <text x="110" y="128" font-size="16" text-anchor="middle" fill="#67707d">候选分子</text>
+
+      <line x1="218" y1="107" x2="280" y2="107" stroke="#67707d" stroke-width="2" marker-end="url(#ar)"/>
+
+      <rect x="290" y="45" width="230" height="125" rx="8" fill="#eef3ff" stroke="#1d4ed8"/>
+      <text x="405" y="80" font-size="19" text-anchor="middle" font-weight="700" fill="#1d4ed8">第一关:结合强度</text>
+      <text x="405" y="107" font-size="16" text-anchor="middle">能不能紧紧粘住</text>
+      <text x="405" y="130" font-size="16" text-anchor="middle">致病的那个蛋白</text>
+      <text x="405" y="156" font-size="14" text-anchor="middle" fill="#67707d">(标准做法只做到这里)</text>
+
+      <line x1="528" y1="107" x2="590" y2="107" stroke="#67707d" stroke-width="2" marker-end="url(#ar)"/>
+
+      <rect x="600" y="45" width="230" height="125" rx="8" fill="#fff8ee" stroke="#b45309" stroke-dasharray="6 4"/>
+      <text x="715" y="80" font-size="19" text-anchor="middle" font-weight="700" fill="#b45309">第二关:有没有毒</text>
+      <text x="715" y="107" font-size="16" text-anchor="middle">粘得紧 ≠ 安全</text>
+      <text x="715" y="133" font-size="14" text-anchor="middle" fill="#67707d">常常拖到很晚才暴露</text>
+
+      <line x1="838" y1="107" x2="900" y2="107" stroke="#b4231c" stroke-width="2" marker-end="url(#ar)"/>
+      <rect x="910" y="60" width="230" height="95" rx="8" fill="#fff4f3" stroke="#b4231c"/>
+      <text x="1025" y="97" font-size="19" text-anchor="middle" font-weight="700" fill="#b4231c">失败</text>
+      <text x="1025" y="125" font-size="15" text-anchor="middle" fill="#67707d">越晚发现,代价越大</text>
+    </svg>
+
+    <div class="note">只看第一关,就会把一批「粘得很紧但有毒」的分子一路推到最后。
+    <b>我们把两关放在一起,一次给出两个分数。</b></div>
+  </div>
+  <div class="pagenum"></div>
+</section>
+
+<!-- 3 研究问题 -->
+<section class="slide">
+  <div class="kicker">真正的研究问题</div>
+  <h2>模型在「没见过的东西」上还灵吗</h2>
+  <div class="body">
+    <p class="lead">这其实不是化学问题,是个<b>机器学习的老问题</b>:
+    模型在和训练数据相似的样本上表现很好,一旦换成不像的样本就不行了。</p>
+    <div class="cards">
+      <div class="card">
+        <h4>通常怎么报告</h4>
+        <p class="small">把数据<b>随机</b>分成训练集和测试集,报一个很漂亮的分数。</p>
+      </div>
+      <div class="card">
+        <h4>问题出在哪</h4>
+        <p class="small">随机分的时候,长得像的样本会被分到两边,测试集里其实有「亲戚」。
+        真实使用时没有这种好事。</p>
+      </div>
+      <div class="card">
+        <h4>我们做的事</h4>
+        <p class="small">刻意把数据分得更难,量出<b>到底掉多少分</b>,
+        再问模型知不知道自己正在出错。</p>
+      </div>
+    </div>
+    <div class="note">整篇展示的主角是两个数字之间的<b>差值</b>,不是哪个数字更高。</div>
+  </div>
+  <div class="pagenum"></div>
+</section>
+
+<!-- 4 图解:随机切分 vs 骨架切分 -->
+<section class="slide">
+  <div class="kicker">关键概念 · 图解一</div>
+  <h2>什么叫「刻意分得更难」</h2>
+  <div class="body">
+    <p>形状代表分子的<b>骨架</b>(主体结构)。颜色只是为了区分训练集和测试集。</p>
+    <svg viewBox="0 0 1150 320" width="100%" height="320" aria-label="随机切分与骨架切分对比">
+      <!-- 左:随机切分 -->
+      <text x="20" y="26" font-size="21" font-weight="700">随机切分 —— 看起来很容易</text>
+      <rect x="20" y="42" width="250" height="170" rx="8" fill="#eef3ff" stroke="#1d4ed8"/>
+      <text x="145" y="68" font-size="17" text-anchor="middle" fill="#1d4ed8" font-weight="700">训练集</text>
+      <g fill="#1d4ed8" fill-opacity=".65">
+        <circle cx="70" cy="100" r="13"/><circle cx="130" cy="112" r="13"/><circle cx="210" cy="98" r="13"/>
+        <rect x="155" y="140" width="24" height="24" rx="3"/><rect x="60" y="150" width="24" height="24" rx="3"/>
+        <polygon points="230,138 243,162 217,162"/><polygon points="105,146 118,170 92,170"/>
+      </g>
+      <rect x="300" y="42" width="250" height="170" rx="8" fill="#f6f8fb" stroke="#dfe3ea"/>
+      <text x="425" y="68" font-size="17" text-anchor="middle" fill="#67707d" font-weight="700">测试集</text>
+      <g fill="#67707d" fill-opacity=".6">
+        <circle cx="350" cy="102" r="13"/><circle cx="470" cy="112" r="13"/>
+        <rect x="395" y="92" width="24" height="24" rx="3"/>
+        <polygon points="500,140 513,164 487,164"/><circle cx="360" cy="162" r="13"/>
+        <rect x="440" y="148" width="24" height="24" rx="3"/>
+      </g>
+      <text x="285" y="240" font-size="17" text-anchor="middle" fill="#047857" font-weight="700">两边都有圆、方、三角</text>
+      <text x="285" y="264" font-size="16" text-anchor="middle" fill="#67707d">测试集里的每种形状,训练集都见过</text>
+      <text x="285" y="292" font-size="19" text-anchor="middle" font-weight="700">分数虚高</text>
+
+      <line x1="585" y1="40" x2="585" y2="300" stroke="#dfe3ea" stroke-width="2"/>
+
+      <!-- 右:骨架切分 -->
+      <text x="615" y="26" font-size="21" font-weight="700">骨架切分 —— 逼近真实</text>
+      <rect x="615" y="42" width="250" height="170" rx="8" fill="#eef3ff" stroke="#1d4ed8"/>
+      <text x="740" y="68" font-size="17" text-anchor="middle" fill="#1d4ed8" font-weight="700">训练集</text>
+      <g fill="#1d4ed8" fill-opacity=".65">
+        <circle cx="665" cy="100" r="13"/><circle cx="725" cy="100" r="13"/><circle cx="785" cy="100" r="13"/>
+        <circle cx="825" cy="138" r="13"/><circle cx="695" cy="140" r="13"/><circle cx="755" cy="140" r="13"/>
+        <circle cx="665" cy="178" r="13"/><circle cx="785" cy="178" r="13"/>
+      </g>
+      <rect x="895" y="42" width="250" height="170" rx="8" fill="#fff8ee" stroke="#b45309"/>
+      <text x="1020" y="68" font-size="17" text-anchor="middle" fill="#b45309" font-weight="700">测试集</text>
+      <g fill="#b45309" fill-opacity=".7">
+        <polygon points="945,88 960,116 930,116"/><polygon points="1005,88 1020,116 990,116"/>
+        <polygon points="1065,88 1080,116 1050,116"/><polygon points="975,130 990,158 960,158"/>
+        <polygon points="1035,130 1050,158 1020,158"/><polygon points="1100,130 1115,158 1085,158"/>
+      </g>
+      <text x="880" y="240" font-size="17" text-anchor="middle" fill="#b45309" font-weight="700">左边全是圆,右边全是三角</text>
+      <text x="880" y="264" font-size="16" text-anchor="middle" fill="#67707d">测试时才第一次遇到这种骨架</text>
+      <text x="880" y="292" font-size="19" text-anchor="middle" font-weight="700">这才是我们关心的分数</text>
+    </svg>
+  </div>
+  <div class="pagenum"></div>
+</section>
+
+<!-- 5 系统全景 -->
+<section class="slide">
+  <div class="kicker">我们做了什么</div>
+  <h2>一页看懂整个系统</h2>
+  <div class="body">
+    <svg viewBox="0 0 1150 330" width="100%" height="330" aria-label="系统流程图">
+      <defs><marker id="a2" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+        <path d="M0,0 L9,4.5 L0,9 Z" fill="#67707d"/></marker></defs>
+
+      <rect x="10" y="118" width="175" height="96" rx="8" fill="#f6f8fb" stroke="#dfe3ea"/>
+      <text x="97" y="150" font-size="18" text-anchor="middle" font-weight="700">输入</text>
+      <text x="97" y="175" font-size="15" text-anchor="middle" fill="#67707d">一串分子</text>
+      <text x="97" y="196" font-size="15" text-anchor="middle" fill="#67707d">+ 一个目标蛋白</text>
+      <line x1="193" y1="166" x2="243" y2="166" stroke="#67707d" stroke-width="2" marker-end="url(#a2)"/>
+
+      <rect x="253" y="30" width="215" height="90" rx="8" fill="#eef3ff" stroke="#1d4ed8"/>
+      <text x="360" y="60" font-size="17" text-anchor="middle" font-weight="700" fill="#1d4ed8">分子怎么表示</text>
+      <text x="360" y="84" font-size="14" text-anchor="middle">指纹 / 图网络 / 语言模型</text>
+      <text x="360" y="105" font-size="13" text-anchor="middle" fill="#67707d">三种方案互相对比</text>
+
+      <rect x="253" y="212" width="215" height="90" rx="8" fill="#eef3ff" stroke="#1d4ed8"/>
+      <text x="360" y="242" font-size="17" text-anchor="middle" font-weight="700" fill="#1d4ed8">蛋白怎么表示</text>
+      <text x="360" y="266" font-size="14" text-anchor="middle">冻结的 ESM-2 向量</text>
+      <text x="360" y="287" font-size="13" text-anchor="middle" fill="#67707d">1280 维 · 229 个蛋白</text>
+
+      <line x1="476" y1="75" x2="520" y2="130" stroke="#67707d" stroke-width="2" marker-end="url(#a2)"/>
+      <line x1="476" y1="257" x2="520" y2="202" stroke="#67707d" stroke-width="2" marker-end="url(#a2)"/>
+
+      <rect x="530" y="118" width="175" height="96" rx="8" fill="#fff" stroke="#15181d" stroke-width="2"/>
+      <text x="617" y="152" font-size="18" text-anchor="middle" font-weight="700">模型</text>
+      <text x="617" y="177" font-size="15" text-anchor="middle" fill="#67707d">两个输出头</text>
+      <text x="617" y="198" font-size="14" text-anchor="middle" fill="#67707d">结合强度 + 12 项毒性</text>
+
+      <line x1="713" y1="150" x2="757" y2="106" stroke="#67707d" stroke-width="2" marker-end="url(#a2)"/>
+      <line x1="713" y1="182" x2="757" y2="226" stroke="#67707d" stroke-width="2" marker-end="url(#a2)"/>
+
+      <rect x="767" y="56" width="180" height="90" rx="8" fill="#f6f8fb" stroke="#dfe3ea"/>
+      <text x="857" y="86" font-size="17" text-anchor="middle" font-weight="700">双轴排序</text>
+      <text x="857" y="110" font-size="14" text-anchor="middle" fill="#67707d">粘得紧 + 毒性低</text>
+      <text x="857" y="131" font-size="14" text-anchor="middle" fill="#67707d">才排得靠前</text>
+
+      <rect x="767" y="186" width="180" height="90" rx="8" fill="#fff8ee" stroke="#b45309" stroke-width="2"/>
+      <text x="857" y="212" font-size="17" text-anchor="middle" font-weight="700" fill="#b45309">可信度闸门</text>
+      <text x="857" y="236" font-size="14" text-anchor="middle">离训练集太远的</text>
+      <text x="857" y="257" font-size="14" text-anchor="middle">直接标「不可信」</text>
+
+      <line x1="955" y1="166" x2="1000" y2="166" stroke="#67707d" stroke-width="2" marker-end="url(#a2)"/>
+      <rect x="1010" y="118" width="130" height="96" rx="8" fill="#eef3ff" stroke="#1d4ed8"/>
+      <text x="1075" y="152" font-size="17" text-anchor="middle" font-weight="700" fill="#1d4ed8">结果表</text>
+      <text x="1075" y="177" font-size="14" text-anchor="middle" fill="#67707d">+ 二维结构</text>
+      <text x="1075" y="197" font-size="14" text-anchor="middle" fill="#67707d">+ 三维口袋</text>
+    </svg>
+    <div class="note">橙色那一块是本项目的主张:<b>「这个预测值不值得信」和预测值本身一样重要。</b>
+    后面会说明为什么。</div>
+  </div>
+  <div class="pagenum"></div>
+</section>
+
+<!-- 6 数据 -->
+<section class="slide">
+  <div class="kicker">数据</div>
+  <h2>全部来自公开学术基准</h2>
+  <div class="body">
+    <table>
+      <tr><th>数据集</th><th class="n">规模</th><th>用途</th></tr>
+      <tr><td>Tox21</td><td class="n">7,831 个化合物 → 标准化去重后 <b>6,143</b></td><td>12 项毒性标签</td></tr>
+      <tr><td>hERG</td><td class="n"><b>11,052</b> 个化合物</td><td>第二个数据集,用来复核结论</td></tr>
+      <tr><td>KIBA</td><td class="n">2,030 分子 × 229 蛋白 = <b>117,193</b> 个实测配对</td><td>结合强度</td></tr>
+      <tr><td>PoseBusters / Astex</td><td class="n"><b>428</b> + <b>85</b> 个三维复合物</td><td>三维位姿评测</td></tr>
+      <tr><td>PDBbind refined</td><td class="n"><b>5,311</b> 个复合物</td><td>第一个有物理单位的外部验证集</td></tr>
+    </table>
+    <div class="cards">
+      <div class="card">
+        <h4>标签很不完整</h4>
+        <p class="small">约 <b>1/4 缺失</b>——不是每个化合物都测过每一项。
+        阳性率只有 <b>3.1%–18.3%</b>,属于严重不平衡。</p>
+      </div>
+      <div class="card">
+        <h4>一共 5 种切分</h4>
+        <p class="small">随机 → 骨架 → 留出分子 → 留出蛋白 → 留出骨架,
+        测试集一个比一个远。</p>
+      </div>
+    </div>
+    <div class="slide-foot">全部可从 Therapeutics Data Commons、Protein Data Bank、Zenodo 公开下载。
+    本项目不涉及任何实验室操作,只读公开表格、训练模型、报告指标。</div>
+  </div>
+  <div class="pagenum"></div>
+</section>
+
+<!-- 7 发现一 -->
+<section class="slide">
+  <div class="kicker">发现一</div>
+  <h2>换一批没见过的骨架,分数就掉</h2>
+  <div class="body">
+    <div class="row">
+      <div class="col">
+        <svg viewBox="0 0 520 290" width="100%" height="290" aria-label="随机切分与骨架切分的 ROC-AUC 对比">
+          <line x1="70" y1="20" x2="70" y2="230" stroke="#dfe3ea" stroke-width="2"/>
+          <line x1="70" y1="230" x2="500" y2="230" stroke="#dfe3ea" stroke-width="2"/>
+          <text x="46" y="36" font-size="14" text-anchor="end" fill="#67707d">0.90</text>
+          <text x="46" y="130" font-size="14" text-anchor="end" fill="#67707d">0.75</text>
+          <text x="46" y="226" font-size="14" text-anchor="end" fill="#67707d">0.60</text>
+          <line x1="70" y1="36" x2="500" y2="36" stroke="#dfe3ea" stroke-dasharray="3 4"/>
+          <line x1="70" y1="130" x2="500" y2="130" stroke="#dfe3ea" stroke-dasharray="3 4"/>
+
+          <!-- 0.8324 -> y = 230 - (0.8324-0.60)/0.30*194 = 230-150.2 = 79.8 -->
+          <rect x="130" y="80" width="105" height="150" fill="#1d4ed8" fill-opacity=".75"/>
+          <text x="182" y="68" font-size="24" text-anchor="middle" font-weight="700">0.8324</text>
+          <text x="182" y="252" font-size="16" text-anchor="middle">随机切分</text>
+          <text x="182" y="274" font-size="13" text-anchor="middle" fill="#67707d">±0.0181</text>
+
+          <!-- 0.7611 -> 230 - 0.1611/0.30*194 = 230-104.2 = 125.8 -->
+          <rect x="330" y="126" width="105" height="104" fill="#b45309" fill-opacity=".75"/>
+          <text x="382" y="114" font-size="24" text-anchor="middle" font-weight="700">0.7611</text>
+          <text x="382" y="252" font-size="16" text-anchor="middle">骨架切分</text>
+          <text x="382" y="274" font-size="13" text-anchor="middle" fill="#67707d">±0.0227</text>
+
+          <line x1="283" y1="80" x2="283" y2="126" stroke="#b4231c" stroke-width="2.5"/>
+          <path d="M278,85 L283,78 L288,85" fill="none" stroke="#b4231c" stroke-width="2.5"/>
+          <path d="M278,121 L283,128 L288,121" fill="none" stroke="#b4231c" stroke-width="2.5"/>
+          <text x="283" y="155" font-size="19" font-weight="700" fill="#b4231c" text-anchor="middle">掉 0.0713</text>
+        </svg>
+      </div>
+      <div class="col">
+        <h3>怎么读这个数字</h3>
+        <p class="small">ROC-AUC 是「排序能力」:<b>0.5 等于瞎猜,1.0 是完美</b>。
+        掉 0.0713 不是小数点后的噪声——</p>
+        <ul class="small">
+          <li>置信区间 <b>[0.0413, 0.1013]</b>,<b class="ok">不包含 0</b></li>
+          <li>换到完全独立的 hERG 数据集上,同样掉了 <b>+0.0526</b></li>
+          <li>所以这不是某一个数据集的偶然现象</li>
+        </ul>
+        <div class="note" style="font-size:18px">结合强度任务上退化得更明显:
+        随机切分 Pearson <b>0.8219</b> → 留出分子 <b>0.7289</b> → <b>留出蛋白 0.6438</b>。</div>
+      </div>
+    </div>
+  </div>
+  <div class="pagenum"></div>
+</section>
+
+<!-- 8 发现二 -->
+<section class="slide">
+  <div class="kicker">发现二</div>
+  <h2>复杂的模型,没有赢过简单的模型</h2>
+  <div class="body">
+    <div class="cards">
+      <div class="card">
+        <h4>最简单的做法</h4>
+        <p class="small">把分子变成一串 0/1(<b>分子指纹</b>:每一位表示「有没有某个小零件」),
+        再套一个随机森林。十几年前的技术。</p>
+      </div>
+      <div class="card">
+        <h4>我们从零训练的图神经网络</h4>
+        <p class="small"><b class="warn">在试过的每一个训练集规模上都只是追平</b>,没有超过。</p>
+      </div>
+      <div class="card">
+        <h4>真正最强的那个</h4>
+        <p class="small">冻结的 <b>ESM-2</b> 蛋白模型 + 一个小型多层感知机,Pearson <b>0.8510 ± 0.0043</b>。
+        赢的是<b>别人预训练好的大模型</b>,不是我们自己训的。</p>
+      </div>
+    </div>
+    <div class="note warnbox">
+      <b>还有一件事值得说:</b>我们一开始以为神经网络领先 <b>+0.0669</b>。
+      后来把随机森林的超参数认真调了一遍,领先幅度<b>坍缩到 +0.0291</b>。
+      <br><span class="small muted">基线没调好的时候,很容易高估自己的模型——这件事本身就是结论之一。</span>
+    </div>
+  </div>
+  <div class="pagenum"></div>
+</section>
+
+<!-- 9 发现三:最有冲击力 -->
+<section class="slide">
+  <div class="kicker">发现三 · 最反直觉的一条</div>
+  <h2>模型不知道自己不知道</h2>
+  <div class="body">
+    <p class="lead">如果允许模型对一半样本说「我不确定,不答了」,
+    按什么标准挑出要放弃的那一半最好?</p>
+    <svg viewBox="0 0 1150 250" width="100%" height="250" aria-label="四种弃权信号的效果对比">
+      <line x1="330" y1="14" x2="330" y2="214" stroke="#15181d" stroke-width="2"/>
+      <text x="330" y="238" font-size="14" text-anchor="middle" fill="#67707d">0</text>
+      <text x="700" y="238" font-size="14" text-anchor="middle" fill="#67707d">0.25</text>
+      <text x="1070" y="238" font-size="14" text-anchor="middle" fill="#67707d">0.50</text>
+      <line x1="700" y1="14" x2="700" y2="214" stroke="#dfe3ea" stroke-dasharray="3 4"/>
+      <line x1="1070" y1="14" x2="1070" y2="214" stroke="#dfe3ea" stroke-dasharray="3 4"/>
+
+      <!-- scale: 0.50 -> 740px ; x = 330 + v/0.5*740 -->
+      <text x="316" y="40" font-size="17" text-anchor="end">按模型自己的置信度</text>
+      <rect x="330" y="22" width="308" height="26" fill="#b4231c" fill-opacity=".75"/>
+      <text x="650" y="41" font-size="18" font-weight="700" fill="#b4231c">0.2079</text>
+
+      <text x="316" y="88" font-size="17" text-anchor="end">按森林内部分歧</text>
+      <rect x="330" y="70" width="300" height="26" fill="#b4231c" fill-opacity=".55"/>
+      <text x="642" y="89" font-size="18" font-weight="700" fill="#b4231c">0.2024</text>
+
+      <text x="316" y="136" font-size="17" text-anchor="end" font-weight="700">完全随机地放弃一半</text>
+      <rect x="330" y="118" width="590" height="26" fill="#67707d" fill-opacity=".65"/>
+      <text x="932" y="137" font-size="18" font-weight="700">0.3983</text>
+
+      <text x="316" y="184" font-size="17" text-anchor="end" font-weight="700">按离训练集有多远</text>
+      <rect x="330" y="166" width="726" height="26" fill="#047857" fill-opacity=".8"/>
+      <text x="1068" y="185" font-size="18" font-weight="700" fill="#047857">0.4904</text>
+    </svg>
+    <div class="note errbox">
+      <b>模型自己的置信度,比掷硬币还差。</b>
+      它「最不确定」的那些样本,并不是它真正会出错的样本。
+      <br>唯一管用的信号是一个和模型无关的量:<b>这个分子离训练集有多远</b>。
+    </div>
+    <div class="slide-foot">横轴是 PR-AUC(越高越好),在保留 50% 样本的条件下测得。</div>
+  </div>
+  <div class="pagenum"></div>
+</section>
+
+<!-- 10 发现四:共享编码器机制 -->
+<section class="slide">
+  <div class="kicker">发现四 · 一个工程错误伪装成科学结论</div>
+  <h2>「两个任务共享一个模型」为什么反而更差</h2>
+  <div class="body">
+    <div class="row top">
+      <div class="col" style="flex:0 0 330px">
+        <table style="font-size:17px">
+          <tr><th>配置</th><th class="n">毒性 ROC-AUC</th></tr>
+          <tr><td>只做毒性</td><td class="n"><b>0.7689</b></td></tr>
+          <tr><td>两任务共享</td><td class="n"><b class="err">0.6820</b></td></tr>
+          <tr><td colspan="2" class="small" style="background:#fff4f3">共享让毒性掉了 <b>0.0869</b></td></tr>
+        </table>
+        <p class="small" style="margin-top:12px">但换成<b>预训练</b>的 ChemBERTa 做同样的共享,
+        几乎没掉(0.7603 → 0.7619)。<b>同样的改动,两种结果。</b></p>
+      </div>
+      <div class="col">
+        <h3>原因不是「梯度打架」,是训练循环的写法</h3>
+        <svg viewBox="0 0 740 185" width="100%" height="185" aria-label="两个任务轮流更新参数的时序示意">
+          <text x="0" y="18" font-size="15" fill="#67707d">一轮训练(一个 epoch)内,参数被谁改过:</text>
+          <rect x="0" y="34" width="150" height="34" rx="4" fill="#1d4ed8" fill-opacity=".75"/>
+          <text x="75" y="56" font-size="15" text-anchor="middle" fill="#fff" font-weight="700">毒性任务</text>
+          <rect x="155" y="34" width="560" height="34" rx="4" fill="#b45309" fill-opacity=".8"/>
+          <text x="435" y="56" font-size="15" text-anchor="middle" fill="#fff" font-weight="700">结合强度任务(批次数约为前者的 18 倍)</text>
+          <text x="722" y="56" font-size="14" fill="#67707d">→</text>
+
+          <line x1="715" y1="76" x2="715" y2="104" stroke="#b4231c" stroke-width="2"/>
+          <path d="M710,99 L715,106 L720,99" fill="none" stroke="#b4231c" stroke-width="2"/>
+          <text x="700" y="126" font-size="15" text-anchor="end" fill="#b4231c" font-weight="700">这一刻去考毒性</text>
+
+        </svg>
+        <p class="small" style="margin-top:4px">两个任务<b>从来没有同时</b>更新过参数——它们是前后脚各改各的。
+        结合强度跑在最后,所以每轮结束时,<b>共享的部分几乎只被它调过</b>。</p>
+      </div>
+    </div>
+    <div class="note">
+      这解释了那个不对称:<b>从零训练的模型会「忘掉」毒性,而预训练模型的学习率低 50 倍,几乎不动。</b>
+      <br><span class="small">所以首先要修的不是算法,是训练循环本身。
+      我们实现了四种修法(把两个梯度真正加在一起、梯度投影 PCGrad、软参数共享、任务专属适配层)。</span>
+    </div>
+    <div class="slide-foot"><span class="pill run">完整对照实验进行中</span>
+      七个对照臂 × 3 个随机种子的最终数字尚未产出,本页只报告已确认的机制与现象。</div>
+  </div>
+  <div class="pagenum"></div>
+</section>
+
+<!-- 11 样本量 -->
+<section class="slide">
+  <div class="kicker">自我纠错</div>
+  <h2>三维部分的样本量,原来根本不够</h2>
+  <div class="body">
+    <div class="row">
+      <div class="col" style="flex:0 0 430px">
+        <svg viewBox="0 0 420 250" width="100%" height="250" aria-label="结构样本量从 20 个单一来源扩到 428 个不同来源">
+          <text x="10" y="24" font-size="17" font-weight="700" fill="#b4231c">原来</text>
+          <rect x="10" y="36" width="19" height="34" rx="3" fill="#b4231c" fill-opacity=".7"/>
+          <text x="40" y="60" font-size="26" font-weight="700" fill="#b4231c">20</text>
+          <text x="96" y="52" font-size="15" fill="#67707d">个共晶结构</text>
+          <text x="96" y="72" font-size="15" fill="#b4231c" font-weight="700">全部来自同一个蛋白</text>
+
+          <text x="10" y="122" font-size="17" font-weight="700" fill="#047857">现在</text>
+          <rect x="10" y="134" width="400" height="34" rx="3" fill="#047857" fill-opacity=".7"/>
+          <text x="20" y="158" font-size="24" font-weight="700" fill="#fff">428</text>
+          <text x="96" y="158" font-size="16" fill="#fff">个共晶结构(另加 Astex 85 个)</text>
+          <text x="10" y="196" font-size="15" fill="#047857" font-weight="700">没有任何两个复合物的链序列完全相同</text>
+          <text x="10" y="220" font-size="15" fill="#67707d">条形长度按 20 : 428 等比例绘制</text>
+          <text x="10" y="242" font-size="15" fill="#67707d">另有 PDBbind refined 的 5,311 个复合物作外部验证</text>
+        </svg>
+      </div>
+      <div class="col">
+        <h3>为什么这是个问题</h3>
+        <p class="small">用 20 个<b>同一个蛋白</b>的结构,无法支撑任何关于「对接方法好不好」的结论——
+        它只描述了一个结合口袋。<b>我们自己在中期就记录过这一点,评审也指出了同样的问题。</b></p>
+        <h3 style="margin-top:14px">同时补上一件事</h3>
+        <p class="small">新增 <b>28 项物理合法性检查</b>(键长、键角、环平面性、与蛋白/水的空间冲突……),
+        把「位置对不对」和「化学上成不成立」<b>分开报告</b>。
+        一个位置大致正确但化学上不可能的结果,不应该算成功。</p>
+        <div class="note" style="font-size:17px">PDBbind 还带来了本项目<b>第一个有物理单位的结合数据</b>
+        (pKd/pKi,范围 2.00–11.92,中位数 6.42),也是<b>第一次有外部验证集</b>。</div>
+      </div>
+    </div>
+    <div class="slide-foot"><span class="pill run">完整对接实验进行中</span>
+      428+85 个复合物的命中率尚未产出,本页只报告样本量与多样性的扩大。</div>
+  </div>
+  <div class="pagenum"></div>
+</section>
+
+<!-- 12 应用 -->
+<section class="slide">
+  <div class="kicker">做出来的工具</div>
+  <h2>把「不可信」做成第一等的一列</h2>
+  <div class="body">
+    <div class="row top">
+      <div class="col" style="flex:0 0 640px">
+        <img class="shot" src="img/app-table.webp" alt="应用结果表截图:前 8 行判为域内,第 8、9 行因离训练集太远被划线标注 do not trust,第 10 行为无法解析的输入但保留了行序" style="max-height:300px">
+      </div>
+      <div class="col">
+        <h3>这张表在做三件事</h3>
+        <ul class="small">
+          <li><b>「离训练集多远」和预测值并排</b>,不是藏在提示框里</li>
+          <li>离得太远的行<b>划掉、变灰、沉到最底部</b>——在任何排序方式下都排不到前面</li>
+          <li>无法解析的输入<b>保留原来的行号</b>并标错,不会被悄悄删掉
+            <span class="muted">(删掉会让人把结果对到错的分子上)</span></li>
+        </ul>
+        <div class="note" style="font-size:17px">依据就是发现三:<b>模型自己察觉不到自己何时出错</b>,
+        所以这个闸门必须由外部的距离来把守。</div>
+      </div>
+    </div>
+    <div class="row" style="margin-top:4px">
+      <div class="col"><p class="small">
+        图中第 8 行是乙醇(距离 0.357)、第 9 行是一个二肽(0.390)——两者都远离训练集,
+        工具<b>照样给出了预测值,但同时明确说不要相信它</b>。这正是我们希望的行为。</p></div>
+    </div>
+    <div class="slide-foot">整套模型约 31.7 MB,克隆代码仓库即可运行:不需要 GPU,也不需要下载任何数据集。</div>
+  </div>
+  <div class="pagenum"></div>
+</section>
+
+<!-- 13 边界 -->
+<section class="slide">
+  <div class="kicker">诚实的边界</div>
+  <h2>这些话必须说出口</h2>
+  <div class="body">
+    <ul>
+      <li><b>这是一个以负面结果为主的项目</b>,而负面结果就是发现本身,不是失败。</li>
+      <li><b>我们没有宣称自己从零训练的模型打败了基线。</b>图神经网络只是追平随机森林;
+        真正最强的是别人预训练好的、被我们冻结使用的 ESM-2。</li>
+      <li>结合强度的预测值是 <b>KIBA score</b>,<b class="err">不是 pKd,不是结合常数</b>。
+        而且这个量本身<b>极度集中</b>:半数真实值落在 <b>11.20–11.95</b>,
+        <b>74.7%</b> 落在中位数 11.50 的 ±0.6 之内。
+        所以预测值看起来"差不多",是数据如此,不是模型坏了
+        <span class="muted">(实测 std(预测)/std(真实)=0.8718,与理论最优收缩比 r=0.8487 基本一致)</span>。</li>
+      <li>三维对接是<b>自对接</b>:搜索范围来自被重新对接的那个结构自己,
+        所以命中率是<b>上界</b>,不代表面对一个未知口袋时的表现。</li>
+      <li><b>原子归因只是线索,不是解释。</b>每次只遮一个原子,会低估跨多个原子的基团。</li>
+      <li>计划里的<b>生成式分子模型没有做</b>,已明确放弃并写明理由;对接引擎的对比仍在进行中。</li>
+      <li>结合强度的「适用域」参照包含了 KIBA 的全部 2,030 个分子,
+        所以<b>它筛不出 KIBA 内部的分子</b>——真正的外推缺口在「留出分子」那种切分上。</li>
+    </ul>
+  </div>
+  <div class="pagenum"></div>
+</section>
+
+<!-- 14 总结 -->
+<section class="slide">
+  <div class="kicker">一句话总结</div>
+  <div class="body" style="justify-content:center;gap:28px">
+    <h2 style="font-size:41px;line-height:1.3">我们做的不是「又一个更准的模型」,<br>
+      而是把一个诚实的问题量化了。</h2>
+    <div class="row" style="gap:20px">
+      <div class="bignum"><span class="big" style="color:var(--warn)">0.0713</span>
+        <span class="cap">换成没见过的骨架<br>掉掉的 ROC-AUC</span></div>
+      <div style="width:1px;background:var(--bd);align-self:stretch"></div>
+      <div class="bignum"><span class="big" style="color:var(--err)">0.2079</span>
+        <span class="cap">靠模型自己的置信度弃权<br>比随机(0.3983)<b>更差</b></span></div>
+      <div style="width:1px;background:var(--bd);align-self:stretch"></div>
+      <div class="bignum"><span class="big" style="color:var(--ok)">0.4904</span>
+        <span class="cap">靠「离训练集多远」弃权<br>唯一真正管用的信号</span></div>
+    </div>
+    <div class="note" style="font-size:22px">
+      这类模型遇到没见过的结构时会退化,<b>而且它自己察觉不到</b>。
+      唯一管用的警报是「这个分子离训练集有多远」——
+      所以我们的工具把这个距离做成了第一等的输出。
+    </div>
+  </div>
+  <div class="pagenum"></div>
+</section>
+
+</div>
+
+<div class="hint">← → / PageUp PageDown 翻页 · F 全屏</div>
+
+<script>
+const slides = [...document.querySelectorAll('.slide')];
+let at = 0;
+
+slides.forEach((s, i) => {
+  const tag = s.querySelector('.pagenum');
+  if (tag) tag.textContent = (i + 1) + ' / ' + slides.length;
+});
+
+function show(i) {
+  at = Math.max(0, Math.min(slides.length - 1, i));
+  slides.forEach((s, k) => s.classList.toggle('on', k === at));
+  location.hash = String(at + 1);
+}
+
+// Slides are authored at a fixed 1280x720 and scaled to the window, so the
+// layout is identical in a browser, in full screen and in an exported image.
+function fit() {
+  const scale = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+  slides.forEach(s => { s.style.transform = 'scale(' + scale + ')'; });
+}
+
+addEventListener('resize', fit);
+addEventListener('keydown', e => {
+  if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) { show(at + 1); e.preventDefault(); }
+  else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) { show(at - 1); e.preventDefault(); }
+  else if (e.key === 'Home') show(0);
+  else if (e.key === 'End') show(slides.length - 1);
+  else if (e.key === 'f' || e.key === 'F') {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else document.documentElement.requestFullscreen();
+  }
+});
+addEventListener('click', e => { if (!e.target.closest('a')) show(at + 1); });
+
+fit();
+show(Number(location.hash.slice(1)) - 1 || 0);
+</script>
+</html>

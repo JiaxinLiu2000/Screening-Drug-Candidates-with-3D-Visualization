@@ -40,7 +40,56 @@ import torch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from tox21lib import ablation_data, model_io, paths, protein_embed  # noqa: E402
+from tox21lib import (  # noqa: E402
+    ablation_data,
+    applicability,
+    datasets,
+    dti,
+    featurize,
+    model_io,
+    paths,
+    protein_embed,
+)
+
+
+def build_applicability_references() -> dict[str, applicability.Reference]:
+    """Packed fingerprints of each task's training fold.
+
+    The toxicity reference uses the scaffold split, because that is the split
+    the shipped toxicity model was selected on; the affinity reference uses the
+    distinct drugs in the KIBA random-split training fold, since the affinity
+    model's chemical domain is set by which drugs it saw, not by how many pairs
+    each drug appeared in.
+    """
+    tox_clean = pd.read_parquet(paths.CLEAN_PARQUET)
+    tox_subsets = ablation_data.tox21_subsets("scaffold", 0)
+    if len(tox_subsets) != len(tox_clean):
+        raise SystemExit(
+            f"FAILED: scaffold split has {len(tox_subsets)} rows for "
+            f"{len(tox_clean)} molecules")
+    tox_train = tox_clean.loc[tox_subsets == "train", "canonical_smiles"].tolist()
+
+    raw = datasets.load_dti("KIBA")
+    kiba_clean, _ = datasets.unique_molecules(raw)
+    pairs, _ = dti.build_pairs(raw, kiba_clean)
+    kiba_subsets = pd.read_csv(
+        paths.SPLITS / "kiba_random_seed0.csv").sort_values("pair_index")
+    train_keys = set(pairs.loc[
+        kiba_subsets["subset"].to_numpy() == "train", "inchikey"])
+    smiles_by_key = dict(zip(kiba_clean["inchikey"],
+                             kiba_clean["canonical_smiles"]))
+    kiba_train = [smiles_by_key[k] for k in sorted(train_keys)]
+
+    print(f"  toxicity reference: {len(tox_train)} molecules (scaffold train)")
+    print(f"  affinity reference: {len(kiba_train)} distinct drugs "
+          f"(KIBA random train)")
+    return {
+        "toxicity": applicability.build_reference(
+            tox_train, task="toxicity", split="scaffold", seed=0),
+        "affinity": applicability.build_reference(
+            kiba_train, task="affinity", split="kiba_random", seed=0),
+    }
+
 
 SOURCE_CHECKPOINTS = paths.DATA_PROCESSED / "checkpoints"
 OUT = paths.ROOT / "models"
@@ -201,15 +250,72 @@ def export_affinity(device: str) -> dict:
                         "five_seed_mean_pearson": expected},
             "input_contract": "Morgan r=2 2048-bit fingerprint + standardised "
                               "1280-d ESM-2 vector",
-            "units": "KIBA score as distributed by TDC (observed range 0.0-17.2, "
-                     "median 11.6); higher is stronger binding. NOT pKd.",
+            "units": "KIBA score as distributed by TDC: median 11.50, IQR "
+                     "11.20-11.95, 75% of values within +-0.6 of the median. "
+                     "Higher is stronger binding. NOT pKd. The full 0.0-17.2 "
+                     "range is driven by rare extremes and overstates how much "
+                     "predictions should be expected to vary.",
         },
     }
     torch.save(payload, OUT / "affinity_frozen_mlp.pt")
     return payload
 
 
+def _reference_block(references: dict[str, applicability.Reference],
+                     ref_path: Path) -> dict:
+    """The registry entry describing the applicability reference.
+
+    One definition, used by both the full export and `--reference-only`. Two
+    verbatim copies of this dict would drift the moment either path changed,
+    and the drift would be silent: a stale `threshold` or `sha256` in the
+    registry still loads fine, it just stops describing the file on disk.
+    """
+    return {
+        "file": ref_path.name,
+        "fingerprint": f"Morgan radius {featurize.MORGAN_RADIUS}, "
+                       f"{featurize.MORGAN_N_BITS} bits, binary",
+        "packing": "numpy.packbits, 256 bytes per molecule",
+        "threshold": applicability.DEFAULT_DOMAIN_THRESHOLD,
+        "rationale": "distance-to-training-set was the only abstention signal "
+                     "that beat random in results/abstention.json",
+        "references": {name: {"split": r.split, "seed": r.seed,
+                              "n_molecules": r.n_molecules}
+                       for name, r in references.items()},
+        "sha256": model_io.sha256(ref_path),
+    }
+
+
+def refresh_reference_only() -> int:
+    """Rebuild only `applicability_reference.npz` and patch the registry entry.
+
+    The full export retrains the affinity MLP, which needs a GPU and several
+    minutes. The applicability reference is pure CPU fingerprinting, so this
+    path exists to rebuild it without disturbing the shipped checkpoints -- the
+    case that comes up when the reference format changes or the file is lost.
+
+    The existing registry is *merged into*, never regenerated: with no models
+    exported in this pass, rewriting it wholesale would leave `"models": {}`.
+    """
+    registry_path = OUT / "registry.json"
+    if not registry_path.exists():
+        raise SystemExit(
+            f"FAILED: {registry_path} missing; run the full export first")
+    print("applicability_reference.npz <- training-fold fingerprints")
+    references = build_applicability_references()
+    ref_path = applicability.save_reference(
+        OUT / "applicability_reference.npz", references)
+
+    registry = json.loads(registry_path.read_text(encoding="utf-8"))
+    registry["applicability_reference"] = _reference_block(references, ref_path)
+    registry_path.write_text(json.dumps(registry, indent=2) + "\n",
+                             encoding="utf-8")
+    print(f"Updated {registry_path}")
+    return 0
+
+
 def main() -> int:
+    if "--reference-only" in sys.argv[1:]:
+        return refresh_reference_only()
     OUT.mkdir(parents=True, exist_ok=True)
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print(f"device {device}; writing {OUT}")
@@ -247,6 +353,15 @@ def main() -> int:
     matrix, _, embed_model = protein_embed.load_cache(OUT / "protein_embeddings.npz")
     n_prot, dim = matrix.shape
 
+    # Nearest-neighbour distance to the training set is the only abstention
+    # signal that beat random in src/33_abstention.py, so the application needs
+    # it -- and the raw datasets are not committed. Packed fingerprints of the
+    # training folds ship instead: 2048 bits become 256 bytes per molecule.
+    print("applicability_reference.npz <- training-fold fingerprints")
+    references = build_applicability_references()
+    ref_path = applicability.save_reference(
+        OUT / "applicability_reference.npz", references)
+
     registry = {
         "format_version": model_io.FORMAT_VERSION,
         "generated_by": "src/38_export_models.py",
@@ -258,6 +373,7 @@ def main() -> int:
             "n_proteins": int(n_prot), "dim": int(dim),
             "sha256": model_io.sha256(OUT / "protein_embeddings.npz"),
         },
+        "applicability_reference": _reference_block(references, ref_path),
     }
     for name, entry in entries.items():
         path = OUT / entry["file"]

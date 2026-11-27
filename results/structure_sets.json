@@ -1,0 +1,59 @@
+{
+  "generated_seconds": 1.1,
+  "superseded_phase2_set": {
+    "n_complexes": 20,
+    "n_queried": 271,
+    "uniprot": "P00533",
+    "protein_name": "EGFR",
+    "note": "single target; cannot support a docking-method claim"
+  },
+  "posebusters_benchmark_set": {
+    "label": "posebusters_benchmark_set",
+    "present": true,
+    "path": "data\\raw\\posebusters\\posebusters_benchmark_set",
+    "n_complexes": 428,
+    "n_distinct_pdb_entries": 428,
+    "n_distinct_protein_sequence_sets": 428,
+    "largest_protein_group": 1,
+    "n_missing_protein_pdb": 0,
+    "n_with_ligand_sdf": 428,
+    "median_residues_per_complex": 386
+  },
+  "astex_diverse_set": {
+    "label": "astex_diverse_set",
+    "present": true,
+    "path": "data\\raw\\posebusters\\astex_diverse_set",
+    "n_complexes": 85,
+    "n_distinct_pdb_entries": 85,
+    "n_distinct_protein_sequence_sets": 85,
+    "largest_protein_group": 1,
+    "n_missing_protein_pdb": 0,
+    "n_with_ligand_sdf": 85,
+    "median_residues_per_complex": 461
+  },
+  "pdbbind_refined": {
+    "present": true,
+    "source": "cached",
+    "path": "data\\raw\\pdbbind_refined.parquet",
+    "sha256": "aa4324825290633e4f877a7989508e1108a989c316f5e7c456fbf8fc55cb9542",
+    "n_rows": 5311,
+    "n_distinct_pdb_ids": 5311,
+    "n_distinct_smiles": 4303,
+    "n_distinct_sequences": 3186,
+    "affinity_unit": "pKd/pKi (-log10 M)",
+    "affinity_min": 1.9956786632537842,
+    "affinity_max": 11.920818328857422,
+    "affinity_median": 6.4202165603637695,
+    "n_affinity_missing": 0,
+    "columns": [
+      "seq",
+      "name",
+      "smiles",
+      "affinity_uM",
+      "neg_log10_affinity_M",
+      "smiles_can",
+      "affinity"
+    ]
+  },
+  "posebusters_zenodo": "https://zenodo.org/record/8278563"
+}

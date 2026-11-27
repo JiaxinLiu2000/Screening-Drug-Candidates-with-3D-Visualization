@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>项目收尾计划 · 2026-11-27</title>
+<style>
+:root{--fg:#1a1a1a;--muted:#6b7280;--bd:#e5e7eb;--bg:#fff;--acc:#1d4ed8;--ok:#047857;--warn:#b45309;--err:#b91c1c;--sf:#f9fafb}
+@media(prefers-color-scheme:dark){:root{--fg:#e5e7eb;--muted:#9ca3af;--bd:#374151;--bg:#111827;--acc:#60a5fa;--ok:#34d399;--warn:#fbbf24;--err:#f87171;--sf:#1f2937}}
+*{box-sizing:border-box}
+body{max-width:980px;margin:0 auto;padding:40px 24px 80px;background:var(--bg);color:var(--fg);
+ font:15px/1.65 -apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+h1{font-size:25px;margin:0 0 4px;letter-spacing:-.01em}
+h2{font-size:19px;margin:44px 0 12px;padding-top:14px;border-top:1px solid var(--bd)}
+h3{font-size:15px;margin:22px 0 6px;color:var(--acc)}
+.sub{color:var(--muted);font-size:13px;margin-bottom:28px}
+table{border-collapse:collapse;width:100%;margin:12px 0;font-size:13.5px}
+th,td{border:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--sf);font-weight:600}
+code{font:12.5px ui-monospace,Consolas,monospace;background:var(--sf);padding:1px 5px;border-radius:3px}
+.ok{color:var(--ok);font-weight:600}.warn{color:var(--warn);font-weight:600}.err{color:var(--err);font-weight:600}
+.lead{background:var(--sf);border-left:3px solid var(--acc);padding:14px 18px;margin:18px 0;border-radius:0 4px 4px 0}
+ul,ol{padding-left:22px;margin:8px 0}li{margin:3px 0}
+.pill{display:inline-block;font-size:11px;padding:1px 7px;border-radius:9px;border:1px solid var(--bd);color:var(--muted);margin-left:6px;vertical-align:1px}
+.src{font-size:12px;color:var(--muted)}
+a{color:var(--acc)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:720px){.grid{grid-template-columns:1fr}}
+.card{border:1px solid var(--bd);border-radius:5px;padding:12px 14px}
+.card h4{margin:0 0 6px;font-size:13.5px}
+.no{text-decoration:line-through;color:var(--muted)}
+</style>
+
+<h1>项目收尾计划</h1>
+<div class="sub">2026-11-27 · 调研截止 2026-11-26 · 所有外部数字均来自下方链接的原始论文,未做估算</div>
+
+<div class="lead">
+<b>核心结论:这两个月的文献<u>站在我们这一边</u>。</b>
+项目最担心的三个"负面结果"——GIN 只追平随机森林、调好基线后 MLP 优势坍缩、cold_target 上单模态反而更强——
+在 9&nbsp;月至 11&nbsp;月分别有独立论文得出同样结论。
+这把它们从"我们没调好"变成"可引用的已知现象"。<br><br>
+<b>真正的风险在别处:我们用的 Tox21 不是原版 Tox21。</b>
+TDC 继承了 MoleculeNet 的改动(标签被插补/伪造),2025-11 的可复现排行榜论文点名了这一点。
+这影响我们所有毒性数字与文献的可比性,是优先级最高的待办。
+</div>
+
+<h2>1 · 外部进展与对本项目的影响</h2>
+<table>
+<tr><th style="width:22%">成果</th><th style="width:30%">它说了什么</th><th>对我们的影响</th></tr>
+
+<tr><td><b>Tox21 可复现排行榜</b><br><span class=src>Klambauer 组, arXiv 2511.14744<br>托管于 HuggingFace</span></td>
+<td>原版 Tox21 挑战赛数据被 MoleculeNet / OGB 收录时<b>标签遭插补与伪造</b>,导致十年来结果互不可比。2015 年的 DeepTox 与 2017 年的 SNN <b>至今仍排前列</b>。</td>
+<td class=err><b>必须处理。</b>我们的 Tox21 经 TDC 取得,继承了同一改动。文献对比章节的前提受影响。同时也是机会:排行榜接受提交,且 DeepTox/SNN 仍强这一点,正好支撑我们"基线难以击败"的论述。</td></tr>
+
+<tr><td><b>25 模型 × 25 数据集 预训练分子嵌入基准</b><br><span class=src>AGH Kraków, arXiv 2508.06199v4 (2026-02)<br>scaffold 切分 + 冻结嵌入 + 贝叶斯 Bradley-Terry 检验</span></td>
+<td>几乎所有神经模型<b>相对 ECFP 指纹无显著提升</b>。GIN 在 23 个模型中排第 20(均值 AUROC 75.14% vs ECFP 79.89%)。唯一统计显著胜出的 CLAMP <b>本身就建立在指纹之上</b>。</td>
+<td class=ok><b>独立印证我们的核心负面结果。</b>可直接引用,把"GIN 仅追平 RF"从实验失误改写为领域共识。<br>可执行项:① 我们用的是<b>二值</b> Morgan 指纹,该文基线为<b>计数</b>型(信息量更大);② CLAMP 是唯一真正的上界候选。</td></tr>
+
+<tr><td><b>ToxBench</b><br><span class=src>BMC Bioinformatics, 2026-09-05<br>泄漏审计版多任务毒性基准</span></td>
+<td>Tox21 上 scaffold 切分使 AUROC 下降 <b>0.057–0.079,均值 0.070</b>(4 类模型 × 5 种子)。并审计残余泄漏:测试集最近邻 Tanimoto&gt;0.6 的比例由 43.9% 降至 12.1%,未归零。</td>
+<td class=ok><b>我们测得 0.0713,CI [0.0413, 0.1013] —— 落在其区间正中。</b>这是一次独立复现,是报告里分量最重的外部佐证。我们的校准(ECE 0.0653→等渗 0.0252)与弃权实验也覆盖了它的另外两个维度。</td></tr>
+
+<tr><td><b>Beyond Random Splits</b><br><span class=src>Georgia Tech, arXiv 2610.03456 (2026-10-02)<br>718,800 对 ChEMBL+BindingDB</span></td>
+<td>12 种架构 × 3 种 ESM-2 交互方式。模型排名在两种化学偏移间一致(τ=0.79),在蛋白 OOD 下降至 τ=0.39,在<b>双重 OOD 下反转(τ=−0.55)</b>。</td>
+<td class=ok><b>与我们的模态消融同构。</b>我们在 cold_target 上测到 drug_only 反超双模态 <b>+0.0927</b>——正是"排名随偏移形式反转"的一个实例。<br>缺口:我们有 cold_drug 与 cold_target,<b>没有双重 OOD</b>。</td></tr>
+
+<tr><td><b>STORM</b><br><span class=src>Stanford (Dror 组), arXiv 2611.23777<br>2026-11-18,9 天前</span></td>
+<td>无结构的亲和力预测:<b>集成多个"蛋白表征 × 分子表征"小型融合模型</b>。同数据下匹配或超过 Boltz-2,推理与训练<b>快 5 个数量级以上</b>。</td>
+<td class=ok><b>与我们的获胜架构是同一类</b>(冻结 ESM-2 + 小型拼接头)。为"不做协同折叠"提供了当期最强辩护,并给出明确的下一步算法:把单个 MLP 换成多表征小模型集成。</td></tr>
+
+<tr><td><b>ESM-C / BenchPLM</b><br><span class=src>EvolutionaryScale;LiteFold 2026-06<br>HyPLM 技术报告 2026-11</span></td>
+<td>ESM-C 300m/600m 已开放。多项基准显示<b>更大的蛋白语言模型并不必然更好</b>。</td>
+<td class=warn>我们选 ESM-2 650M 是站得住的。ESM-C 300m 可作为<b>替换接口的第一个真实用例</b>——参数减半,看指标是否掉。成本低,结论二元明确。</td></tr>
+
+<tr><td><b>对接 / 协同折叠</b><br><span class=src>Boltz-2、Chai-1、DiffDock-L<br>PoseBusters 物理合法性</span></td>
+<td>协同折叠已成主流;PoseBusters 系列持续显示 DL 对接<b>常产生物理上非法的构象</b>,且难以泛化到新序列。</td>
+<td class=warn>设计文档 §11.6(DiffDock vs Vina + PoseBusters)<b>仍未建</b>。我们已有 Vina 基线(首位命中 41.0%、九选优 76.0%)与自对接对照,补一条对比即可闭合。</td></tr>
+</table>
+
+<h2>2 · 还需要做什么(按性价比排序)</h2>
+<table>
+<tr><th style="width:4%">#</th><th style="width:26%">工作</th><th style="width:40%">为什么</th><th style="width:10%">成本</th><th>产出</th></tr>
+<tr><td><b>1</b></td><td class=err><b>Tox21 数据溯源</b><br>在原版挑战赛数据上重跑</td>
+<td>当前数字与文献不可比。这是唯一会<b>动摇已有结论</b>的问题,其余都是增量。
+数据已可直接取用(🤗 <code>ml-jku/tox21</code>,见 §5),<b>且官方自带 <code>CVfold</code> 列</b>——
+意味着要改用官方折而非我们提交的 5 组切分,<b>对比口径由他们定义,不由我们定义</b>。</td>
+<td>半天<br>(特征与模型层可直接复用)</td><td>可比的毒性数字;可与排行榜上的第三方 GIN / RF 基线直接对照</td></tr>
+
+<tr><td><b>2</b></td><td><b>双重 OOD 切分</b><br>cold_drug ∧ cold_target</td>
+<td>文献显示架构排名在此处<b>反转</b>。我们的模态消融已指向同一现象,但缺这一格。</td><td>2 小时<br>(<code>03_splits.py</code> 可扩展)</td><td>消融表补全;最强的单一新结果</td></tr>
+
+<tr><td><b>3</b></td><td><b>计数型指纹 + CLAMP 嵌入</b><br>再抬一次基线地板</td>
+<td>我们已经证明"调好基线后优势坍缩"。该文指出计数指纹信息量更大、CLAMP 是唯一显著胜出者——<b>地板可能还没踩到底</b>。</td><td>1 天</td><td>诚实的性能上界;若 GIN 再被拉开,是比现在更强的论点</td></tr>
+
+<tr><td><b>4</b></td><td><b>STORM 式集成</b><br>多表征小模型集成替代单 MLP</td>
+<td>9 天前发表、与我们架构同类、声称匹配 Boltz-2。直接套用现有冻结特征即可。</td><td>1–2 天</td><td>亲和力指标的真实改进机会</td></tr>
+
+<tr><td><b>5</b></td><td><b>前端(本次只出功能稿)</b></td><td>见下节。</td><td>设计稿即时</td><td>可评审的功能规格</td></tr>
+
+<tr><td><b>6</b></td><td><b>§11.6 对接引擎对比</b><br>+ PoseBusters 合法性</td>
+<td>设计文档承诺过;Vina 侧已完成,只差对照臂。</td><td>2–3 天<br>(GPU + 环境)</td><td>补齐承诺范围</td></tr>
+
+<tr><td><b>7</b></td><td><b>ESM-C 替换实验</b></td><td>替换接口的首个真实验证。</td><td>半天</td><td>接口可用性证明</td></tr>
+</table>
+
+<h3>建议不做</h3>
+<ul>
+<li class=no><b>§11.4 生成模型微调(MolGPT)</b> —— 与"判别模型在分布偏移下的可靠性"这一主线无关,且无法在课程周期内做出可信评估。YAGNI。</li>
+<li class=no><b>更多数据集本身</b> —— 再加 BBBP/SIDER/ClinTox 只会摊薄论述。<b>唯二值得加的是:原版 Tox21(修正可比性)、BindingDB 留出子集(外部验证)。</b></li>
+<li class=no><b>换更大的分子编码器</b> —— 上表第二行已经说明这条路线的期望收益为零。</li>
+</ul>
+
+<h2>3 · 直接回答你的两个问题</h2>
+<div class="grid">
+<div class=card><h4>需要更多数据集吗?</h4>
+<b>需要两个,且都不是为了"更多"。</b>
+<ul>
+<li><b>原版 Tox21</b>——修正可比性,属于纠错而非扩充。</li>
+<li><b>BindingDB / ChEMBL 留出子集</b>——目前亲和力结论全部来自 KIBA 与 DAVIS,<b>没有任何外部验证</b>。这是审稿人最容易攻击的点。</li>
+</ul>
+其余一律不加。</div>
+
+<div class=card><h4>需要新算法吗?</h4>
+<b>需要三个,全部能复用现有冻结特征与替换接口。</b>
+<ul>
+<li><b>CLAMP 嵌入</b>——唯一被统计显著证实胜过 ECFP 的模型。</li>
+<li><b>STORM 式多表征集成</b>——当期最强的"无结构"亲和力方案。</li>
+<li><b>ESM-C 300m</b>——顺带检验替换接口。</li>
+</ul>
+<span class=warn>前提:三者都必须先跑再下结论,不预设会赢。</span></div>
+</div>
+
+<h2>4 · 前端功能设计稿(只谈功能,不谈视觉)</h2>
+
+<div class="lead" style="border-color:var(--warn)">
+<b>设计前提:这套模型在分布外会错,而且错得很自信。</b>
+我们自己测到 scaffold 偏移掉 0.0713 AUROC、cold_target 上 Pearson 仅 0.48、
+而且<b>最好的弃权信号是"到训练集的 Tanimoto 距离"</b>(PR-AUC 0.4904,优于模型自身置信度 0.2079)。
+因此前端的第一职责不是展示预测,而是<b>标出哪些预测不该被相信</b>。把适用域做成装饰性角标是本项目最容易犯的错。
+</div>
+
+<h3>F1 · 批量筛选(主流程)</h3>
+<table>
+<tr><th style="width:16%">步骤</th><th>功能</th><th style="width:30%">失败与边界</th></tr>
+<tr><td>输入</td><td>粘贴 SMILES(每行一个)或上传 CSV;选择靶点(229 个已有 ESM-2 嵌入的蛋白,下拉可搜索)</td><td>无法解析的 SMILES <b>保留行序并标为 NaN</b>,不静默丢弃(后端已是此行为);未收录靶点明确拒绝,不回退到近似靶点</td></tr>
+<tr><td>提交</td><td>返回 job_id,前端轮询状态</td><td>超出条数上限时拒绝并给出上限,不截断</td></tr>
+<tr><td>结果</td><td>表格,每行一个分子</td><td>部分失败 → 整体仍返回,失败行可见</td></tr>
+</table>
+
+<h3>F2 · 结果表的列(这是整个设计的核心)</h3>
+<table>
+<tr><th style="width:20%">列</th><th>来源</th><th style="width:34%">必须说清的语义</th></tr>
+<tr><td>预测亲和力</td><td><code>affinity_frozen_mlp</code></td><td class=warn><b>KIBA score(0–17.2,中位 11.6),不是 pKd</b>。单位必须标注,否则会被当成 pKd 读。</td></tr>
+<tr><td>12 个毒性终点</td><td><code>toxicity_gin</code> + 等渗校准</td><td>展示<b>校准后</b>概率(ECE 0.0653→0.0252);原始分数仅在详情页供对照</td></tr>
+<tr><td>毒性风险汇总</td><td>12 终点取最大</td><td>标注为聚合量,非任何单一测量</td></tr>
+<tr><td class=err><b>适用域</b></td><td>到训练集最近邻 Tanimoto</td><td class=err><b>一等公民,与预测值并列。</b>低于阈值的行整行降级显示,并给出"建议弃权"</td></tr>
+<tr><td>靶点熟悉度</td><td>该靶点是否在训练集中出现</td><td>cold_target 下指标显著更差,须单独提示</td></tr>
+<tr><td>QED / 分子量等</td><td>RDKit 即时计算</td><td>确定性计算,非预测,应与预测列在视觉上区分</td></tr>
+</table>
+
+<h3>F3–F6 · 其余功能</h3>
+<div class="grid">
+<div class=card><h4>F3 结果总览</h4>
+散点图:横轴亲和力、纵轴毒性风险、点大小 QED、颜色为是否通过过滤。支持框选并联动下方表格。
+<br><span class=warn>相对设计文档 §8.3 的改动:横轴标注改为 KIBA score;并以底纹区分适用域内/外,而非仅标"理想区域"——否则会把域外的高分分子推荐出去。</span></div>
+
+<div class=card><h4>F4 分子详情</h4>
+二维结构(服务端 SVG,便于与原子归因对齐)+ 原子归因热图(<code>22_attribution.py</code> 已有)+ Mol* 三维 + <b>训练集最近邻分子并列展示</b>(让用户自己判断外推距离)。</div>
+
+<div class=card><h4>F5 模型管理</h4>
+列出 <code>registry.json</code> 中的模型:任务、架构、指标、sha256、训练数据。支持上传替换模型,<b>前端显示契约校验结果</b>(终点数、嵌入维度、是否带标准化统计量)——校验失败必须拒绝并说明原因,不降级加载。</div>
+
+<div class=card><h4>F6 可追溯</h4>
+每次预测记录所用模型名 + sha256 + 代码版本,结果可导出为带出处的 CSV/JSON。与项目既有的"每个产物都有机器可读 JSON 兄弟"一致。</div>
+</div>
+
+<h3>接口契约(草案)</h3>
+<table>
+<tr><th style="width:38%">端点</th><th>说明</th></tr>
+<tr><td><code>GET  /api/targets</code></td><td>229 个可用靶点(id、基因名、是否在训练集中出现)</td></tr>
+<tr><td><code>GET  /api/models</code></td><td>registry 内容 + 每个模型的契约与指标</td></tr>
+<tr><td><code>POST /api/screen</code></td><td><code>{smiles:[], target_id, models:{tox, affinity}}</code> → <code>{job_id}</code></td></tr>
+<tr><td><code>GET  /api/screen/{job_id}</code></td><td><code>{status, rows:[{input_index, smiles|null, error|null, affinity, tox:{...}, tox_calibrated:{...}, applicability:{nn_tanimoto, in_domain, advice}}]}</code></td></tr>
+<tr><td><code>GET  /api/molecule/{inchikey}</code></td><td>2D SVG、原子归因、最近邻训练分子</td></tr>
+</table>
+<p class=src><code>input_index</code> 必须存在:行序是前端对齐失败行的唯一依据。<code>applicability</code> 为必填而非可选字段——设成可选,前端早晚会忘记渲染它。</p>
+
+<h2>5 · GitHub / HuggingFace 可直接取用的资源</h2>
+<p class=src>以下全部于 2026-11-27 通过 <code>gh search repos</code>、<code>gh api repos/…</code> 与 HuggingFace API 实时查询,
+星数、许可与最后更新时间为查询当时的真实值,非引用自二手文章。</p>
+
+<h3>最高价值的一条:官方 Tox21 已在 HuggingFace 上,且带 GIN 基线</h3>
+<table>
+<tr><th style="width:30%">资源</th><th style="width:22%">状态</th><th>为什么要紧</th></tr>
+<tr><td><a href="https://huggingface.co/datasets/ml-jku/tox21">🤗 <code>ml-jku/tox21</code></a><br><span class=src>数据集</span></td>
+<td>2025-10-28 更新<br>251 次下载 · 3 赞</td>
+<td class=ok><b>我已下载核对过结构:</b><code>tox21_train.csv</code> 11,764 行 × 19 列 + <code>tox21_validation.csv</code> 296 行。
+含 <code>CVfold</code> 与 <code>set</code> 两列(<b>官方规定的交叉验证折</b>),12 个终点的缺失率 20.4%–39.1% —— <b>真实缺失,未被插补</b>,正是 MoleculeNet 版本被改动的地方。
+对比:我们经 TDC 得到的集合标准化后为 6,143 个分子。</td></tr>
+
+<tr><td><a href="https://huggingface.co/spaces/ml-jku/tox21_leaderboard">🤗 <code>ml-jku/tox21_leaderboard</code></a><br><span class=src>Space · 13 赞</span></td>
+<td>在线</td>
+<td>排行榜本体,论文称可通过标准化 API 调用提交。</td></tr>
+
+<tr><td><span class=src>同组基线 Spaces:</span><br>
+<code>tox21_gin_classifier</code><br><code>tox21_rf_classifier</code><br>
+<code>tox21_snn_classifier</code> · <code>tox21_chemprop_classifier</code> · <code>tox21_xgboost_classifier</code></td>
+<td>在线,可推理调用</td>
+<td class=ok><b>存在一个跑在官方数据上的 GIN 基线和一个 RF 基线。</b>
+这正是我们项目的两个主角。可以<b>直接对照</b>,而不必自己复现他人实现——
+把"GIN 只追平 RF"这一结论放到第三方同口径环境下检验。</td></tr>
+</table>
+
+<h3>代码仓库</h3>
+<table>
+<tr><th style="width:26%">仓库</th><th style="width:9%">星</th><th style="width:11%">许可</th><th style="width:11%">最后更新</th><th style="width:13%">无 GPU 可用?</th><th>用途</th></tr>
+<tr><td><a href="https://github.com/MLCIL/benchmarking_molecular_models">MLCIL/benchmarking_<wbr>molecular_models</a></td>
+<td>21</td><td class=warn>未声明</td><td>2026-11-24</td><td class=ok>可以</td>
+<td>上文 25×25 基准的官方代码。<b>许可缺失</b>,只宜参考协议、不宜直接并入我们仓库。</td></tr>
+
+<tr><td><a href="https://github.com/MLCIL/scikit-fingerprints">MLCIL/scikit-fingerprints</a></td>
+<td>407</td><td class=ok>MIT</td><td>2026-11-16</td><td class=ok>可以</td>
+<td class=ok><b>最省事的落地项。</b>scikit-learn 兼容的指纹库,含计数型 ECFP 与 Atom Pair。
+我们当前用的是二值 Morgan(<code>GetFingerprintAsNumPy</code>),换计数型只需改特征层一处。</td></tr>
+
+<tr><td><a href="https://github.com/ml-jku/clamp">ml-jku/clamp</a></td>
+<td>121</td><td class=warn>Other</td><td>2026-02-26</td><td class=ok>推理可以</td>
+<td>唯一统计显著胜过 ECFP 的模型。<b>许可为 "Other",并入前必须先读 LICENSE。</b></td></tr>
+
+<tr><td><a href="https://github.com/jwohlwend/boltz">jwohlwend/boltz</a></td>
+<td>4,347</td><td class=ok>MIT</td><td>2026-11-26</td><td class=err>不行</td>
+<td>Boltz-2。协同折叠 + 亲和力。作为对照臂有价值,但算力远超课程预算——STORM 的意义正在于此。</td></tr>
+
+<tr><td><a href="https://github.com/chemprop/chemprop">chemprop/chemprop</a></td>
+<td>2,536</td><td class=warn>Other</td><td>2026-11-24</td><td class=ok>可以</td>
+<td>D-MPNN 参考实现,且排行榜上有同名基线,便于口径对齐。</td></tr>
+
+<tr><td><a href="https://github.com/swansonk14/admet_ai">swansonk14/admet_ai</a></td>
+<td>360</td><td class=ok>MIT</td><td>2026-11-27</td><td class=ok>可以</td>
+<td>已训练好的 Chemprop ADMET 模型,可作为毒性侧的现成外部对照。</td></tr>
+</table>
+
+<h3 class=err>一个必须记录的供应链风险</h3>
+<table>
+<tr><th style="width:26%">事实</th><th>影响</th></tr>
+<tr><td><code>requirements.txt</code> 固定 <code>fair-esm==2.0.0</code>。
+其上游 <code>facebookresearch/esm</code> <b>现已重定向至 <a href="https://github.com/Biohub/esm-archive">Biohub/esm-archive</a>,
+<code>archived: true</code>,最后提交 2024-02-07</b>(4,175 星,MIT)。</td>
+<td class=warn>我们的 <code>protein_embed.py</code> 走 <code>esm.pretrained.load_model_and_alphabet()</code>,权重自 Meta 的 CDN 拉取。
+<b>对新克隆者无影响</b>——嵌入已随仓库提交,这个决定现在显得更正确了。
+但<b>重新生成嵌入依赖一个已归档的库和一个第三方 CDN</b>。
+若要做 ESM-C 替换实验,正好顺手迁到 <code>transformers</code>(已固定 5.20.2),去掉这条依赖。</td></tr>
+</table>
+
+<p class=src>说明:HuggingFace 上搜不到可信的 ESM-C 官方权重镜像(<code>author=evolutionaryscale</code> 下无模型,
+<code>search=esmc</code> 返回的均为个人上传的无关条目)。ESM-C 需经其官方 <code>esm</code> 包或云 API 取得,
+这会提高"替换实验"的成本,请在排期时计入。<code>nvidia/NV-KERMT-70M-v2</code> 许可为 <code>other</code>、
+近 30 天下载量 0、最后更新 2026-06-23,<b>不建议采用</b>。</p>
+
+<h2>6 · 建议的执行顺序</h2>
+<ol>
+<li><b>第 1 项(Tox21 溯源)单独先做</b>——它可能改变已有数字,必须在其他实验叠加之前落定。</li>
+<li>第 2、3、7 项可并行(切分 / 基线 / 嵌入替换,互不冲突)。</li>
+<li>第 4 项(STORM 集成)依赖第 3 项的特征。</li>
+<li>前端在后端契约冻结后再动工;本稿即为契约输入。</li>
+<li>第 6 项(对接对比)最后做,环境成本最高且与主线最弱耦合。</li>
+</ol>
+
+<p class=src style="margin-top:34px;border-top:1px solid var(--bd);padding-top:14px">
+<b>出处与口径</b>(我方数字均取自仓库既有产物,下列每项都已实际读取核对,而非按文件名推断):
+</p>
+<table style="font-size:12.5px">
+<tr><th style="width:21%">数字</th><th style="width:30%">来源</th><th>取数方式</th></tr>
+<tr><td>scaffold 惩罚 0.0713<br>区间 [0.0413, 0.1013]</td><td><code>results/tox_reliability.json</code> / <code>.md</code> 第 61 行</td>
+<td>直接读出。注意 <code>scaffold_stats.json</code> <b>只存骨架计数</b>(<code>n_unique_scaffolds</code> 等),<b>不含惩罚值</b>——本文初稿曾引错此处。</td></tr>
+<tr><td>ECE 0.0653 → 0.0252</td><td><code>results/tox_calibration.csv</code></td>
+<td><b>未校准列 <code>ece</code> → 等渗校准后列 <code>ece_isotonic</code></b>,按 <code>split</code> 分组取算术平均(<code>groupby('split').mean()</code>),<b>取 <code>random</code> 那一行</b>。
+<code>scaffold</code> 行为 0.0722 → 0.0253。两列均为原始 CSV 字段,非本文计算。</td></tr>
+<tr><td>弃权最佳信号<br><code>tanimoto_to_train</code></td><td><code>results/abstention.json</code></td>
+<td>字段 <code>best_signal_by_mean_pr_auc</code> 直接读出;四个候选信号为 <code>distance_from_half</code> / <code>forest_agreement</code> / <code>random</code> / <code>tanimoto_to_train</code>。</td></tr>
+<tr><td>模态消融 +0.0927</td><td><code>results/modality_ablation.json</code></td>
+<td class=warn><b>该数字不以字面形式出现在文件中,是推导值。</b>由 <code>by_split.cold_target</code> 下
+<code>drug_only.pearson_mean</code> 0.5720227758 减 <code>both.pearson_mean</code> 0.4793567955 得 0.09267,四舍五入为 +0.0927。核对者请勿在文件中搜索该字符串。</td></tr>
+<tr><td>官方 Tox21 11,764 / 296<br>缺失率 20.4%–39.1%</td><td>🤗 <code>ml-jku/tox21</code></td>
+<td>于 2026-11-27 下载两个 CSV 后用 pandas 实测 <code>shape</code> 与 <code>isna().mean()</code>,非引自论文。</td></tr>
+</table>
+<p class=src>外部文献数字均可在上文所附链接中核对;GitHub 星数、许可与更新时间取自 <code>gh api</code> 实时返回。</p>

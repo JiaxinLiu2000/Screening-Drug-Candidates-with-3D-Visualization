@@ -1,0 +1,432 @@
+:root {
+  --fg: #16181d;
+  --muted: #6b7280;
+  --bd: #e3e6eb;
+  --bg: #ffffff;
+  --surface: #f7f8fa;
+  --accent: #1d4ed8;
+  --ok: #047857;
+  --warn: #b45309;
+  --err: #b91c1c;
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 14px/1.55 -apple-system, "Segoe UI", "PingFang SC", sans-serif;
+}
+
+.shell {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 28px 22px 70px;
+}
+
+header h1 {
+  margin: 0 0 4px;
+  font-size: 23px;
+  letter-spacing: -0.01em;
+}
+
+h2 {
+  font-size: 16px;
+  margin: 0 0 8px;
+}
+
+h3 {
+  font-size: 13px;
+  margin: 16px 0 5px;
+  color: var(--accent);
+}
+
+.muted {
+  color: var(--muted);
+}
+.small {
+  font-size: 12px;
+}
+.ok {
+  color: var(--ok);
+}
+.warn {
+  color: var(--warn);
+}
+.error {
+  color: var(--err);
+}
+.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* controls -------------------------------------------------------------- */
+
+.controls {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 18px;
+  margin: 20px 0 14px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+
+.field > span {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+textarea,
+select,
+input[type="range"] {
+  font: inherit;
+  border: 1px solid var(--bd);
+  border-radius: 5px;
+  padding: 7px 9px;
+  background: var(--bg);
+  color: inherit;
+}
+
+textarea {
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 12.5px;
+  resize: vertical;
+}
+
+button {
+  font: inherit;
+  font-weight: 600;
+  padding: 9px 20px;
+  border: 0;
+  border-radius: 5px;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+}
+
+button:disabled {
+  background: var(--muted);
+  cursor: progress;
+}
+
+/* model bar ------------------------------------------------------------- */
+
+.modelbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 16px;
+}
+
+.chip {
+  font-size: 11.5px;
+  font-family: ui-monospace, Consolas, monospace;
+  padding: 3px 9px;
+  border-radius: 11px;
+  border: 1px solid var(--bd);
+  background: var(--surface);
+  color: var(--muted);
+}
+
+.chip.ok {
+  border-color: #a7d7c2;
+  color: var(--ok);
+}
+.chip.bad {
+  border-color: #e7b3b3;
+  color: var(--err);
+}
+.chip.warn {
+  border-color: #e8cfa3;
+  color: var(--warn);
+}
+
+/* summary --------------------------------------------------------------- */
+
+.summary {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.stat {
+  border: 1px solid var(--bd);
+  border-radius: 6px;
+  padding: 9px 14px;
+  min-width: 112px;
+  background: var(--surface);
+}
+
+.stat.wide {
+  min-width: 300px;
+}
+.stat.warn {
+  border-color: #e8cfa3;
+  background: #fff8ec;
+}
+
+.stat-value {
+  display: block;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.stat-label {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* plot ------------------------------------------------------------------ */
+
+.plot-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.75fr);
+  gap: 18px;
+  align-items: start;
+  margin-bottom: 22px;
+}
+
+.scatter {
+  width: 100%;
+  border: 1px solid var(--bd);
+  border-radius: 6px;
+  background: var(--bg);
+  user-select: none;
+  cursor: crosshair;
+}
+
+.plot-empty,
+.detail-empty {
+  border: 1px dashed var(--bd);
+  border-radius: 6px;
+  padding: 26px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.plot-frame {
+  fill: none;
+  stroke: var(--bd);
+}
+.grid {
+  stroke: var(--bd);
+  stroke-dasharray: 2 3;
+}
+.tick {
+  font-size: 10px;
+  fill: var(--muted);
+  text-anchor: middle;
+}
+.tick-y {
+  text-anchor: end;
+}
+.axis-label {
+  font-size: 11px;
+  fill: var(--muted);
+  text-anchor: middle;
+}
+
+.point {
+  cursor: pointer;
+}
+
+.point.in-domain {
+  fill: var(--accent);
+  fill-opacity: 0.6;
+  stroke: var(--accent);
+}
+
+/* Out-of-domain points are hollow so they read as "not scored reliably"
+   rather than as a second category of result. */
+.point.out-domain {
+  fill: none;
+  stroke: var(--warn);
+  stroke-dasharray: 3 2;
+}
+
+.point.selected {
+  stroke: #111;
+  stroke-width: 2;
+}
+
+.brush {
+  fill: rgba(29, 78, 216, 0.08);
+  stroke: var(--accent);
+  stroke-dasharray: 3 2;
+}
+
+/* detail ---------------------------------------------------------------- */
+
+.detail {
+  border: 1px solid var(--bd);
+  border-radius: 6px;
+  padding: 14px 16px;
+  background: var(--surface);
+  max-height: 760px;
+  overflow-y: auto;
+}
+
+.smiles {
+  display: block;
+  font-size: 11.5px;
+  word-break: break-all;
+  margin-bottom: 10px;
+  color: var(--muted);
+}
+
+.depiction svg {
+  max-width: 100%;
+  height: auto;
+  background: #fff;
+  border: 1px solid var(--bd);
+  border-radius: 4px;
+}
+
+.viewer3d {
+  position: relative;
+  width: 100%;
+  height: 280px;
+  border: 1px solid var(--bd);
+  border-radius: 4px;
+  background: #fff;
+  margin-top: 6px;
+}
+
+.bar {
+  display: inline-block;
+  height: 8px;
+  background: var(--accent);
+  opacity: 0.55;
+  border-radius: 2px;
+}
+
+/* tables ---------------------------------------------------------------- */
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.mini {
+  font-size: 12px;
+  margin: 6px 0;
+}
+
+.mini th,
+.mini td {
+  border-bottom: 1px solid var(--bd);
+  padding: 3px 6px;
+  text-align: left;
+}
+
+.table-head {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.inline {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.results {
+  font-size: 13px;
+}
+
+.results th,
+.results td {
+  border-bottom: 1px solid var(--bd);
+  padding: 6px 9px;
+  text-align: left;
+}
+
+.results th {
+  background: var(--surface);
+  font-weight: 600;
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+  position: sticky;
+  top: 0;
+}
+
+.results tbody tr {
+  cursor: pointer;
+}
+
+.results tbody tr:hover {
+  background: #f2f6ff;
+}
+
+.results tr.out-domain .smiles-cell {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+
+.results tr.out-domain {
+  background: #fffaf2;
+}
+
+.results tr.failed {
+  background: #fff4f4;
+}
+
+.results tr.selected {
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.results tr.focused {
+  background: #e8f0ff;
+}
+
+.smiles-cell {
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 11.5px;
+  max-width: 330px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 1040px) {
+  .controls,
+  .plot-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Reference band: where half of all measured KIBA affinities actually fall.
+   Drawn behind the points so a packed batch is visibly packed. */
+.ref-band {
+  fill: var(--accent);
+  fill-opacity: 0.07;
+}
+
+.ref-median {
+  stroke: var(--accent);
+  stroke-opacity: 0.45;
+  stroke-dasharray: 4 3;
+}
+
+.ref-label {
+  font-size: 10px;
+  fill: var(--accent);
+  fill-opacity: 0.75;
+}

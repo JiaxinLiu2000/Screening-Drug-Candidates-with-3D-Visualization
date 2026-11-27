@@ -126,9 +126,20 @@ def train_model(
     """Train one configuration; returns the training history and best epoch.
 
     ``tox_loaders`` / ``affinity_loaders`` are ``(train, valid)`` pairs; passing
-    only one of them gives a single-task configuration (A or B). With both, each
-    epoch alternates: it consumes the toxicity loader and the affinity loader,
-    summing ``loss_tox + loss_weight * loss_affinity`` over the shared encoder.
+    only one of them gives a single-task configuration (A or B).
+
+    With both, the loop below consumes the toxicity loader and then the affinity
+    loader, taking a separate optimiser step per batch. The two task gradients
+    therefore **never coexist**, and because affinity is iterated last and
+    contributes ~18x more batches, the shared encoder ends each epoch updated
+    almost entirely by affinity.
+
+    An earlier version of this docstring claimed the losses were summed into one
+    step. They are not. The behaviour is deliberately left alone because
+    configurations C and D in ``results/shared_encoder_metrics.csv`` were
+    produced by this code path and are cited in the report; the summed-gradient
+    variant and the repairs built on it live in :mod:`tox21lib.multitask`, which
+    treats this function's behaviour as the "sequential sharing" reference arm.
     """
     model = model.to(device)
     encoder_params = list(model.encoder.parameters())

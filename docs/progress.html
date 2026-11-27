@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>项目进度 · 2026-11-27</title>
+<style>
+:root{
+  --fg:#15181d;--muted:#67707d;--bd:#e0e4ea;--bg:#fff;--surf:#f7f8fb;
+  --accent:#1d4ed8;--ok:#047857;--warn:#b45309;--err:#b4231c;
+  --okbg:#eefaf4;--warnbg:#fff8ec;--errbg:#fff4f3;--accbg:#eef3ff;
+}
+@media(prefers-color-scheme:dark){:root{
+  --fg:#e6e9ee;--muted:#9aa3b2;--bd:#333c4a;--bg:#111722;--surf:#1a2130;
+  --accent:#6ba3ff;--ok:#34d399;--warn:#fbbf24;--err:#f87171;
+  --okbg:#13291f;--warnbg:#2b2112;--errbg:#2c1715;--accbg:#172036;
+}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--fg);
+  font:15px/1.6 -apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  padding:34px 22px 90px}
+.wrap{max-width:1180px;margin:0 auto}
+h1{font-size:27px;letter-spacing:-.02em;margin-bottom:4px}
+h2{font-size:20px;margin:42px 0 12px;padding-top:16px;border-top:1px solid var(--bd)}
+h3{font-size:15px;color:var(--accent);margin:20px 0 7px}
+.sub{color:var(--muted);font-size:13.5px;margin-bottom:24px}
+p{margin:8px 0}
+.muted{color:var(--muted)}.small{font-size:13px}
+.ok{color:var(--ok)}.warn{color:var(--warn)}.err{color:var(--err)}
+code{font:12.5px ui-monospace,Consolas,monospace;background:var(--surf);
+  padding:1px 5px;border-radius:3px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;margin:10px 0}
+th,td{border:1px solid var(--bd);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--surf);font-weight:600;font-size:12.5px}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.done td{background:var(--okbg)}
+tr.running td{background:var(--accbg)}
+tr.blocked td{background:var(--errbg)}
+tr.todo td{background:var(--warnbg)}
+
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;
+  border-radius:10px;white-space:nowrap}
+.tag.done{background:var(--ok);color:#fff}
+.tag.running{background:var(--accent);color:#fff}
+.tag.todo{background:var(--warn);color:#fff}
+.tag.blocked{background:var(--err);color:#fff}
+.tag.gpu{background:transparent;border:1px solid var(--err);color:var(--err)}
+.tag.cpu{background:transparent;border:1px solid var(--ok);color:var(--ok)}
+.tag.code{background:transparent;border:1px solid var(--accent);color:var(--accent)}
+
+.note{background:var(--surf);border-left:4px solid var(--accent);
+  padding:12px 16px;margin:14px 0;font-size:14px}
+.note.err{border-color:var(--err);background:var(--errbg)}
+.note.warn{border-color:var(--warn);background:var(--warnbg)}
+.note.ok{border-color:var(--ok);background:var(--okbg)}
+
+.bars{display:flex;flex-direction:column;gap:9px;margin:16px 0}
+.bar{display:grid;grid-template-columns:150px 1fr 76px;gap:11px;align-items:center;
+  font-size:13.5px}
+.track{height:19px;background:var(--surf);border-radius:4px;overflow:hidden;
+  border:1px solid var(--bd)}
+.fill{height:100%;display:block}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin:16px 0}
+.card{border:1px solid var(--bd);border-radius:7px;padding:13px 15px;background:var(--surf)}
+.card .big{font-size:26px;font-weight:700;display:block;line-height:1.15}
+.card .cap{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+ul,ol{padding-left:22px;margin:8px 0}li{margin:4px 0}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin:10px 0 2px}
+.foot{margin-top:40px;padding-top:14px;border-top:1px solid var(--bd);
+  font-size:12.5px;color:var(--muted)}
+</style>
+
+<div class="wrap">
+
+<h1>项目进度表</h1>
+<div class="sub">2026-11-27 · 距提交(12 月 6 日)约 9 天 · 本页所有状态均由当前仓库实测得出</div>
+
+<div class="cards">
+  <div class="card"><span class="big ok">4 / 4</span><span class="cap">原计划四阶段 已完成</span></div>
+  <div class="card"><span class="big ok">70 / 70</span><span class="cap">审计检查 通过</span></div>
+  <div class="card"><span class="big" style="color:var(--accent)">已跑通</span><span class="cap">应用(前端+后端)</span></div>
+  <div class="card"><span class="big" style="color:var(--accent)">2</span><span class="cap">实验进行中</span></div>
+  <div class="card"><span class="big err">21</span><span class="cap">文件未提交</span></div>
+</div>
+
+<div class="note err">
+<b>必须先说清楚的一件事:</b>我之前告诉你「两个长实验正在运行」,这个说法<b>在当时已经不准确了</b>。
+实测:<code>results/multitask_fix.json</code> 和 <code>docking_scaleup.json</code> 的时间戳停在 02:30 / 02:41,
+内容仍是 <code>"smoke": true</code>(冒烟测试),进程已不存在。
+多任务实验死于磁盘耗尽那段时间;对接实验跑到 <b>253 / 513</b> 时被我清理磁盘的命令中断。
+下面的工时估算已按「需要重跑」重新计算。
+</div>
+
+<div class="note ok">
+<b>两个实验现已重新启动,并已实测确认在跑(不是「应该在跑」):</b>
+<ul>
+<li><b>对接</b>——最新写入的文件按字母序推进:<code>6X8D → 6XCT → 6XG5</code>,每约 25 秒一个。
+  <span class="small muted">(目录数不能作为判据:那 259 个目录是上次被中断的残留,数量不变既可能是在跳过也可能是卡死。
+  这里改用「最新文件是否变化」。)</span></li>
+<li><b>多任务训练</b>——<code>nvidia-smi</code> 实测 GPU <b>占用 56%、显存 3125 MiB</b>,已经上卡。</li>
+</ul>
+</div>
+
+<h2>一、总体完成度</h2>
+
+<div class="legend">
+  <span><span class="tag done">已完成</span> 产物已生成并验证</span>
+  <span><span class="tag running">进行中</span> 现在正在跑</span>
+  <span><span class="tag todo">待做</span></span>
+  <span><span class="tag gpu">需显卡</span></span>
+  <span><span class="tag cpu">纯 CPU</span></span>
+  <span><span class="tag code">只写代码</span></span>
+</div>
+
+<div class="bars">
+  <div class="bar"><span>Phase 1–4 实验</span>
+    <span class="track"><span class="fill" style="width:100%;background:var(--ok)"></span></span>
+    <span class="n ok">100%</span></div>
+  <div class="bar"><span>报告与可复现性</span>
+    <span class="track"><span class="fill" style="width:100%;background:var(--ok)"></span></span>
+    <span class="n ok">100%</span></div>
+  <div class="bar"><span>模型打包发布</span>
+    <span class="track"><span class="fill" style="width:100%;background:var(--ok)"></span></span>
+    <span class="n ok">100%</span></div>
+  <div class="bar"><span>应用(后端)</span>
+    <span class="track"><span class="fill" style="width:100%;background:var(--ok)"></span></span>
+    <span class="n ok">100%</span></div>
+  <div class="bar"><span>应用(前端)</span>
+    <span class="track"><span class="fill" style="width:92%;background:var(--ok)"></span></span>
+    <span class="n ok">92%</span></div>
+  <div class="bar"><span>教授意见 1:多任务</span>
+    <span class="track"><span class="fill" style="width:60%;background:var(--accent)"></span></span>
+    <span class="n" style="color:var(--accent)">60%</span></div>
+  <div class="bar"><span>教授意见 2:3D 规模化</span>
+    <span class="track"><span class="fill" style="width:55%;background:var(--accent)"></span></span>
+    <span class="n" style="color:var(--accent)">55%</span></div>
+  <div class="bar"><span>PPT 与演示视频</span>
+    <span class="track"><span class="fill" style="width:50%;background:var(--warn)"></span></span>
+    <span class="n warn">50%</span></div>
+  <div class="bar"><span>8 页正式报告</span>
+    <span class="track"><span class="fill" style="width:15%;background:var(--warn)"></span></span>
+    <span class="n warn">15%</span></div>
+</div>
+
+<h2>二、已经完成的部分</h2>
+
+<table>
+<tr><th style="width:21%">模块</th><th style="width:11%">状态</th><th>产出</th></tr>
+
+<tr class="done"><td><b>Phase 1–4 全部实验</b></td><td><span class="tag done">已完成</span></td>
+<td>Tox21 / hERG / KIBA / DAVIS 四个数据集,5 种切分协议,随机森林 / GIN / ChemBERTa / 冻结 ESM-2 四类模型,
+加上校准、弃权、模态消融、调优地板。都已写入 <code>results/</code> 并被审计覆盖。</td></tr>
+
+<tr class="done"><td><b>可复现性保障</b></td><td><span class="tag done">已完成</span></td>
+<td><b>70 项审计检查全部通过</b>,含两项服务路径检查:冻结 MLP 与多任务模型在全部 11,720 个留出配对上
+的预测,与训练时记录的指标<b>逐位一致</b>(差值 0.00000)。</td></tr>
+
+<tr class="done"><td><b>模型发布包</b></td><td><span class="tag done">已完成</span></td>
+<td>3 个模型 + 229 个蛋白嵌入 + 适用域参照,共约 32 MB。<b>克隆仓库即可运行,不需要 GPU、不需要下载数据集。</b>
+附带模型替换接口与契约校验。</td></tr>
+
+<tr class="done"><td><b>应用后端</b></td><td><span class="tag done">已完成</span></td>
+<td>FastAPI,7 个端点。已实测:行序保留、非法输入标错不丢行、未知靶点拒绝、
+缺产物时返回 503 带可操作提示(而不是裸 500)。</td></tr>
+
+<tr class="done"><td><b>应用前端</b></td><td><span class="tag done">已完成</span></td>
+<td>React + Vite + 3Dmol.js。双轴散点图(含真实值分布参照带)、适用域一等列、
+二维结构与原子归因、三维口袋查看。<code>tsc</code> 与 <code>vite build</code> 均通过,浏览器实测可用。</td></tr>
+
+<tr class="done"><td><b>中文 PPT</b></td><td><span class="tag done">已完成</span></td>
+<td>14 页,<code>docs/slides/screening-slides-zh.pptx</code>(PowerPoint 可直接放映)+ HTML 源文件。
+每个数字都已核对到事实清单。</td></tr>
+</table>
+
+<h2>三、还要做什么</h2>
+
+<p class="small muted">工时按「一个人专注工作」估算。<b>显卡时间</b>指机器在跑、人可以同时做别的事;
+<b>人工时间</b>指需要你或我实际动手。</p>
+
+<table>
+<tr><th style="width:4%">#</th><th style="width:20%">任务</th><th style="width:9%">状态</th>
+<th style="width:9%">类型</th><th class="n" style="width:11%">显卡时间</th>
+<th class="n" style="width:10%">人工时间</th><th>说明</th></tr>
+
+<tr class="running"><td><b>1</b></td><td><b>跨靶点对接基准</b><br>428 + 85 个复合物</td>
+<td><span class="tag running">进行中</span></td><td><span class="tag cpu">纯 CPU</span></td>
+<td class="n">0</td><td class="n">约 2.5 小时<br><span class="small muted">(机器自己跑)</span></td>
+<td>AutoDock Vina 是 CPU 程序,不占显卡。按实测速率(4 并发、约 26 秒/复合物)约 2.5 小时。
+<b>刚刚重新启动</b>,这次带上了下面说的受体修复。</td></tr>
+
+<tr class="running"><td><b>2</b></td><td><b>多任务干扰修复实验</b><br>7 个对照臂 × 3 种子</td>
+<td><span class="tag running">进行中</span></td><td><span class="tag gpu">需显卡</span></td>
+<td class="n">约 6–7 小时<br><span class="small muted">(机器自己跑)</span></td><td class="n">约 20 分钟<br><span class="small muted">(事后校对)</span></td>
+<td>21 次训练,按配置 C 实测 368 秒/次、加上 PCGrad 的双反向传播开销估算。
+代码已通过冒烟测试(7 个臂全部跑通)。<b>已启动,GPU 实测占用 56%。</b>
+与对接并行:一个吃 GPU、一个吃 CPU,互不抢占。</td></tr>
+
+<tr class="todo"><td><b>3</b></td><td><b>8 页正式报告</b></td>
+<td><span class="tag todo">待做</span></td><td><span class="tag code">只写代码/文字</span></td>
+<td class="n">0</td><td class="n">约 6–8 小时</td>
+<td>这是<b>最大的一块未完成工作,也是必交项</b>。素材齐备(<code>FINAL_REPORT.md</code> 176 行、
+<code>ML_REPORT.md</code> 184 行),但要按学术论文格式重组为 8 页,并补 Discussion、
+AI Prompts、Statement of Contributions 三节。</td></tr>
+
+<tr class="todo"><td><b>4</b></td><td><b>5 分钟演示视频</b></td>
+<td><span class="tag todo">待做</span></td><td><span class="tag code">录制</span></td>
+<td class="n">0</td><td class="n">约 2–3 小时</td>
+<td>PPT 已就绪、应用可演示。需要写讲稿、录制、重录几遍。
+<b>必须在第 1、2 项跑完后录</b>,否则那两页只能说「进行中」。</td></tr>
+
+<tr class="todo"><td><b>5</b></td><td><b>回填两个实验的数字</b></td>
+<td><span class="tag todo">待做</span></td><td><span class="tag code">只写代码</span></td>
+<td class="n">0</td><td class="n">约 1 小时</td>
+<td>第 1、2 项跑完后,把结果写进 <code>ML_REPORT.md</code>、PPT 第 10/11 页,重新导出 PPTX。
+脚本已经会自动生成 markdown 报告,主要是校对。</td></tr>
+
+<tr class="todo"><td><b>6</b></td><td><b>提交全部代码</b></td>
+<td><span class="tag todo">待做</span></td><td><span class="tag code">只写代码</span></td>
+<td class="n">0</td><td class="n">约 30 分钟</td>
+<td><b>21 个文件尚未提交</b>,包括整个 <code>app/</code> 应用、<code>docs/slides/</code>、
+多任务与对接两个新脚本。含约 3 MB 的 PPTX 和幻灯片 PNG。</td></tr>
+
+<tr class="todo"><td><b>7</b></td><td><b>prompt 日志更新</b></td>
+<td><span class="tag todo">待做</span></td><td><span class="tag code">只写文字</span></td>
+<td class="n">0</td><td class="n">约 30 分钟</td>
+<td>课程<b>明确要求</b>提交全部 AI 提示词记录。<code>PROMPTS.md</code> 需要补上本轮会话。</td></tr>
+</table>
+
+<div class="note warn">
+<b>合计:人工约 11–14 小时,显卡约 6–7 小时(可在夜间无人值守运行)。</b>
+瓶颈不是算力,是第 3 项的报告写作。
+</div>
+
+<h2>四、本轮发现并修掉的三个真实缺陷</h2>
+
+<p>这些不是进度条上的格子,但比格子重要——它们都会让已发布的数字变成错的。</p>
+
+<table>
+<tr><th style="width:24%">缺陷</th><th style="width:27%">症状</th><th>修复</th></tr>
+
+<tr><td class="err"><b>受体准备系统性失败</b><br><span class="small">对接实验</span></td>
+<td>日志里约三分之一是 <code>mk_prepare_receptor failed</code>。
+原因:PoseBusters 的受体保留了辅因子和修饰残基(例如 <code>A:202: 'CO'</code>),
+Meeko 没有对应模板。我们自己清洗过的 EGFR 受体不会碰到,所以此前一直没暴露。</td>
+<td>加了一次 <code>--delete_residues</code> 回退(第一次尝试保持原样,以免改动已发表的 Phase 2 数字),
+<b>并按到晶体配体的距离设闸</b>:删除的残基若有任何原子在 6 Å 以内,该结构直接<b>排除</b>而不是对接后计入。
+实测 <code>7P4J_5JK</code> 需删 34 个残基,其中 <b>A:903、A:911 就在结合位点内</b>——
+只按「删除数量」放行会把它当成成功案例。</td></tr>
+
+<tr><td class="err"><b>缺产物时返回裸 500</b><br><span class="small">应用后端</span></td>
+<td><code>ApplicabilityError</code> 与 <code>ModelContractError</code> 是 <code>ServiceError</code> 的
+<b>兄弟类而非子类</b>,而端点只捕获后者。结果:新克隆的仓库访问
+<code>/api/targets</code> 得到 <code>500 Internal Server Error</code>,
+那句「请运行 src/38_export_models.py」被完全吞掉。</td>
+<td>在 <code>get_bundle()</code> 一处统一转换。现在返回 <b>503 + 可操作提示</b>。</td></tr>
+
+<tr><td class="warn"><b>亲和力数字被呈现得有误导性</b><br><span class="small">应用 + 幻灯片</span></td>
+<td>我一直在写「KIBA 范围 0.0–17.2」。但那 17 个单位的跨度由极少数极端值撑起,
+<b>74.7% 的真实值其实落在中位数 ±0.6 之内</b>,四分位距只有 0.75。
+这让「预测值全都差不多」看起来像模型坏了。散点图还自动贴合当批数据,
+把 1.4 单位的差异拉满整个画幅。</td>
+<td>实测 <code>std(预测)/std(真实) = 0.8718</code>,理论最优收缩比 ≈ Pearson r = 0.8487
+——<b>模型几乎把标签方差用满了,没有退化</b>。
+改掉四处单位文案,散点图改为锚定真实分布并画出参照带。</td></tr>
+</table>
+
+<h2>五、哪些需要显卡,哪些只是写代码</h2>
+
+<table>
+<tr><th style="width:26%">工作</th><th style="width:13%">算力需求</th><th>说明</th></tr>
+<tr><td>多任务修复实验(第 2 项)</td><td><span class="tag gpu">需显卡</span></td>
+<td><b>唯一真正需要 GPU 的待办。</b>21 次 GIN 训练,RTX 3070 Ti 上约 6–7 小时。</td></tr>
+<tr><td>跨靶点对接(第 1 项)</td><td><span class="tag cpu">纯 CPU</span></td>
+<td>AutoDock Vina 是 CPU 程序。瓶颈是 CPU 核数和磁盘,不是显卡。</td></tr>
+<tr><td>报告、视频、提交、日志</td><td><span class="tag code">只写东西</span></td>
+<td>第 3–7 项全部不需要任何算力。</td></tr>
+<tr><td>应用运行</td><td><span class="tag cpu">纯 CPU</span></td>
+<td>推理走 CPU 即可,实测 11 个分子 0.16 秒。演示时不需要显卡。</td></tr>
+</table>
+
+<div class="note ok">
+<b>好消息:</b>所有需要算力的工作,代码都已经写完并通过冒烟测试了。
+剩下的显卡时间是「让机器跑」,不是「还要开发」。
+</div>
+
+<h2>六、建议的顺序</h2>
+<ol>
+  <li class="ok"><b>现在 — 已完成:</b>对接实验(约 2.5 小时,CPU)与多任务实验(约 6–7 小时,GPU)
+    <b>均已启动并实测在跑</b>,互不抢占资源。这一步不需要再做什么。</li>
+  <li><b>明天:</b>两个实验出结果 → 回填数字(第 5 项,1 小时)→ 提交代码(第 6 项,30 分钟)。</li>
+  <li><b>然后:</b>集中写 8 页报告(第 3 项,6–8 小时)。这是最大的一块,建议单独排两天。</li>
+  <li><b>最后:</b>报告定稿后再录视频(第 4 项),顺手补 prompt 日志(第 7 项)。</li>
+</ol>
+
+<div class="note">
+<b>关于风险:</b>唯一真正的时间风险是报告写作,不是实验。
+如果 12 月 3 日前报告还没有初稿,建议砍掉对接实验的 PoseBusters 物理合法性分析部分
+——那是加分项,报告和视频是必交项。
+</div>
+
+<div class="foot">
+本页状态由以下实测得出:<code>results/*.json</code> 的 <code>smoke</code> 字段与文件时间戳、
+<code>git status --porcelain</code> 的 21 个未提交文件、
+<code>results/shared_encoder_metrics.csv</code> 中 <code>train_seconds</code> 的实测均值(配置 C:368 秒/次)、
+对接冒烟测试实测的 26 秒/复合物、以及 <code>src/15_data_audit.py</code> 的 70 项检查结果。
+工时为估算值,已标明依据。
+</div>
+
+</div>
+</html>

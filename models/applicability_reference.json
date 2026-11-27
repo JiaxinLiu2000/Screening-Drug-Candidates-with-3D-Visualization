@@ -1,0 +1,21 @@
+{
+  "format_version": 1,
+  "references": {
+    "toxicity": {
+      "task": "toxicity",
+      "n_bits": 2048,
+      "radius": 2,
+      "split": "scaffold",
+      "seed": 0,
+      "n_molecules": 4915
+    },
+    "affinity": {
+      "task": "affinity",
+      "n_bits": 2048,
+      "radius": 2,
+      "split": "kiba_random",
+      "seed": 0,
+      "n_molecules": 2030
+    }
+  }
+}

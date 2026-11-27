@@ -1,0 +1,61 @@
+{
+  "n_attempted": 6,
+  "n_docked": 6,
+  "n_failed": 0,
+  "top_pose_success_rate": 0.5,
+  "best_of_9_success_rate": 0.8333333333333334,
+  "median_top_rmsd": 3.1064399843663386,
+  "median_best_of_rmsd": 0.9426163100238272,
+  "physically_valid_rate": 1.0,
+  "valid_and_accurate_rate": 0.5,
+  "accurate_but_invalid_rate": 0.0,
+  "per_check_failure_rate": {
+    "mol_pred_loaded": 0.0,
+    "mol_true_loaded": 0.0,
+    "mol_cond_loaded": 0.0,
+    "sanitization": 0.0,
+    "inchi_convertible": 0.0,
+    "all_atoms_connected": 0.0,
+    "no_radicals": 0.0,
+    "molecular_formula": 0.0,
+    "molecular_bonds": 0.0,
+    "double_bond_stereochemistry": 0.0,
+    "tetrahedral_chirality": 0.0,
+    "bond_lengths": 0.0,
+    "bond_angles": 0.0,
+    "internal_steric_clash": 0.0,
+    "aromatic_ring_flatness": 0.0,
+    "non-aromatic_ring_non-flatness": 0.0,
+    "double_bond_flatness": 0.0,
+    "internal_energy": 0.0,
+    "protein-ligand_maximum_distance": 0.0,
+    "minimum_distance_to_protein": 0.0,
+    "minimum_distance_to_organic_cofactors": 0.0,
+    "minimum_distance_to_inorganic_cofactors": 0.0,
+    "minimum_distance_to_waters": 0.0,
+    "volume_overlap_with_protein": 0.0,
+    "volume_overlap_with_organic_cofactors": 0.0,
+    "volume_overlap_with_inorganic_cofactors": 0.0,
+    "volume_overlap_with_waters": 0.0
+  },
+  "by_set": {
+    "posebusters": {
+      "n": 6,
+      "top_pose_success_rate": 0.5,
+      "best_of_9_success_rate": 0.8333333333333334
+    }
+  },
+  "vina_version": "AutoDock Vina v1.2.7",
+  "exhaustiveness": 8,
+  "num_modes": 9,
+  "success_rmsd_angstrom": 2.0,
+  "box": "crystal-ligand bounding box + 5.0 A per side",
+  "seed": 0,
+  "smoke": true,
+  "phase4_egfr_reference": {
+    "n": 20,
+    "top": 0.41,
+    "best_of": 0.76
+  },
+  "docking_seconds": 146.0
+}

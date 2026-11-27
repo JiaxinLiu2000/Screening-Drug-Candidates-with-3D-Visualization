@@ -49,5 +49,25 @@
     "n_proteins": 229,
     "dim": 1280,
     "sha256": "8a1545e5b37fc4bde713464703cd55fb863d996b77afd8412057470f584e2463"
+  },
+  "applicability_reference": {
+    "file": "applicability_reference.npz",
+    "fingerprint": "Morgan radius 2, 2048 bits, binary",
+    "packing": "numpy.packbits, 256 bytes per molecule",
+    "threshold": 0.4,
+    "rationale": "distance-to-training-set was the only abstention signal that beat random in results/abstention.json",
+    "references": {
+      "toxicity": {
+        "split": "scaffold",
+        "seed": 0,
+        "n_molecules": 4915
+      },
+      "affinity": {
+        "split": "kiba_random",
+        "seed": 0,
+        "n_molecules": 2030
+      }
+    },
+    "sha256": "108678584c3ec161eed3dedcbfd831fcb0c892d7b58b9938cad0ff663e27028f"
   }
 }
