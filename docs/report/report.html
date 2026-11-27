@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Screening Drug Candidates on Both Target Binding and Toxicity</title>
+<style>
+/* Print-first stylesheet. The course requires a PDF at 11 pt, single-spaced,
+   with the main body capped at 8 pages; references, the appendix and the
+   contribution statement are excluded from that cap and are marked below with
+   `.excluded-from-page-limit` so the page count can be checked mechanically. */
+@page { size: letter; margin: 0.75in; }
+
+:root { --fg:#111; --muted:#555; --rule:#bbb; --accent:#1a3a8f; }
+
+* { box-sizing: border-box; }
+body {
+  margin: 0 auto; max-width: 7in;
+  font: 11pt/1.32 "Times New Roman", Times, serif;
+  color: var(--fg); background: #fff;
+  text-align: justify; hyphens: auto;
+}
+h1 { font-size: 15pt; line-height: 1.25; margin: 0 0 6pt; text-align: left; }
+h2 { font-size: 12pt; margin: 13pt 0 4pt; text-align: left; }
+h3 { font-size: 11pt; margin: 9pt 0 3pt; font-style: italic; font-weight: 400;
+     text-align: left; }
+p  { margin: 0 0 5pt; }
+ul, ol { margin: 0 0 5pt; padding-left: 16pt; }
+li { margin: 0 0 2pt; }
+
+.authors { font-size: 10.5pt; margin-bottom: 3pt; }
+.affil   { font-size: 9.5pt; color: var(--muted); margin-bottom: 10pt; }
+.abstract { font-size: 10pt; margin: 0 0 10pt; padding: 6pt 0;
+            border-top: 0.6pt solid var(--rule); border-bottom: 0.6pt solid var(--rule); }
+.abstract b { font-variant: small-caps; }
+
+table { border-collapse: collapse; width: 100%; font-size: 9pt;
+        margin: 5pt 0 7pt; text-align: left; }
+th, td { border-top: 0.5pt solid var(--rule); border-bottom: 0.5pt solid var(--rule);
+         padding: 2.5pt 4pt; vertical-align: top; }
+th { font-weight: bold; }
+td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+caption, .cap { caption-side: bottom; font-size: 8.5pt; color: var(--muted);
+                text-align: left; padding-top: 2pt; }
+
+figure { margin: 6pt 0 8pt; page-break-inside: avoid; }
+figure img { width: 100%; border: 0.5pt solid var(--rule); }
+figcaption { font-size: 8.5pt; color: var(--muted); padding-top: 2.5pt;
+             text-align: left; }
+
+code { font-family: Consolas, "Courier New", monospace; font-size: 9.5pt; }
+.small { font-size: 9.5pt; }
+.muted { color: var(--muted); }
+.refs { font-size: 9.5pt; }
+.refs li { margin-bottom: 2.5pt; }
+.pagebreak { page-break-before: always; }
+.keep { page-break-inside: avoid; }
+</style>
+
+<h1>Screening Drug Candidates on Both Target Binding and Toxicity,
+with 3D Visualization of Predicted Poses</h1>
+
+<div class="authors"><b>Jiaxin Liu</b> (MS Artificial Intelligence, Year 1) &nbsp;·&nbsp;
+<b>Zhenyu Wang</b> (MS Computer Science, Year 2)</div>
+<div class="affil">CS 6140 Machine Learning, Northeastern University — final project report</div>
+
+<div class="abstract">
+<b>Abstract.</b> Computational screening narrows millions of candidate molecules
+before any are synthesised. The standard filter predicts binding affinity, but a
+compound that binds well may still be toxic, and that failure appears late and
+expensively. We built a tool that predicts both, ranks candidates on both axes,
+and renders them in 3D. The research question we set was how far predictive
+accuracy degrades when test molecules are structurally dissimilar to the training
+set. It degrades by 0.0713 macro ROC-AUC on Tox21 under a scaffold split (95%
+interval [0.0413, 0.1013]), an effect that replicates on an independent hERG set
+(+0.0526). More consequentially, the models cannot detect their own failures:
+abstaining on the half of molecules the classifier is least certain about scores
+PR-AUC 0.2079, <i>worse</i> than abstaining at random (0.3983), while abstaining
+on the half furthest from the training set scores 0.4904. The application is
+built around that finding — distance to the training set is a first-class column,
+not a tooltip. Two further results came from auditing our own earlier work: the
+apparent cost of multi-task sharing (0.0869 macro ROC-AUC) was an artefact of
+update ordering in the training loop rather than task interference, and our
+20-structure docking benchmark was replaced by 513 cross-target complexes with
+physical-validity checking.
+</div>
+
+<h2>1. Introduction</h2>
+
+<p>Bringing a drug to market requires selecting a handful of molecules, out of
+millions of candidates, for laboratory synthesis and testing. Because each
+experimental test is slow and costly, candidates are narrowed computationally
+first. The conventional filter predicts <i>binding affinity</i>: how tightly a
+small molecule attaches to the protein that drives a disease. A molecule that
+binds tightly but is toxic, however, fails later in development, when far more
+has been invested in it [1].</p>
+
+<p><i>Non-technical summary.</i> Our tool takes a list of molecules and a target
+protein, and returns two scores per molecule: how strongly it is predicted to
+bind, and how likely it is to be flagged on each of twelve laboratory toxicity
+assays. It ranks candidates on both axes at once and draws the best-ranked ones
+in 3D. Critically, it also reports how similar each molecule is to the data the
+models were trained on, and refuses to stand behind predictions for molecules
+that are too dissimilar.</p>
+
+<p>That last element is not decoration. Our central research question was
+quantitative: <i>how far does accuracy degrade when test molecules are
+structurally unlike the training molecules?</i> Answering it required measuring
+the degradation, and then asking whether the model itself knows when it is in
+that regime. It does not. This report is organised around that result and its
+consequences for how such a tool should present its own output.</p>
+
+<h2>2. Dataset and inputs</h2>
+
+<p>Molecules are supplied as SMILES strings, a text encoding of atoms and bonds.
+All datasets are public academic benchmarks.</p>
+
+<table class="keep">
+<tr><th>Source</th><th class="n">Size</th><th>Role</th></tr>
+<tr><td>Tox21 [2], via Therapeutics Data Commons [3]</td>
+    <td class="n">7,831 compounds → <b>6,143</b> after standardisation</td>
+    <td>12 toxicity endpoints</td></tr>
+<tr><td>hERG [3]</td><td class="n">11,052 compounds</td>
+    <td>independent replication of the split effect</td></tr>
+<tr><td>KIBA [4]</td><td class="n">2,030 molecules × 229 proteins = <b>117,193</b> pairs</td>
+    <td>binding affinity</td></tr>
+<tr><td>DAVIS [3]</td><td class="n">—</td><td>second affinity dataset</td></tr>
+<tr><td>PoseBusters / Astex Diverse [5]</td><td class="n">428 + 85 complexes</td>
+    <td>pose-accuracy benchmark</td></tr>
+<tr><td>PDBbind refined set</td><td class="n">5,311 complexes</td>
+    <td>first affinity data here with a physical unit</td></tr>
+<tr><td>Protein Data Bank [6]</td><td class="n">29 structures</td><td>3D view</td></tr>
+</table>
+<div class="cap">Table 1. Inputs. Tox21 labels are ~25% missing, because not every
+compound was assayed on every endpoint, and positive rates range from 3.1% to
+18.3% — the task is both incomplete and heavily imbalanced.</div>
+
+<p>Every dataset passes through one preprocessing pipeline: parsing, removal of
+unparseable entries, salt stripping, canonicalisation and deduplication by
+InChIKey. Stereochemistry is dropped, so no model here can express
+stereo-dependent activity.</p>
+
+<p>We then apply five split protocols, each placing the test set further from the
+training distribution: random; Bemis–Murcko scaffold; held-out molecules
+(cold-drug); held-out proteins (cold-target); and held-out scaffolds. A random
+split assigns structurally similar molecules to both sides, so the test set
+contains near-relatives of training molecules; a scaffold split does not. The
+difference between the two is our measure of generalisation, and it is the
+quantity this project reports rather than any single accuracy.</p>
+
+<p>Split index files are committed to the repository rather than recomputed, so
+every model in every experiment is evaluated on literally the same molecules.
+This is what makes results from different phases comparable at all.</p>
+
+<p><i>A caveat on provenance.</i> The Tox21 labels redistributed through
+MoleculeNet and TDC — the route we took — were altered during integration, with
+labels imputed or manufactured [7]. Our absolute Tox21 numbers are therefore not
+directly comparable with published values, and we treat the <i>penalty between
+splits</i>, not the level, as the result.</p>
+
+<h2>3. Methods</h2>
+
+<h3>3.1 Models</h3>
+
+<p>The baseline represents each molecule as a 2048-bit Morgan fingerprint, in
+which each bit indicates the presence of a substructure, and fits a random
+forest. We compare two learned representations against it: a Graph Isomorphism
+Network [8] trained from scratch on the molecular graph, and a fine-tuned
+pretrained chemical language model (ChemBERTa). Binding prediction additionally
+needs a protein representation; we concatenate a frozen ESM-2 embedding [9]
+(1280-dimensional, mean-pooled) with the molecular representation. ESM-2 stays
+frozen because our training set is far too small to fine-tune a model of that
+size. One configuration shares a single molecular encoder across both task
+heads, to test whether the two tasks transfer to each other.</p>
+
+<h3>3.2 Calibration and abstention</h3>
+
+<p>Raw classifier scores are not probabilities. We fit isotonic regression on the
+scaffold validation fold, which reduces expected calibration error from 0.0653 to
+0.0252. Separately, we evaluate four signals for deciding when the model should
+decline to answer, measured as PR-AUC at 50% coverage: distance of the predicted
+probability from 0.5; disagreement among forest trees; a random baseline; and
+Tanimoto similarity to the nearest training molecule.</p>
+
+<h3>3.3 Docking and physical validity</h3>
+
+<p>Poses are generated with AutoDock Vina 1.2.7 (exhaustiveness 8, 9 modes,
+single-threaded for determinism). The ligand is rebuilt by ETKDG rather than
+taken from the crystal, so the answer is not handed to the search. RMSD is
+RDKit's symmetry-corrected, in-place <code>CalcRMS</code> — not
+<code>GetBestRMS</code>, which superimposes the pose first and would hide
+placement error. Every top-ranked pose additionally passes through the
+PoseBusters battery [5]: 28 checks covering bond lengths and angles, ring
+flatness, internal energy, and steric clash with protein, cofactors and waters.
+Accuracy and physical validity are reported separately, because a pose can be in
+roughly the right place and still be chemically impossible.</p>
+
+<h3>3.4 Application</h3>
+
+<p>The tool is a FastAPI service over the committed models plus a React
+interface. Three implementation rules follow from the results in Section 4:
+output row order always matches input row order, and a molecule that fails to
+parse keeps its row with an error rather than vanishing; applicability is a
+required field in the response schema rather than an optional one; and the
+affinity axis is anchored to the measured KIBA distribution rather than
+auto-scaled to the submitted batch. Models, protein embeddings and the
+applicability reference are committed (32 MB total), so a fresh clone predicts
+immediately with no dataset download and no GPU.</p>
+
+<h2>4. Results</h2>
+
+<h3>4.1 Accuracy degrades measurably under structural shift</h3>
+
+<table class="keep">
+<tr><th>Task / split</th><th class="n">Random</th><th class="n">Shifted</th><th class="n">Penalty</th></tr>
+<tr><td>Tox21, macro ROC-AUC (scaffold)</td><td class="n">0.8324 ± 0.0181</td>
+    <td class="n">0.7611 ± 0.0227</td><td class="n"><b>0.0713</b></td></tr>
+<tr><td>hERG-large, macro ROC-AUC (scaffold)</td><td class="n">—</td><td class="n">—</td>
+    <td class="n">0.0526</td></tr>
+<tr><td>KIBA, Pearson <i>r</i> (cold-drug)</td><td class="n">0.8219</td>
+    <td class="n">0.7289</td><td class="n">0.0930</td></tr>
+<tr><td>KIBA, Pearson <i>r</i> (cold-target)</td><td class="n">0.8219</td>
+    <td class="n">0.6438</td><td class="n">0.1781</td></tr>
+</table>
+<div class="cap">Table 2. The 95% interval on the Tox21 penalty, combining test-set
+bootstrap with the spread across five committed splits, is [0.0413, 0.1013] and
+excludes zero. Affinity figures are the retuned random forest.</div>
+
+<h3>4.2 Complex models did not beat simple ones</h3>
+
+<p>The GIN matched the random forest at every training-set size we tested and
+never beat it. The strongest affinity model was the frozen ESM-2 embedding fed to
+a small MLP: Pearson 0.8510 ± 0.0043 over five seeds. What won was a pretrained
+model we did not train.</p>
+
+<p>The margin also depends on how seriously the baseline is taken. Tuning one
+random-forest hyperparameter (<code>max_features</code> 'sqrt' → 0.3) cut the
+MLP's apparent lead on KIBA-random from +0.0669 to +0.0291, and to +0.0058 on a
+5% subsample. Had we not retuned, we would have reported a three-fold larger
+effect and believed it.</p>
+
+<h3>4.3 The models cannot detect their own failures</h3>
+
+<table class="keep">
+<tr><th>Abstention signal (50% coverage)</th><th class="n">PR-AUC</th></tr>
+<tr><td>Distance of predicted probability from 0.5</td><td class="n">0.2079</td></tr>
+<tr><td>Disagreement among forest trees</td><td class="n">0.2024</td></tr>
+<tr><td><i>Abstaining at random</i></td><td class="n"><i>0.3983</i></td></tr>
+<tr><td>Tanimoto distance to the training set</td><td class="n"><b>0.4904</b></td></tr>
+</table>
+<div class="cap">Table 3. The model's own confidence is a worse guide to its errors
+than chance. Only a signal computed without reference to the model works.</div>
+
+<p>This is the project's most consequential result. Isotonic calibration makes
+the probabilities trustworthy in aggregate but does nothing for knowing which
+individual prediction is wrong; a well-calibrated model can still be confidently
+wrong exactly where it matters.</p>
+
+<h3>4.4 A measured effect that belonged to the training code</h3>
+
+<p>Sharing one encoder between both tasks cost toxicity 0.0869 macro ROC-AUC
+against the single-task control, which we and a reviewer both read as task
+interference. Reading the training loop showed the two task losses were never
+summed: it ran the toxicity loader, then the affinity loader, taking one
+optimiser step per batch, with affinity last and ~18× more batches per epoch. The
+shared encoder therefore ended every epoch updated almost entirely by affinity
+and was then validated on toxicity. Gradient projection, the first repair
+suggested to us, was not applicable — the two gradients never coexisted.</p>
+
+<table class="keep">
+<tr><th>Arm</th><th class="n">Toxicity ROC-AUC</th><th class="n">Affinity <i>r</i></th>
+    <th class="n">Grad. cosine</th><th class="n">Steps in conflict</th></tr>
+<tr><td>sequential, affinity last (original)</td><td class="n">0.6533 ± 0.0290</td>
+    <td class="n">0.7094</td><td class="n">n/a</td><td class="n">n/a</td></tr>
+<tr><td>sequential, toxicity last</td><td class="n">0.7569 ± 0.0313</td>
+    <td class="n">0.5563</td><td class="n">n/a</td><td class="n">n/a</td></tr>
+<tr><td>sequential, batch-balanced</td><td class="n">0.7085 ± 0.0290</td>
+    <td class="n">0.4175</td><td class="n">n/a</td><td class="n">n/a</td></tr>
+<tr><td><b>joint (both gradients, one step)</b></td><td class="n"><b>0.7643 ± 0.0320</b></td>
+    <td class="n"><b>0.6780</b></td><td class="n">+0.0246</td><td class="n">39.0%</td></tr>
+<tr><td>joint + PCGrad [10]</td><td class="n">0.7401 ± 0.0194</td>
+    <td class="n">0.6038</td><td class="n">+0.0243</td><td class="n">39.3%</td></tr>
+<tr><td>soft parameter sharing</td><td class="n">0.7748 ± 0.0223</td>
+    <td class="n">0.7308</td><td class="n">n/a</td><td class="n">n/a</td></tr>
+<tr><td>task-specific adapters</td><td class="n">0.7525 ± 0.0204</td>
+    <td class="n">0.6721</td><td class="n">+0.0294</td><td class="n">37.3%</td></tr>
+</table>
+<div class="cap">Table 4. Seven arms, three seeds each, against a single-task
+control of 0.7689. Swapping only the task order recovers +0.1036 (Welch p =
+0.014); joint stepping recovers +0.1110 (p = 0.011). All three suggested repairs
+add nothing measurable on top of joint stepping: PCGrad −0.0242 (p = 0.34), soft
+sharing +0.0104 (p = 0.67), adapters −0.0118 (p = 0.62).</div>
+
+<p>Two readings matter here. First, gradient conflict is real but is not the
+mechanism: the mean cosine between task gradients is +0.0246 — near-orthogonal and
+marginally <i>aligned</i> — yet 39.0% of individual steps do conflict, PCGrad
+projects exactly those, and nothing improves. Second, the arms must be judged on
+both axes. Reordering restores toxicity but drops affinity from 0.7094 to 0.5563:
+it moves the damage to whichever task runs last rather than removing it. Only
+joint stepping holds both.</p>
+
+<h3>4.5 Docking at scale, with its denominator</h3>
+
+<p>Our original docking benchmark was 20 co-crystal structures of a single
+protein (EGFR), which cannot support a claim about docking performance; we
+recorded this at the time and a reviewer independently raised it. Replacing it
+with 513 cross-target complexes gave 52.8% top-pose and 78.5% best-of-9 accuracy
+within 2 Å over the 447 that produced a pose, against 41.0% and 76.0% on the
+superseded set. 98.4% of top poses pass all PoseBusters checks; 0.4% are within
+2 Å yet fail one — in roughly the right place, chemically impossible.</p>
+
+<p>Of the 66 complexes with no pose, 61 were <i>deliberately excluded</i> because
+the residues Meeko could not parameterise line the binding site, and only 5 were
+genuine preparation failures. Those exclusions are not docking misses. Whether
+they bias the rate is testable: excluded ligands average 23.3 heavy atoms against
+25.3 among those scored, while within the scored set larger ligands are
+measurably harder (24.2 for hits against 26.5 for misses, p = 0.024). The
+excluded complexes are therefore if anything slightly easier, so the exclusion
+pushes the reported rate down. The per-target spread that one binding site could
+never have shown: Astex 62.3% against PoseBusters 50.8% on the same protocol.</p>
+
+<h3>4.6 The application</h3>
+
+<figure>
+  <img src="../report-app-table.png"
+       alt="Screenshot of the results table: eight molecules marked in domain, two struck through and marked do not trust, and one unparseable input that keeps its row with an error.">
+  <figcaption>Figure 1. Results for eleven molecules against EGFR (P00533),
+  returned in 0.19 s. Rows 8 and 9 (ethanol, a dipeptide) are scored but struck
+  through and marked “do not trust” because their nearest training neighbour is
+  only 0.357 and 0.390 similar; row 10 is unparseable and keeps its position with
+  an error rather than disappearing. Applicability sits beside the predictions,
+  not behind a tooltip.</figcaption>
+</figure>
+
+<figure>
+  <img src="../report-app-plot.png"
+       alt="Scatter plot of predicted affinity against toxicity risk, with a shaded band marking where half of all measured KIBA values fall and hollow rings marking out-of-domain molecules.">
+  <figcaption>Figure 2. Dual-objective view. The shaded band marks where half of
+  all measured KIBA affinities actually fall (11.20–11.95); without it, a batch
+  spanning 1.4 units stretched across the plot width reads as a separation that
+  is not there. Out-of-domain molecules are drawn as hollow rings rather than
+  shaded like the rest.</figcaption>
+</figure>
+
+<p>Verified end to end: the serving path reproduces the training metric exactly
+(Pearson 0.8487 on all 11,720 held-out KIBA pairs, against 0.8487 at training
+time). Seventy automated integrity checks over the committed artefacts pass.</p>
+
+<h2>5. Discussion</h2>
+
+<h3>5.1 Comparison with existing solutions</h3>
+
+<table class="keep">
+<tr><th>Method (KIBA, random split)</th><th class="n">CI</th><th class="n">MSE</th></tr>
+<tr><td>KronRLS [11]</td><td class="n">0.782</td><td class="n">0.411</td></tr>
+<tr><td>SimBoost, gradient-boosted trees [11]</td><td class="n">0.836</td><td class="n">0.222</td></tr>
+<tr><td>DeepDTA, CNN + CNN [11]</td><td class="n">0.863</td><td class="n">0.194</td></tr>
+<tr><td>GraphDTA, GIN [12]</td><td class="n">0.891</td><td class="n">0.139</td></tr>
+<tr><td><b>Ours, tuned random forest</b></td><td class="n"><b>0.8420</b></td><td class="n"><b>0.2297</b></td></tr>
+</table>
+<div class="cap">Table 5. Both metrics are given deliberately: we pass SimBoost on
+the concordance index and trail it on mean squared error. Quoting only the first
+would be cherry-picking. Published figures use the authors' own splits and
+preprocessing, so this is not like-for-like.</div>
+
+<p>Three of our negative results have since been reproduced independently, which
+changes how they should be read. A 25-model, 25-dataset benchmark under scaffold
+splits finds almost no pretrained molecular embedding significantly better than
+count-ECFP fingerprints, with GIN ranking 20th of 23 [13] — our GIN matching but
+never beating the random forest is the same observation. ToxBench reports a
+Tox21 scaffold penalty of 0.057–0.079 across four model classes [14], inside our
+interval. And a 718,800-pair study finds architecture rankings reverse under dual
+distribution shift [15], of which our modality ablation is an instance: on the
+cold-target split a drug-only model beats the two-modality model by 0.0927
+Pearson. The headline is therefore not that our models were weak, but that the
+weakness is a property of the problem setup that several groups measured
+concurrently.</p>
+
+<h3>5.2 What worked, and what was hard</h3>
+
+<p><i>Worked.</i> Choosing what not to train: the strongest affinity result came
+from a frozen pretrained protein model. Treating the baseline as a real
+competitor, which halved a result we would otherwise have overclaimed. Replaying
+committed splits rather than recomputing them. And checking the serving path
+against the training metric rather than merely that models load — this caught a
+predictor feeding raw ESM-2 vectors to a model trained on standardised ones,
+scoring 0.4832 instead of 0.8487 while producing entirely plausible output.</p>
+
+<p><i>Hard.</i> Reporting negative results honestly is harder than obtaining them;
+the discipline that made it possible was mechanical, regenerating every reported
+number from a committed artefact and letting a script write the report. Widening
+the docking benchmark exposed that our own EGFR receptors had been pre-cleaned,
+hiding a preparation failure that affected roughly a third of external complexes.
+And a full disk destroyed one multi-hour experiment outright and truncated
+another at 253 of 513 complexes, which is why the docking script now resumes from
+existing poses with a settings stamp.</p>
+
+<h3>5.3 Limitations</h3>
+
+<ul>
+<li><b>Not state of the art.</b> We trail the neural baselines in Table 5.</li>
+<li><b>Our encoders are not strong encoders.</b> An off-the-shelf frozen embedding
+beats everything we trained, so nothing here generalises to neural methods as a
+class.</li>
+<li><b>Docking rates are an upper bound.</b> This is self-docking: the search box
+comes from the crystal ligand of the structure being redocked, so the site is
+given.</li>
+<li><b>Atom attribution is a hint, not an explanation.</b> Masking one atom of a
+three-atom epoxide leaves a near-identical environment.</li>
+<li><b>Affinity has no external validation.</b> Every affinity number comes from
+KIBA or DAVIS; PDBbind is mirrored but not yet used for evaluation.</li>
+<li><b>No prospective validation.</b> Nothing was tested on a molecule whose label
+was unknown at prediction time.</li>
+<li><b>Three seeds per multi-task arm</b> resolves the ordering effect only; the
+three repairs are bounded as “no measurable gain”, not shown equivalent.</li>
+</ul>
+
+<h3>5.4 Promised and not delivered</h3>
+
+<p>The proposal committed to a generative SMILES model for candidate molecules;
+we abandoned it deliberately, as it is weakly coupled to the reliability question
+the project answers and could not be evaluated credibly in the time available.
+The DiffDock comparison has a complete, checked harness
+(<code>src/42_diffdock_compare.py</code>) that was never run: DiffDock pins
+Python 3.9.18 and torch 1.13.1+cu117 against our 3.11.17 and 2.14.1+cu126, so it
+requires its official container, whose builder stage consumed over 20 GB of
+intermediate layers twice without finishing on a host disk that was 919 of 931 GB
+full with unrelated data. It is reported as not run rather than estimated. The
+queue and database in the original design were dropped: inference takes 0.19 s for
+eleven molecules, so neither would change any answer.</p>
+
+<h3>5.5 Future work</h3>
+
+<ol>
+<li><b>Rebuild the toxicity results on the original Tox21 challenge data</b>
+(available with official CV folds). This is the only item that would change an
+existing conclusion rather than add one.</li>
+<li><b>A dual-OOD split</b> (cold-drug ∧ cold-target), where the literature finds
+rankings reverse and our own ablation already points the same way.</li>
+<li><b>Count-based fingerprints and the CLAMP embedding</b>, the one
+representation shown to significantly beat ECFP.</li>
+<li><b>Prospective validation.</b> Until a prediction is made before its label is
+known, every number here describes retrospective behaviour on curated
+benchmarks.</li>
+</ol>
+
+<h2 class="excluded-from-page-limit">References</h2>
+<ol class="refs">
+<li>Waring, M. J. et al. An analysis of the attrition of drug candidates from four
+major pharmaceutical companies. <i>Nature Reviews Drug Discovery</i>,
+14(7):475–486, 2015.</li>
+<li>Wu, Z. et al. MoleculeNet: A benchmark for molecular machine learning.
+<i>Chemical Science</i>, 9(2):513–530, 2018.</li>
+<li>Huang, K. et al. Therapeutics Data Commons: Machine learning datasets and
+tasks for drug discovery and development. <i>NeurIPS Datasets and Benchmarks
+Track</i>, 2021.</li>
+<li>Tang, J. et al. Making sense of large-scale kinase inhibitor bioactivity data
+sets. <i>Journal of Chemical Information and Modeling</i>, 54(3):735–743, 2014.</li>
+<li>Buttenschoen, M. et al. PoseBusters: AI-based docking methods fail to generate
+physically valid poses or generalise to novel sequences. <i>Chemical Science</i>,
+15(9):3130–3139, 2024.</li>
+<li>Berman, H. M. et al. The Protein Data Bank. <i>Nucleic Acids Research</i>,
+28(1):235–242, 2000.</li>
+<li>Ebner, A. et al. Measuring AI progress in drug discovery: A reproducible
+leaderboard for the Tox21 challenge. arXiv:2511.14744, 2025.</li>
+<li>Xu, K. et al. How powerful are graph neural networks? <i>ICLR</i>, 2019.</li>
+<li>Lin, Z. et al. Evolutionary-scale prediction of atomic-level protein structure
+with a language model. <i>Science</i>, 379(6637):1123–1130, 2023.</li>
+<li>Yu, T. et al. Gradient surgery for multi-task learning. <i>NeurIPS</i>, 2020.</li>
+<li>Öztürk, H. et al. DeepDTA: Deep drug–target binding affinity prediction.
+<i>Bioinformatics</i>, 34(17):i821–i829, 2018.</li>
+<li>Nguyen, T. et al. GraphDTA: Predicting drug–target binding affinity with graph
+neural networks. bioRxiv 684662v2, 2019.</li>
+<li>Praski, M., Adamczyk, J., Czech, W. Benchmarking pretrained molecular
+embedding models for molecular representation learning. arXiv:2508.06199, 2026.</li>
+<li>Kartic et al. ToxBench: A leakage-audited multi-task benchmark for predictive
+toxicology. <i>BMC Bioinformatics</i>, 2026.</li>
+<li>Chung, M. et al. Beyond random splits: Evaluating drug-target affinity models
+under chemically and biologically motivated distribution shifts.
+arXiv:2610.03456, 2026.</li>
+<li>Trott, O., Olson, A. J. AutoDock Vina. <i>Journal of Computational
+Chemistry</i>, 31(2):455–461, 2010.</li>
+<li>Landrum, G. RDKit: Open-source cheminformatics. <a href="https://www.rdkit.org">rdkit.org</a>.</li>
+</ol>
+
+<h2 class="excluded-from-page-limit">Statement of contributions</h2>
+<p class="small">Following the division set out in the project plan, <b>Jiaxin
+Liu</b> led the molecular side — standardisation, splits, the Tox21 and hERG
+baselines, the graph and language-model encoders, calibration, the abstention
+study, atom attribution, and the application's frontend. <b>Zhenyu Wang</b> led
+the protein and structural side — the ESM-2 embedding pipeline, the KIBA and
+DAVIS affinity models, docking and the PoseBusters integration, the structural
+benchmarks, and the backend service. The multi-task experiments, the reproducibility
+harness and this report were joint work.</p>
+
+<h2 class="excluded-from-page-limit">Appendix</h2>
+
+<h3>A. Code and setup</h3>
+<p class="small">Public repository:
+<a href="https://github.com/JiaxinLiu2000/Screening-Drug-Candidates-with-3D-Visualization">github.com/JiaxinLiu2000/Screening-Drug-Candidates-with-3D-Visualization</a></p>
+<p class="small">Predicting from a fresh clone requires no dataset download and no
+GPU; trained models and the 229 protein embeddings are committed.</p>
+<pre class="small"><code>pip install --no-deps -r requirements.txt
+python src/00_fetch_data.py            # only needed to reproduce training
+python -m uvicorn app.backend.main:app --port 8000
+cd app/frontend &amp;&amp; npm install &amp;&amp; npm run dev</code></pre>
+<p class="small">Scripts <code>src/01</code>–<code>src/37</code> produce every
+measurement quoted above, in order; <code>src/38</code> exports the committed
+models and <code>src/39</code>–<code>src/42</code> are the later additions.
+<code>src/15_data_audit.py</code> recomputes each quantity from the committed
+artefacts (70 checks) and <code>src/08_verify_repro.py --with-rf</code> checks
+they rebuild byte-identically.</p>
+
+<h3>B. AI prompts used</h3>
+<p class="small">Every prompt given to the assistant is logged verbatim, with its
+date and purpose, in <code>PROMPTS.md</code> in the repository (13 prompts, 986
+lines, including the full text of every design document referenced by a prompt).
+The log is reproduced there rather than here only because of its length; it is
+part of the submission.</p>
+<p class="small">In summary: prompts 1–5 set up the repository and ran Phases 1–3
+(baseline, data-foundation validation, the shared-encoder ablation); prompt 6 ran
+Phase 4 (external comparison, calibration, abstention, retuned baselines); prompt
+7 drafted résumé text; prompts 8–9 packaged the repository for distribution and
+moved it to GitHub; prompt 10 surveyed literature and tooling released since
+development stopped and drafted the application's functional design; prompt 11
+addressed the instructor's two comments and built the application; prompt 12
+produced the presentation deck; prompt 13 produced the progress report. The
+assistant was asked for outcomes rather than for code, and the constraints that
+mattered most were on honesty rather than implementation: pin every dependency,
+commit the split index files, never fabricate or estimate a number, report
+negative results plainly, and never let a failing tool degrade into a heuristic
+that keeps the authoritative name.</p>
+
+<h3>C. Additional detail</h3>
+<p class="small">Fuller treatments live in the repository:
+<code>ML_REPORT.md</code> (the modelling story with every ablation table),
+<code>FINAL_REPORT.md</code> (generated; every number traced to an artefact),
+<code>DISCUSSION.md</code>, <code>VERIFICATION.md</code> (reproduction evidence
+and what it does not cover), and <code>results/DATA_AUDIT.md</code> (all 70
+integrity checks, one row each).</p>
+</html>
