@@ -2,7 +2,7 @@
 
 A supervised-learning study on molecular data. The application is virtual screening, but the questions are machine-learning questions: does a learned representation beat a fixed one, how much does that answer depend on training-set size, what happens under distribution shift, and can the model tell us when not to trust it.
 
-- commit `56e9559`; 67/67 integrity checks pass; 57/57 artefacts reproduce byte-identically
+- commit `e856947-dirty`; 70/70 integrity checks pass; 57/57 artefacts reproduce byte-identically
 - 76 neural training runs (8.7 GPU-hours) plus 60 learning-curve fits
 
 ## 1. The two prediction problems
@@ -165,6 +165,28 @@ The signal that works is not an uncertainty estimate at all - it is a distance: 
 | scaffold | 0.0645 | 0.0727 | 0.1571 | 0.0926 | 0.0253 |
 
 The forests over-predict by about 1.7x (0.157 predicted against 0.093 observed). This is `class_weight='balanced'` doing what it is designed to do - re-weighting the minority class to improve ranking - at the cost of the scores no longer estimating P(positive). Isotonic regression fitted on the validation fold brings per-fit ECE from 0.0722 to 0.0253. **Takeaway: a re-weighted classifier's output is a score, not a probability, and must be calibrated before it is shown to anyone as a percentage.**
+
+## 7b. The shared-encoder penalty was an ordering artefact
+
+Configuration C cost toxicity 0.0869 macro ROC-AUC against the single-task control, while the same sharing cost ChemBERTa -0.0016. A reviewer read that as task interference and asked for gradient projection, soft parameter sharing, or task-specific layers. Reading the trainer first changed the question: it never summed the two losses. It ran the toxicity loader, then the affinity loader, one optimiser step per batch, with affinity last and roughly 18x more batches per epoch. The two gradients never coexisted, so gradient projection was not applicable to that code path at all.
+
+| arm | toxicity ROC-AUC | vs single-task | affinity r | mean grad cosine | steps in conflict |
+|---|---|---|---|---|---|
+| sequential_affinity_last | 0.6533 ± 0.0290 | -0.1155 | 0.7094 | n/a | n/a |
+| sequential_toxicity_last | 0.7569 ± 0.0313 | -0.0119 | 0.5563 | n/a | n/a |
+| sequential_balanced | 0.7085 ± 0.0290 | -0.0603 | 0.4175 | n/a | n/a |
+| joint | 0.7643 ± 0.0320 | -0.0045 | 0.6780 | +0.0246 | 39.0% |
+| pcgrad | 0.7401 ± 0.0194 | -0.0288 | 0.6038 | +0.0243 | 39.3% |
+| soft | 0.7748 ± 0.0223 | +0.0059 | 0.7308 | n/a | n/a |
+| adapter | 0.7525 ± 0.0204 | -0.0164 | 0.6721 | +0.0294 | 37.3% |
+
+Against the single-task control at 0.7689, 3 seeds per arm.
+
+**What the arms establish.** Swapping only the task order recovers +0.1036 (Welch p = 0.014); summing the two gradients into one optimiser step recovers +0.1110 (p = 0.011). Neither changes the architecture. The three repairs the reviewer named then add nothing measurable on top of joint stepping: PCGrad -0.0242 (p = 0.34), soft sharing +0.0104 (p = 0.67), adapters -0.0118 (p = 0.62) - every one inside the seed spread.
+
+**On gradient conflict specifically.** It is real and it is not the mechanism. The mean cosine between the two task gradients is +0.0246 - near-orthogonal and marginally *aligned* rather than opposed - yet they do point in conflicting directions on 39.0% of steps. PCGrad projects exactly those steps, and the result does not improve. Per-step conflict therefore exists, and removing it is not what repairs the penalty; fixing the update order is.
+
+Caveat: three seeds per arm against a seed spread near 0.02-0.03 resolves only the ordering effect. The three repairs are bounded as 'no measurable gain over joint stepping', not shown to be equivalent to it.
 
 ## 8. What this project does and does not establish
 

@@ -106,3 +106,32 @@ umap-learn==0.5.12
 urllib3==2.8.0
 xxhash==4.0.2
 yarl==1.25.1
+
+# --- Phase 5 additions -------------------------------------------------------
+# posebusters: the 28-check physical-validity battery used by src/41.
+# fastapi + uvicorn: the application in app/backend.
+# python-pptx: converts the rendered slide PNGs into docs/slides/*.pptx.
+# httpx: required by starlette's TestClient, which checks the API's degraded
+#   mode (a missing artefact must surface as 503, not a bare 500).
+# The remainder are transitive dependencies of those four, pinned here because
+# src/15_data_audit.py requires the lock to match the environment exactly - an
+# unpinned transitive dependency is how a working environment silently stops
+# being reproducible.
+annotated-types==0.8.0
+fastapi==0.122.0
+httpcore==1.0.9
+httptools==0.9.0
+httpx==0.29.0
+lxml==6.1.3
+pip==24.0
+posebusters==0.6.5
+pydantic==2.14.4
+pydantic-core==2.50.5
+python-dotenv==1.2.4
+python-pptx==1.0.2
+starlette==0.50.0
+typing-inspection==0.4.5
+uvicorn==0.41.0
+watchfiles==1.3.0
+websockets==17.4
+xlsxwriter==3.3.4

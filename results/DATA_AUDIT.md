@@ -89,14 +89,14 @@ Produced by `src/15_data_audit.py`. This audit does not re-run the pipeline and 
 
 | check | result | measured |
 | --- | --- | --- |
-| dependency lock matches the installed environment exactly | PASS | 79 pins; installed-but-unpinned none; pinned-but-absent none |
+| dependency lock matches the installed environment exactly | PASS | 97 pins; installed-but-unpinned none; pinned-but-absent none |
 
 ## Repository
 
 | check | result | measured |
 | --- | --- | --- |
-| no raw or processed data is tracked by git | PASS | tracked data files 0, committed artefacts 299 |
-| every source module compiles | PASS | 58 modules under src/; compileall exit 0 |
+| no raw or processed data is tracked by git | PASS | tracked data files 0, committed artefacts 308 |
+| every source module compiles | PASS | 64 modules under src/; compileall exit 0 |
 | ablation checkpoints are newer than the metric table they produced | PASS | 6 checkpoints for configs ['A', 'B', 'C', 'D', 'E', 'F']; missing none; stale none |
 
 ## Phase 3 / KIBA overlap

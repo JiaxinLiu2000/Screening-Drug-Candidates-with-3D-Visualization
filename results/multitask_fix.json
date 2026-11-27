@@ -2,16 +2,18 @@
   "tox_split": "scaffold",
   "affinity_split": "random",
   "seeds": [
-    0
+    0,
+    1,
+    2
   ],
-  "epochs_budget": 2,
+  "epochs_budget": 60,
   "soft_lambda_grid": [
     0.001,
     0.01,
     0.1
   ],
-  "soft_lambda_chosen": 0.01,
-  "smoke": true,
+  "soft_lambda_chosen": 0.1,
+  "smoke": false,
   "phase3_reference": {
     "config_A_tox_only_gin": {
       "mean": 0.7688613478956422,
@@ -38,74 +40,74 @@
   },
   "by_mode": {
     "sequential_affinity_last": {
-      "tox_mean": 0.5271530855138838,
-      "tox_std": NaN,
-      "affinity_pearson_mean": 0.4202124774456024,
-      "affinity_pearson_std": NaN,
-      "penalty_vs_config_A": 0.24170826238175835,
+      "tox_mean": 0.6533253715637614,
+      "tox_std": 0.02895400419587703,
+      "affinity_pearson_mean": 0.7093961636225382,
+      "affinity_pearson_std": 0.042282057986460495,
+      "penalty_vs_config_A": 0.11553597633188084,
       "grad_cosine_mean": null,
       "grad_conflict_rate": null,
-      "n_runs": 1
+      "n_runs": 3
     },
     "sequential_toxicity_last": {
-      "tox_mean": 0.7276185039605544,
-      "tox_std": NaN,
-      "affinity_pearson_mean": 0.3220536410808563,
-      "affinity_pearson_std": NaN,
-      "penalty_vs_config_A": 0.041242843935087814,
+      "tox_mean": 0.756928958970617,
+      "tox_std": 0.03131718751250136,
+      "affinity_pearson_mean": 0.5563182135423025,
+      "affinity_pearson_std": 0.05255932390883597,
+      "penalty_vs_config_A": 0.011932388925025239,
       "grad_cosine_mean": null,
       "grad_conflict_rate": null,
-      "n_runs": 1
+      "n_runs": 3
     },
     "sequential_balanced": {
-      "tox_mean": 0.5868892172770831,
-      "tox_std": NaN,
-      "affinity_pearson_mean": 0.18334496021270752,
-      "affinity_pearson_std": NaN,
-      "penalty_vs_config_A": 0.1819721306185591,
+      "tox_mean": 0.7085401577121825,
+      "tox_std": 0.029038861943894996,
+      "affinity_pearson_mean": 0.41749779383341473,
+      "affinity_pearson_std": 0.027128340756636782,
+      "penalty_vs_config_A": 0.060321190183459716,
       "grad_cosine_mean": null,
       "grad_conflict_rate": null,
-      "n_runs": 1
+      "n_runs": 3
     },
     "joint": {
-      "tox_mean": 0.752545519621854,
-      "tox_std": NaN,
-      "affinity_pearson_mean": 0.33193090558052063,
-      "affinity_pearson_std": NaN,
-      "penalty_vs_config_A": 0.01631582827378819,
-      "grad_cosine_mean": 0.017501204822928395,
-      "grad_conflict_rate": 0.39373297002724794,
-      "n_runs": 1
+      "tox_mean": 0.7643402804733368,
+      "tox_std": 0.03202776130970473,
+      "affinity_pearson_mean": 0.6779964168866476,
+      "affinity_pearson_std": 0.02561329434114803,
+      "penalty_vs_config_A": 0.004521067422305403,
+      "grad_cosine_mean": 0.02455395104242708,
+      "grad_conflict_rate": 0.38978307247111504,
+      "n_runs": 3
     },
     "pcgrad": {
-      "tox_mean": 0.7827931937484051,
-      "tox_std": NaN,
-      "affinity_pearson_mean": 0.41684454679489136,
-      "affinity_pearson_std": NaN,
-      "penalty_vs_config_A": -0.013931845852762859,
-      "grad_cosine_mean": 0.012778942754749856,
-      "grad_conflict_rate": 0.4209809264305177,
-      "n_runs": 1
+      "tox_mean": 0.7400925234269541,
+      "tox_std": 0.01935003309014618,
+      "affinity_pearson_mean": 0.6037717262903849,
+      "affinity_pearson_std": 0.03845946415168039,
+      "penalty_vs_config_A": 0.028768824468688114,
+      "grad_cosine_mean": 0.024255990214515077,
+      "grad_conflict_rate": 0.3925607644953694,
+      "n_runs": 3
     },
     "soft": {
-      "tox_mean": 0.7315990897014735,
-      "tox_std": NaN,
-      "affinity_pearson_mean": 0.3716065585613251,
-      "affinity_pearson_std": NaN,
-      "penalty_vs_config_A": 0.03726225819416873,
+      "tox_mean": 0.7747500313803362,
+      "tox_std": 0.02229528037269886,
+      "affinity_pearson_mean": 0.7308071255683899,
+      "affinity_pearson_std": 0.009890910699002019,
+      "penalty_vs_config_A": -0.005888683484693957,
       "grad_cosine_mean": null,
       "grad_conflict_rate": null,
-      "n_runs": 1
+      "n_runs": 3
     },
     "adapter": {
-      "tox_mean": 0.7580384625993064,
-      "tox_std": NaN,
-      "affinity_pearson_mean": 0.3479290306568146,
-      "affinity_pearson_std": NaN,
-      "penalty_vs_config_A": 0.010822885296335794,
-      "grad_cosine_mean": 0.01747518512098886,
-      "grad_conflict_rate": 0.4196185286103542,
-      "n_runs": 1
+      "tox_mean": 0.7525025200400485,
+      "tox_std": 0.020359882339179767,
+      "affinity_pearson_mean": 0.6721147100130717,
+      "affinity_pearson_std": 0.01985001676928104,
+      "penalty_vs_config_A": 0.016358827855593727,
+      "grad_cosine_mean": 0.029416611116654945,
+      "grad_conflict_rate": 0.37263475697587817,
+      "n_runs": 3
     }
   }
 }

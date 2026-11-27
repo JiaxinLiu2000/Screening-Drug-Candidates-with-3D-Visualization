@@ -256,10 +256,17 @@ def run_posebusters(rows: list[dict]) -> pd.DataFrame:
 
 def summarise(df: pd.DataFrame, check_cols: list[str]) -> dict:
     ok = df[df["error"].isna()]
+    # Two very different reasons for producing no pose, kept apart: a complex
+    # excluded because its pocket could not be parameterised is not a docking
+    # miss, and pooling the two makes the success rate unreadable.
+    pocket_excluded = df["error"].fillna("").str.contains("line the binding site")
     out: dict = {
         "n_attempted": int(len(df)),
         "n_docked": int(len(ok)),
         "n_failed": int(df["error"].notna().sum()),
+        "n_excluded_pocket_altered": int(pocket_excluded.sum()),
+        "n_failed_preparation": int(df["error"].notna().sum()
+                                    - pocket_excluded.sum()),
         # Stated so a reader can tell a fresh run from one that reused poses
         # computed before the receptor-preparation fix landed.
         "n_resumed_from_existing_poses": (int(df["resumed"].fillna(False).sum())
@@ -316,10 +323,23 @@ def write_report(df: pd.DataFrame, summary: dict, phase4: dict) -> None:
         add(f"| {name} | {block['n']} | {block['top_pose_success_rate']:.1%} | "
             f"{block['best_of_9_success_rate']:.1%} |")
     add("")
-    add(f"Pooled over {summary['n_docked']} complexes that docked successfully "
-        f"({summary['n_failed']} failed preparation or docking): "
+    add(f"Pooled over the {summary['n_docked']} complexes that produced a pose: "
         f"{summary['top_pose_success_rate']:.1%} top-pose and "
         f"{summary['best_of_9_success_rate']:.1%} best-of-9.")
+    add("")
+    add(f"**What the denominator excludes.** {summary['n_failed']} of "
+        f"{summary['n_attempted']} complexes produced no pose, and the split "
+        "between the two reasons matters for reading the rate above: "
+        f"{summary.get('n_excluded_pocket_altered', 0)} were **deliberately "
+        "excluded** because the residues Meeko could not parameterise line the "
+        f"binding site, and {summary.get('n_failed_preparation', 0)} failed "
+        "receptor preparation outright. The first group is not a docking "
+        "failure - those receptors could have been docked after deleting the "
+        "offending residues, but the resulting pocket would not be the one the "
+        "crystal ligand binds, so their RMSD is not comparable with the rest. "
+        "Counting them as misses would understate the rate; counting them as "
+        "successes after mutilating the pocket would overstate it. They are "
+        "listed in the CSV with the residues named.")
     add("")
 
     if "physically_valid_rate" in summary:

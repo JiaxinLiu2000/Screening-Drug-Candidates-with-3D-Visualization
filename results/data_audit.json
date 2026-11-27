@@ -223,13 +223,13 @@
       "section": "Environment",
       "name": "dependency lock matches the installed environment exactly",
       "status": "PASS",
-      "detail": "79 pins; installed-but-unpinned none; pinned-but-absent none"
+      "detail": "97 pins; installed-but-unpinned none; pinned-but-absent none"
     },
     {
       "section": "Repository",
       "name": "no raw or processed data is tracked by git",
       "status": "PASS",
-      "detail": "tracked data files 0, committed artefacts 299"
+      "detail": "tracked data files 0, committed artefacts 308"
     },
     {
       "section": "Phase 3 / KIBA overlap",
@@ -349,7 +349,7 @@
       "section": "Repository",
       "name": "every source module compiles",
       "status": "PASS",
-      "detail": "58 modules under src/; compileall exit 0"
+      "detail": "64 modules under src/; compileall exit 0"
     },
     {
       "section": "Repository",

@@ -14,19 +14,19 @@ Batches per epoch: 20 toxicity vs 367 affinity, a ratio of 18.35.
 
 | arm | toxicity ROC-AUC | vs single-task | affinity Pearson r | grad cosine | conflict rate | seeds |
 |---|---|---|---|---|---|---|
-| sequential_affinity_last | 0.5272 ± nan | -0.2417 | 0.4202 | n/a (gradients never coexist) | n/a | 1 |
-| sequential_toxicity_last | 0.7276 ± nan | -0.0412 | 0.3221 | n/a (gradients never coexist) | n/a | 1 |
-| sequential_balanced | 0.5869 ± nan | -0.1820 | 0.1833 | n/a (gradients never coexist) | n/a | 1 |
-| joint | 0.7525 ± nan | -0.0163 | 0.3319 | +0.0175 | 39.4% | 1 |
-| pcgrad | 0.7828 ± nan | +0.0139 | 0.4168 | +0.0128 | 42.1% | 1 |
-| soft (lambda=0.01) | 0.7316 ± nan | -0.0373 | 0.3716 | n/a (gradients never coexist) | n/a | 1 |
-| adapter | 0.7580 ± nan | -0.0108 | 0.3479 | +0.0175 | 42.0% | 1 |
+| sequential_affinity_last | 0.6533 ± 0.0290 | -0.1155 | 0.7094 | n/a (gradients never coexist) | n/a | 3 |
+| sequential_toxicity_last | 0.7569 ± 0.0313 | -0.0119 | 0.5563 | n/a (gradients never coexist) | n/a | 3 |
+| sequential_balanced | 0.7085 ± 0.0290 | -0.0603 | 0.4175 | n/a (gradients never coexist) | n/a | 3 |
+| joint | 0.7643 ± 0.0320 | -0.0045 | 0.6780 | +0.0246 | 39.0% | 3 |
+| pcgrad | 0.7401 ± 0.0194 | -0.0288 | 0.6038 | +0.0243 | 39.3% | 3 |
+| soft (lambda=0.1) | 0.7748 ± 0.0223 | +0.0059 | 0.7308 | n/a (gradients never coexist) | n/a | 3 |
+| adapter | 0.7525 ± 0.0204 | -0.0164 | 0.6721 | +0.0294 | 37.3% | 3 |
 
 `vs single-task` is against configuration A (0.7689). Negative means sharing still costs toxicity.
 
 ## 3. Reading
 
-Measured over 2202 gradient pairs, the cosine between the two task gradients on the shared encoder averages +0.0159 and is negative on 41.1% of steps.
+Measured over 147901 gradient pairs, the cosine between the two task gradients on the shared encoder averages +0.0261 and is negative on 38.5% of steps.
 
 The conclusions the numbers support, and the ones they do not, are written up in `ML_REPORT.md`; this file is the generated record.
 
