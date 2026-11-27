@@ -31,6 +31,7 @@ vina*.exe
 external/
 data/processed/docking/diffdock/
 
-# Report PDF is a build output of docs/report/report.html; regenerate with the
-# browser rather than tracking a binary that changes on every render.
-docs/report/report.pdf
+# docs/report/report.pdf is deliberately NOT ignored: it is the graded
+# deliverable, and a reader who clones this repository must get the PDF itself
+# rather than instructions for producing it. The "build output" argument does
+# not apply to a submission artefact.
