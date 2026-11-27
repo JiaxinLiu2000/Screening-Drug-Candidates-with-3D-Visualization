@@ -172,5 +172,5 @@ Known bugs we found in our own work and fixed, listed because they are the part 
 | [`results/DATA_AUDIT.md`](results/DATA_AUDIT.md) | all integrity checks, one row each |
 | [`PROMPTS.md`](PROMPTS.md) | every prompt used, with date and purpose |
 
-Reproduce from scratch: `pip install --no-deps -r requirements.txt`, then `src/01` through `src/37` in order. `src/15_data_audit.py` checks the artefacts and `src/08_verify_repro.py --with-rf` checks that they rebuild byte-identically.
+Reproduce from scratch: `pip install --no-deps -r requirements.txt`, then `src/01` through `src/37` in order - those produce every measurement quoted above. `src/38` exports the committed models and `src/39`-`src/42` are the phase-5 additions (multi-task repair arms, the cross-target docking benchmark, DiffDock), which add results rather than change these. `src/15_data_audit.py` checks the artefacts and `src/08_verify_repro.py --with-rf` checks that they rebuild byte-identically.
 

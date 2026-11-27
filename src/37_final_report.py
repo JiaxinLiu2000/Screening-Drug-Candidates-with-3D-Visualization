@@ -483,9 +483,18 @@ def main() -> int:
     ]:
         add(f"| [`{doc}`]({doc}) | {what} |")
     add("")
+    # Derived from the filesystem rather than written out, because a hardcoded
+    # range silently goes stale every time a script is added - it already read
+    # "01 through 37" after five more had landed.
+    numbered = sorted(p.name for p in (paths.ROOT / "src").glob("[0-9][0-9]_*.py"))
+    last = numbered[-1].split("_")[0] if numbered else "37"
     add("Reproduce from scratch: `pip install --no-deps -r requirements.txt`, then "
-        "`src/01` through `src/37` in order. `src/15_data_audit.py` checks the "
-        "artefacts and `src/08_verify_repro.py --with-rf` checks that they rebuild "
+        "`src/01` through `src/37` in order - those produce every measurement "
+        f"quoted above. `src/38` exports the committed models and `src/39`-`src/{last}` "
+        "are the phase-5 additions (multi-task repair arms, the cross-target "
+        "docking benchmark, DiffDock), which add results rather than change "
+        "these. `src/15_data_audit.py` checks the artefacts and "
+        "`src/08_verify_repro.py --with-rf` checks that they rebuild "
         "byte-identically.")
     add("")
 
