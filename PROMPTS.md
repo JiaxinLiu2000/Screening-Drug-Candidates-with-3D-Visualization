@@ -760,3 +760,227 @@ backed by a number:
 
 This file is what we will write the report's discussion section from.
 ````
+
+---
+
+## Prompt 6 — 2026-11-26
+
+**Verbatim message:**
+
+```text
+然后把phase4做了
+```
+
+("Then do Phase 4.")
+
+**Purpose:** run the fourth and final planned phase. Produced `src/26`–`src/37`:
+the like-for-like external comparison, the frozen ESM-2 + MLP affinity model,
+toxicity calibration and the split-seed spread, Vina self-docking on the 20 EGFR
+co-crystals, cold-drug diagnosis, learning curves, the four-signal abstention
+study, `ML_REPORT.md`, the retuned random-forest floor, the modality ablation,
+and `FINAL_REPORT.md`.
+
+Two results from this phase changed what the project claims:
+
+* The abstention study found the model's own confidence is a *worse* abstention
+  signal than chance (PR-AUC 0.2079 against 0.3983 for random), while distance
+  to the training set scored 0.4904. Every later design decision about the
+  interface follows from this.
+* Retuning the random forest (`max_features=0.3`) collapsed the neural network's
+  lead from +0.0669 to +0.0291. The earlier, larger figure had been an artefact
+  of an undertuned baseline.
+
+---
+
+## Prompt 7 — 2026-11-26
+
+**Verbatim message:**
+
+```text
+然后帮我写一个简历，我要把这个项目写进去
+```
+
+("Then help me write a résumé; I want to put this project in it.")
+
+**Purpose:** draft résumé bullets. Several revisions were required: the project
+had to be labelled a two-person course project rather than a personal one, and
+claims that the from-scratch models beat the baselines had to be removed, since
+the GIN only matched the random forest and the frozen ESM-2 model was the one
+that won.
+
+---
+
+## Prompt 8 — 2026-11-26
+
+**Verbatim message:**
+
+```text
+现在帮我放到github上，不过有几点，首先是这个数据集太大了，所以要用gitignore，但是要写清楚怎么下载，然后后续要做成软件，需要下载下来就能跑，所以模型要存好，最后我希望模型是可替换的
+```
+
+("Now help me put this on GitHub, with a few points: the dataset is too large so
+use gitignore but document how to download it; later this becomes software that
+runs straight after cloning, so the models must be stored properly; finally I
+want the models to be replaceable.")
+
+**Purpose:** package the repository for distribution. Produced
+`src/tox21lib/model_io.py` (registry, self-describing checkpoint envelope,
+sha256 verification), `src/38_export_models.py`, `src/00_fetch_data.py`, the
+committed `models/` directory, and a rewritten `.gitignore`.
+
+Three real defects surfaced only because the serving path was checked against
+the training metric rather than merely "does it load":
+
+1. `protein_embeddings.npz` stores one matrix plus an id list, not one array per
+   protein, so the loader needed `allow_pickle=True`.
+2. `ConcatMLP` had been duplicated into `model_io` and drifted from the training
+   script, so the state-dict keys no longer matched. It now lives once in
+   `tox21lib/models.py`.
+3. **The serving path scored 0.4832 instead of 0.8487** because
+   `27_frozen_baseline.py` standardises the protein embeddings column-wise and
+   the predictor was feeding raw ESM-2 vectors. The model ran, produced
+   plausible-looking numbers, and was entirely wrong. Fixed by shipping the
+   standardisation statistics inside the checkpoint and requiring a
+   `preprocessing` block for affinity models.
+
+---
+
+## Prompt 9 — 2026-11-27
+
+**Verbatim message:**
+
+```text
+上传到这里https://github.com/JiaxinLiu2000/Screening-Drug-Candidates-with-3D-Visualization.git，作者是jiaxinliubus@gmail.com
+```
+
+("Upload to <URL>; the author is <email>.")
+
+**Purpose:** move the repository to the team's GitHub account and rewrite all
+commit authorship to the named address.
+
+---
+
+## Prompt 10 — 2026-11-27
+
+**Verbatim message:**
+
+```text
+ok，现在我们准备将这个项目彻底做完，做好，做完整。目前看下来，你觉得这个项目还需要做什么，是否需要找更多的数据集，是否需要尝试新的写法/算法，然后就是我们需要做一个前端，但是前端的部分只需要先出一个设计稿，主要是针对功能而不是ui. 然后由于这个项目距离上次开发过了两个月了，这方面的技术，模型甚至是数据有了很多的更新，你先通过github和huggingfece搜搜看有啥新的技术我们可以运用的。给我整理成一个简短，直接明了的html并打开
+```
+
+("We are getting this project fully finished. What still needs doing — more
+datasets? new methods? Also we need a frontend, but for now only a design
+document focused on function rather than UI. Since two months have passed,
+search GitHub and HuggingFace for new techniques. Summarise it as a short,
+direct HTML page and open it.")
+
+**Purpose:** survey the literature and tooling released since development
+stopped, and draft the application's functional design. Produced
+`docs/2026-11-27-next-steps.html`.
+
+The survey found that three of the project's own negative results had since been
+reproduced independently — the AGH 25-model benchmark (GIN ranks 20th of 23, no
+pretrained embedding beats ECFP significantly), ToxBench (scaffold penalty
+0.057–0.079, against our measured 0.0713), and "Beyond Random Splits" (model
+rankings reverse under dual OOD). It also found a problem: the Tox21 labels
+redistributed through MoleculeNet and TDC were imputed, so our toxicity numbers
+are not directly comparable with the literature.
+
+---
+
+## Prompt 11 — 2026-11-27
+
+**Verbatim message (course requirements and the submitted proposal were pasted
+in full, followed by the instructor's comments):**
+
+```text
+这是project的要求：[full CS 6140 final-project specification] … 我们完成的proposal是：
+[full proposal text] … 教授的comments：
+Assuming you have the compute and bandwidth to fully execute the 3D docking
+pipeline, your strongest areas for improvement shift to your architecture and
+dataset limitations: [1] propose techniques to fix the shared-encoder
+degradation — gradient projection (PCGrad), soft parameter sharing, or
+task-specific attention layers. [2] Twenty structures is far too small; swap in
+a large-scale structural database like PDBbind.
+```
+
+**Purpose:** address the two weaknesses the instructor named, and build the
+application the course grades (Functionality / Creativity / Use Cases).
+
+Scope was settled with the user before starting: a lean FastAPI + React stack
+rather than the design document's Redis/PostgreSQL plan, both PoseBusters *and*
+PDBbind for the structural work, DiffDock kept, and the generative SMILES model
+explicitly abandoned.
+
+Reading the trainer changed what the first task should be. The Phase 3 loop
+never summed the two task losses — it iterated the toxicity loader, then the
+affinity loader, taking a separate optimiser step per batch, with affinity last
+and ~18× more batches. The two gradients therefore never coexisted and PCGrad
+was not applicable to it at all. Three diagnostic arms (task order, batch
+balance, true joint stepping) were added ahead of the three repairs the
+instructor named, so the mechanism is measured rather than assumed.
+
+---
+
+## Prompt 12 — 2026-11-27
+
+**Verbatim message:**
+
+```text
+帮我用图形化的方式解释，就好像我要和一群完全不懂这个项目的人做一个ppt，用这样的标准做一个中文的ppt，单独安排一个子代理去做
+```
+
+("Explain it graphically, as if presenting to people who know nothing about the
+project; make a Chinese PPT to that standard, and assign a subagent to do it.")
+
+**Purpose:** produce the presentation deck. A verified fact sheet was written
+first so the deck could not invent numbers. Two subagent attempts were both
+refused by a safety classifier despite the content being statistical modelling
+on public benchmarks, so the deck was built directly: 14 slides as
+`docs/slides/index.html` plus `screening-slides-zh.pptx`.
+
+Every number in the deck was cross-checked against the fact sheet by script: 49
+numerical claims, all traceable, none unsourced.
+
+---
+
+## Prompt 13 — 2026-11-27
+
+**Verbatim message:**
+
+```text
+然后大致给我一个目前的进度表，有哪些要做的，现在做到哪里了，每个估计要多久，有哪些只是代码有哪些是需要显卡训练的
+```
+
+("Give me a progress table: what is left, where things stand, how long each will
+take, and which are code-only versus needing GPU training.")
+
+**Purpose:** produce `docs/progress.html`.
+
+Checking the state before writing it showed that both long experiments had died
+— their `results/*.json` were still smoke-test output — so an earlier statement
+that they were "running" was wrong and is corrected on the page itself.
+Relaunching the docking run exposed a systematic defect: roughly a third of the
+log lines were `mk_prepare_receptor failed`, because the PoseBusters receptors
+retain cofactors and modified residues that Meeko has no template for. The fix
+retries with `--delete_residues` but refuses any complex whose deleted residues
+lie within 6 Å of the crystal ligand, since docking against a receptor missing
+part of its pocket is a different problem and its RMSD must not be pooled.
+
+---
+
+## Note on how the assistant was used
+
+Across all thirteen prompts the pattern was the same: the assistant was asked
+for an outcome, not for code, and the instructions that mattered most were
+constraints on honesty rather than on implementation — pin every dependency,
+commit the split index files, never fabricate or estimate a number, report
+negative results plainly, and never let a failing tool degrade into a heuristic
+that keeps the authoritative name.
+
+Several of the project's findings exist because of those constraints rather than
+in spite of them. The abstention result, the collapse of the neural network's
+lead once the baseline was tuned, the shared-encoder penalty turning out to be a
+training-loop artefact, and the three serving-path defects above were all
+produced by insisting that a number be re-derived from a committed artefact
+instead of quoted from memory.

@@ -25,3 +25,8 @@ data/processed/
 vina*.exe
 *.log
 .DS_Store
+
+# DiffDock lives in its own container with an incompatible pinned environment
+# (Python 3.9.18, torch 1.13.1+cu117); the clone is a build input, not our code.
+external/
+data/processed/docking/diffdock/
