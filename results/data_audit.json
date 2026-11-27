@@ -223,7 +223,7 @@
       "section": "Environment",
       "name": "dependency lock matches the installed environment exactly",
       "status": "PASS",
-      "detail": "97 pins; installed-but-unpinned none; pinned-but-absent none"
+      "detail": "95 pins (['pip', 'setuptools', 'wheel'] excluded as installer packages); installed-but-unpinned none; pinned-but-absent none"
     },
     {
       "section": "Repository",

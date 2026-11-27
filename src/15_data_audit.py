@@ -667,18 +667,30 @@ def _():
     )
     if out.returncode != 0:
         return None, "uv not available; lock comparison skipped"
-    installed = {
+
+    # `pip`, `setuptools` and `wheel` are the installer and its shims,
+    # bootstrapped by ensurepip rather than requested by this project. Pinning
+    # pip in requirements.txt would make `pip install -r` try to downgrade
+    # itself, so they are excluded from the comparison rather than locked.
+    installers = {"pip", "setuptools", "wheel"}
+
+    def without_installers(pins: set[str]) -> set[str]:
+        return {p for p in pins if p.split("==")[0] not in installers}
+
+    installed = without_installers({
         line.strip().lower().replace("_", "-")
         for line in out.stdout.splitlines() if "==" in line
-    }
-    locked = {
+    })
+    locked = without_installers({
         line.strip().lower().replace("_", "-")
         for line in (paths.ROOT / "requirements.txt").read_text().splitlines()
         if "==" in line and not line.startswith("#")
-    }
-    return installed == locked, (f"{len(locked)} pins; installed-but-unpinned "
-                                 f"{sorted(installed - locked) or 'none'}; "
-                                 f"pinned-but-absent {sorted(locked - installed) or 'none'}")
+    })
+    return installed == locked, (
+        f"{len(locked)} pins ({sorted(installers)} excluded as installer "
+        f"packages); installed-but-unpinned "
+        f"{sorted(installed - locked) or 'none'}; "
+        f"pinned-but-absent {sorted(locked - installed) or 'none'}")
 
 
 @check("Repository", "no raw or processed data is tracked by git")

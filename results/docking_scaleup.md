@@ -14,6 +14,8 @@ Pooled over the 447 complexes that produced a pose: 52.8% top-pose and 78.5% bes
 
 **What the denominator excludes.** 66 of 513 complexes produced no pose, and the split between the two reasons matters for reading the rate above: 61 were **deliberately excluded** because the residues Meeko could not parameterise line the binding site, and 5 failed receptor preparation outright. The first group is not a docking failure - those receptors could have been docked after deleting the offending residues, but the resulting pocket would not be the one the crystal ligand binds, so their RMSD is not comparable with the rest. Counting them as misses would understate the rate; counting them as successes after mutilating the pocket would overstate it. They are listed in the CSV with the residues named.
 
+Whether that exclusion biases the rate upward is testable rather than a matter of opinion, because ligand size is measurable for excluded complexes even though their RMSD is not. The excluded average 23.3 heavy atoms against 25.3 among those scored (Welch p = 0.18), while within the scored set larger ligands are measurably harder: 24.2 heavy atoms for hits against 26.5 for misses (p = 0.024). The excluded complexes are therefore, if anything, slightly *easier* than the ones scored, so the exclusion pushes the reported rate down rather than up - though the size difference itself is not resolved at that p-value, so this bounds the bias rather than measuring it.
+
 ## 2. Physical validity
 
 PoseBusters passes 98.4% of top-ranked poses on all checks. Combining both requirements, 52.3% of top poses are within 2 A *and* physically valid, while 0.4% are within 2 A but fail at least one check - a pose in roughly the right place that a chemist would reject.

@@ -2,7 +2,7 @@
 
 A supervised-learning study on molecular data. The application is virtual screening, but the questions are machine-learning questions: does a learned representation beat a fixed one, how much does that answer depend on training-set size, what happens under distribution shift, and can the model tell us when not to trust it.
 
-- commit `e856947-dirty`; 70/70 integrity checks pass; 57/57 artefacts reproduce byte-identically
+- commit `09d5a55-dirty`; 70/70 integrity checks pass; 57/57 artefacts reproduce byte-identically
 - 76 neural training runs (8.7 GPU-hours) plus 60 learning-curve fits
 
 ## 1. The two prediction problems
@@ -182,7 +182,9 @@ Configuration C cost toxicity 0.0869 macro ROC-AUC against the single-task contr
 
 Against the single-task control at 0.7689, 3 seeds per arm.
 
-**What the arms establish.** Swapping only the task order recovers +0.1036 (Welch p = 0.014); summing the two gradients into one optimiser step recovers +0.1110 (p = 0.011). Neither changes the architecture. The three repairs the reviewer named then add nothing measurable on top of joint stepping: PCGrad -0.0242 (p = 0.34), soft sharing +0.0104 (p = 0.67), adapters -0.0118 (p = 0.62) - every one inside the seed spread.
+**What the arms establish.** Swapping only the task order recovers +0.1036 (Welch p = 0.01); summing the two gradients into one optimiser step recovers +0.1110 (Welch p = 0.01). Neither changes the architecture. The three repairs the reviewer named then add nothing measurable on top of joint stepping: PCGrad -0.0242 (Welch p = 0.34), soft sharing +0.0104 (Welch p = 0.67), adapters -0.0118 (Welch p = 0.62) - every one inside the seed spread. The soft arm has the highest toxicity mean of the seven, but at p well above any threshold it is not a winner, and reporting it as one would be reading seed noise.
+
+**Both axes, not one.** Judging these arms on toxicity alone would pick the wrong one. Reordering recovers toxicity to 0.7569 but drops affinity to 0.5563, from 0.7094 - it moves the damage to the other task rather than removing it, which is what the mechanism predicts, since whichever task runs last is the one the shared encoder ends up tuned for. Only joint stepping holds both: toxicity 0.7643 with affinity 0.6780. Balancing the batch counts without joint stepping is the worst of both, at 0.7085 and 0.4175.
 
 **On gradient conflict specifically.** It is real and it is not the mechanism. The mean cosine between the two task gradients is +0.0246 - near-orthogonal and marginally *aligned* rather than opposed - yet they do point in conflicting directions on 39.0% of steps. PCGrad projects exactly those steps, and the result does not improve. Per-step conflict therefore exists, and removing it is not what repairs the penalty; fixing the update order is.
 
@@ -194,7 +196,8 @@ Caveat: three seeds per arm against a seed spread near 0.02-0.03 resolves only t
 
 - A well-tuned random forest on fingerprints is a serious baseline at this scale. On Tox21 it ties a GIN at every training-set size tested; on KIBA, tuning one hyperparameter moved it further than most architecture changes did.
 - Pretrained frozen representations beat both learned-from-scratch encoders and fixed descriptors on the affinity task, and the advantage grows with data rather than shrinking.
-- Multi-task sharing between these two tasks produced no gain beyond seed noise, in a setting where the two input distributions are measurably adjacent rather than overlapping.
+- Multi-task sharing between these two tasks produced no gain beyond seed noise. What it *appeared* to produce - a large penalty on toxicity - was an artefact of the training loop's update order, not task interference: the two task gradients never coexisted, whichever task ran last owned the shared encoder, and summing them into one step removes almost all of the penalty without touching the architecture (section 7b).
+- A measured effect attributed to a model can belong to the code that trained it. The only way we found this one was reading the loop before implementing the fixes a reviewer suggested for it.
 - Under class imbalance, score-based confidence is worse than useless for abstention, while a training-set-distance signal works.
 - The amount of distribution shift a split imposes can be measured, not just asserted, and it changes results by more than most modelling decisions.
 

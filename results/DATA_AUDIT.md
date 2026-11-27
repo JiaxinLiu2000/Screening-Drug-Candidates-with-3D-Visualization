@@ -89,7 +89,7 @@ Produced by `src/15_data_audit.py`. This audit does not re-run the pipeline and 
 
 | check | result | measured |
 | --- | --- | --- |
-| dependency lock matches the installed environment exactly | PASS | 97 pins; installed-but-unpinned none; pinned-but-absent none |
+| dependency lock matches the installed environment exactly | PASS | 95 pins (['pip', 'setuptools', 'wheel'] excluded as installer packages); installed-but-unpinned none; pinned-but-absent none |
 
 ## Repository
 

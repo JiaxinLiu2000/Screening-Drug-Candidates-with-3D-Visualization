@@ -353,6 +353,36 @@ def main() -> int:
                                    else float(sub["grad_conflict_rate"].mean())),
             "n_runs": int(len(sub)),
         }
+
+    # Pairwise Welch tests, computed here and stored, so no consumer has to
+    # hardcode a p-value next to a mean it recomputes. Welch rather than
+    # Student: the arms have visibly unequal variance (0.019 to 0.032) at
+    # three seeds each. Three seeds is few, which is the point of reporting the
+    # p-value rather than asserting a difference.
+    from scipy import stats
+
+    def arm(mode: str) -> np.ndarray:
+        sub = df[df["mode"] == mode]
+        if mode == "soft":
+            sub = sub[sub["soft_lambda"] == chosen_lambda]
+        return sub["tox_macro_roc_auc"].to_numpy(dtype=float)
+
+    comparisons = {}
+    for a, b in (("sequential_affinity_last", "sequential_toxicity_last"),
+                 ("sequential_affinity_last", "sequential_balanced"),
+                 ("sequential_affinity_last", "joint"),
+                 ("joint", "pcgrad"), ("joint", "soft"), ("joint", "adapter")):
+        xa, xb = arm(a), arm(b)
+        if len(xa) < 2 or len(xb) < 2:
+            continue
+        t, p = stats.ttest_ind(xa, xb, equal_var=False)
+        comparisons[f"{b}_minus_{a}"] = {
+            "delta_tox": float(xb.mean() - xa.mean()),
+            "p_value": float(p),
+            "n_a": int(len(xa)), "n_b": int(len(xb)),
+        }
+    summary["pairwise_tox_tests"] = comparisons
+
     OUT_JSON.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     print(f"Wrote {OUT_JSON}")
 

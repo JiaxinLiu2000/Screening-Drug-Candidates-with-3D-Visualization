@@ -510,17 +510,41 @@ def main() -> int:
             add(f"Against the single-task control at {base:.4f}, "
                 f"{len(mf['seeds'])} seeds per arm.")
             add("")
+            tests = mf.get("pairwise_tox_tests", {})
+
+            def tp(a: str, b: str) -> str:
+                """Delta and p for arm b against arm a, both read from the artefact."""
+                t = tests.get(f"{b}_minus_{a}")
+                if not t:
+                    return "not tested"
+                return f"{t['delta_tox']:+.4f} (Welch p = {t['p_value']:.2f})"
+
             add("**What the arms establish.** Swapping only the task order recovers "
-                f"{by['sequential_toxicity_last']['tox_mean'] - seq:+.4f} "
-                "(Welch p = 0.014); summing the two gradients into one optimiser step "
-                f"recovers {by['joint']['tox_mean'] - seq:+.4f} (p = 0.011). Neither "
-                "changes the architecture. The three repairs the reviewer named then "
-                "add nothing measurable on top of joint stepping: PCGrad "
-                f"{by['pcgrad']['tox_mean'] - by['joint']['tox_mean']:+.4f} (p = 0.34), "
-                f"soft sharing {by['soft']['tox_mean'] - by['joint']['tox_mean']:+.4f} "
-                f"(p = 0.67), adapters "
-                f"{by['adapter']['tox_mean'] - by['joint']['tox_mean']:+.4f} (p = 0.62) "
-                "- every one inside the seed spread.")
+                f"{tp('sequential_affinity_last', 'sequential_toxicity_last')}; "
+                "summing the two gradients into one optimiser step recovers "
+                f"{tp('sequential_affinity_last', 'joint')}. Neither changes the "
+                "architecture. The three repairs the reviewer named then add nothing "
+                "measurable on top of joint stepping: PCGrad "
+                f"{tp('joint', 'pcgrad')}, soft sharing {tp('joint', 'soft')}, "
+                f"adapters {tp('joint', 'adapter')} - every one inside the seed "
+                "spread. The soft arm has the highest toxicity mean of the seven, "
+                "but at p well above any threshold it is not a winner, and reporting "
+                "it as one would be reading seed noise.")
+            add("")
+            add("**Both axes, not one.** Judging these arms on toxicity alone would "
+                "pick the wrong one. Reordering recovers toxicity to "
+                f"{by['sequential_toxicity_last']['tox_mean']:.4f} but drops affinity "
+                f"to {by['sequential_toxicity_last']['affinity_pearson_mean']:.4f}, "
+                "from "
+                f"{by['sequential_affinity_last']['affinity_pearson_mean']:.4f} - it "
+                "moves the damage to the other task rather than removing it, which is "
+                "what the mechanism predicts, since whichever task runs last is the "
+                "one the shared encoder ends up tuned for. Only joint stepping holds "
+                f"both: toxicity {by['joint']['tox_mean']:.4f} with affinity "
+                f"{by['joint']['affinity_pearson_mean']:.4f}. Balancing the batch "
+                "counts without joint stepping is the worst of both, at "
+                f"{by['sequential_balanced']['tox_mean']:.4f} and "
+                f"{by['sequential_balanced']['affinity_pearson_mean']:.4f}.")
             add("")
             add("**On gradient conflict specifically.** It is real and it is not the "
                 "mechanism. The mean cosine between the two task gradients is "
@@ -550,8 +574,14 @@ def main() -> int:
         "and fixed descriptors on the affinity task, and the advantage grows with "
         "data rather than shrinking.")
     add("- Multi-task sharing between these two tasks produced no gain beyond seed "
-        "noise, in a setting where the two input distributions are measurably "
-        "adjacent rather than overlapping.")
+        "noise. What it *appeared* to produce - a large penalty on toxicity - was an "
+        "artefact of the training loop's update order, not task interference: the "
+        "two task gradients never coexisted, whichever task ran last owned the shared "
+        "encoder, and summing them into one step removes almost all of the penalty "
+        "without touching the architecture (section 7b).")
+    add("- A measured effect attributed to a model can belong to the code that "
+        "trained it. The only way we found this one was reading the loop before "
+        "implementing the fixes a reviewer suggested for it.")
     add("- Under class imbalance, score-based confidence is worse than useless for "
         "abstention, while a training-set-distance signal works.")
     add("- The amount of distribution shift a split imposes can be measured, not just "

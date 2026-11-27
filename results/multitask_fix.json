@@ -109,5 +109,43 @@
       "grad_conflict_rate": 0.37263475697587817,
       "n_runs": 3
     }
+  },
+  "pairwise_tox_tests": {
+    "sequential_toxicity_last_minus_sequential_affinity_last": {
+      "delta_tox": 0.1036035874068556,
+      "p_value": 0.013791790710366871,
+      "n_a": 3,
+      "n_b": 3
+    },
+    "sequential_balanced_minus_sequential_affinity_last": {
+      "delta_tox": 0.055214786148421124,
+      "p_value": 0.08006412223355895,
+      "n_a": 3,
+      "n_b": 3
+    },
+    "joint_minus_sequential_affinity_last": {
+      "delta_tox": 0.11101490890957544,
+      "p_value": 0.011474811705424874,
+      "n_a": 3,
+      "n_b": 3
+    },
+    "pcgrad_minus_joint": {
+      "delta_tox": -0.024247757046382712,
+      "p_value": 0.3369089883195301,
+      "n_a": 3,
+      "n_b": 3
+    },
+    "soft_minus_joint": {
+      "delta_tox": 0.01040975090699936,
+      "p_value": 0.6707938047558235,
+      "n_a": 3,
+      "n_b": 3
+    },
+    "adapter_minus_joint": {
+      "delta_tox": -0.011837760433288325,
+      "p_value": 0.6225233955472759,
+      "n_a": 3,
+      "n_b": 3
+    }
   }
 }
