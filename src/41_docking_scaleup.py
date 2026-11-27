@@ -127,18 +127,43 @@ def dock_one(entry: Path, set_name: str) -> dict:
         # rather than inherited from a run whose code may have differed. Vina
         # dominates the per-complex cost, so this recovers most of the time
         # without trusting a stale artefact for anything but coordinates.
+        #
+        # A leftover that parses but holds no poses must be redocked, not
+        # reused: reusing it would raise "Vina produced no poses" on this run
+        # and on every rerun afterwards, so the complex could never recover.
+        # The stamp guards against reusing coordinates produced under different
+        # search settings, which would silently mix two protocols in one table.
+        stamp = work / f"{name}_vina_settings.json"
+        expected = {"vina_version": docking.VINA_VERSION,
+                    "exhaustiveness": docking.EXHAUSTIVENESS,
+                    "num_modes": docking.NUM_MODES,
+                    "seed": docking.vina_seed(DOCK_SEED),
+                    "box_padding": BOX_PADDING}
         row["resumed"] = False
+        poses: list[tuple[float, float]] = []
         if out.exists():
-            try:
-                docking.score_poses(out, crystal)
-                row["resumed"] = True
-            except Exception:
-                # Truncated or unparsable leftover: redock rather than fail.
+            # Compared on the settings keys only, so a stamp may carry extra
+            # provenance (e.g. that it was backfilled) without failing the test.
+            same_settings = stamp.exists() and all(
+                json.loads(stamp.read_text()).get(k) == v
+                for k, v in expected.items())
+            if not same_settings:
                 out.unlink(missing_ok=True)
+            else:
+                try:
+                    poses = docking.score_poses(out, crystal)
+                except Exception:
+                    poses = []          # truncated or unparsable leftover
+                if poses:
+                    row["resumed"] = True
+                else:
+                    out.unlink(missing_ok=True)
         if not out.exists():
             docking.run_vina(rec["pdbqt"], lig_pdbqt, centre, size,
                              docking.vina_seed(DOCK_SEED), out)
-        poses = docking.score_poses(out, crystal)
+            stamp.write_text(json.dumps(expected, indent=2) + "\n",
+                             encoding="utf-8")
+            poses = docking.score_poses(out, crystal)
         if not poses:
             raise RuntimeError("Vina produced no poses")
         scores = [s for s, _ in poses]
