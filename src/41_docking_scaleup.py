@@ -121,9 +121,23 @@ def dock_one(entry: Path, set_name: str) -> dict:
         docking.prepare_ligand(crystal, lig_pdbqt)
 
         out = work / f"{name}_vseed{docking.vina_seed(DOCK_SEED)}.pdbqt"
-        docking.run_vina(rec["pdbqt"], lig_pdbqt, centre, size,
-                         docking.vina_seed(DOCK_SEED), out)
-
+        # Resume: a pose file from an earlier run is reused, but only the Vina
+        # search is skipped - receptor preparation above still runs, so the
+        # pocket-deletion gate and the per-complex provenance are recomputed
+        # rather than inherited from a run whose code may have differed. Vina
+        # dominates the per-complex cost, so this recovers most of the time
+        # without trusting a stale artefact for anything but coordinates.
+        row["resumed"] = False
+        if out.exists():
+            try:
+                docking.score_poses(out, crystal)
+                row["resumed"] = True
+            except Exception:
+                # Truncated or unparsable leftover: redock rather than fail.
+                out.unlink(missing_ok=True)
+        if not out.exists():
+            docking.run_vina(rec["pdbqt"], lig_pdbqt, centre, size,
+                             docking.vina_seed(DOCK_SEED), out)
         poses = docking.score_poses(out, crystal)
         if not poses:
             raise RuntimeError("Vina produced no poses")
@@ -221,6 +235,10 @@ def summarise(df: pd.DataFrame, check_cols: list[str]) -> dict:
         "n_attempted": int(len(df)),
         "n_docked": int(len(ok)),
         "n_failed": int(df["error"].notna().sum()),
+        # Stated so a reader can tell a fresh run from one that reused poses
+        # computed before the receptor-preparation fix landed.
+        "n_resumed_from_existing_poses": (int(df["resumed"].fillna(False).sum())
+                                          if "resumed" in df.columns else 0),
     }
     if not len(ok):
         return out

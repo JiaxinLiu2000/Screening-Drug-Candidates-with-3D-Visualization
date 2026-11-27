@@ -85,6 +85,32 @@ exactly (Pearson **0.8487** on all 11,720 held-out KIBA pairs, against 0.8487 at
 training time). See [`models/README.md`](models/README.md) for the full list, the
 output contract, and how to drop in a replacement model.
 
+## Run the screening application
+
+A two-process application lives in [`app/`](app/README.md): a FastAPI service
+over the committed models, and a React interface. It scores a batch of molecules
+on binding affinity and the twelve Tox21 endpoints, ranks them on both axes, and
+reports how far each molecule sits from the training distribution.
+
+```bash
+python -m uvicorn app.backend.main:app --port 8000     # terminal 1
+cd app/frontend && npm install && npm run dev          # terminal 2 -> :5173
+```
+
+The interface treats the applicability domain as a first-class column rather
+than a tooltip, because `results/abstention.json` records that the models are
+confidently wrong outside their training distribution and their own confidence
+does not detect it: abstaining on the least-confident half scored PR-AUC 0.2079,
+*worse* than abstaining at random (0.3983), while abstaining on the molecules
+furthest from the training set scored 0.4904. Out-of-domain rows are therefore
+struck through and sorted last under every sort order, and molecules that fail
+to parse keep their row with an error rather than disappearing.
+
+Without the raw Tox21 table the API reports uncalibrated toxicity scores and
+says so, instead of presenting raw scores as if they were calibrated
+probabilities. See [`app/README.md`](app/README.md) for the endpoint contract
+and the deliberate omissions.
+
 ## Reproduce the results
 
 Raw data (~320 MB) is not committed. Fetch it, then run the pipeline:
@@ -135,7 +161,33 @@ python src/22_attribution.py           # atom masking + group-masking control
 python src/23_ablation_report.py       # results/shared_encoder_ablation.md
 python src/24_phase3_decisions.py      # results/PHASE3_DECISIONS.md
 python src/25_verification_report.py   # VERIFICATION.md
+
+# Phase 4 - external comparison, calibration, abstention, tuned baselines
+python src/26_external_comparison.py   # published KIBA/Tox21 numbers, like-for-like
+python src/27_frozen_baseline.py       # frozen ESM-2 + MLP, the strongest affinity model
+python src/28_tox_reliability.py       # calibration (ECE, isotonic) + split-seed spread
+python src/29_self_docking.py          # Vina redocking, 20 EGFR co-crystals x 5 seeds
+python src/30_binding_followups.py     # per-split diagnostics on the binding task
+python src/31_cold_drug_diagnosis.py   # why cold_drug is the harder chemical shift
+python src/32_learning_curves.py       # RF vs MLP across training-set sizes
+python src/33_abstention.py            # four abstention signals; distance wins, confidence loses
+python src/34_ml_report.py             # ML_REPORT.md
+python src/35_tuned_floor.py           # retune the RF baseline; the MLP lead collapses
+python src/36_modality_ablation.py     # drug-only / protein-only / both / shuffled (GPU)
+python src/37_final_report.py          # FINAL_REPORT.md, every number from an artefact
+python src/38_export_models.py         # build the committed models/ directory
+
+# Phase 5 - the two weaknesses the reviewer named
+python src/39_multitask_fix.py --stage all   # 7 arms x 3 seeds, ~6 GPU-hours
+python src/40_structure_sets.py              # inventory PoseBusters / Astex / PDBbind
+python src/41_docking_scaleup.py --set all   # 428+85 complexes, ~2.5 CPU-hours
 ```
+
+`41_docking_scaleup.py` resumes: a complex whose pose file already exists skips
+the Vina search but still re-prepares its receptor, so the binding-site deletion
+gate and the per-complex provenance are recomputed rather than inherited. The
+summary reports `n_resumed_from_existing_poses` so a resumed run is never
+mistaken for a fresh one.
 
 Phase 3 needs a CUDA GPU (developed on an 8 GB RTX 3070 Ti). `requirements.txt`
 pins the CUDA 12.6 torch build and carries the matching `--extra-index-url`;
@@ -161,8 +213,15 @@ data/processed/checkpoints/  reference model weights             (gitignored)
 src/tox21lib/        importable modules: paths, standardize, featurize,
                      splits, structure, datasets, baseline, dti,
                      properties, rcsb, graphs, models, train,
-                     ablation_data, protein_embed, attribution
+                     ablation_data, protein_embed, attribution,
+                     docking, multitask, applicability, model_io
 src/NN_*.py          numbered drivers
+models/              3 committed models, 229 protein embeddings,
+                     applicability reference, registry.json          (committed)
+app/backend/         FastAPI service over the committed models        (committed)
+app/frontend/        React interface                                 (committed)
+docs/slides/         14-slide Chinese deck: index.html + .pptx        (committed)
+docs/progress.html   current status of every deliverable             (committed)
 ```
 
 The training code and the planned web service both import
