@@ -114,6 +114,23 @@ residues that Meeko cannot parameterise, so roughly a third of complexes failed
 preparation. Our own EGFR receptors had been pre-cleaned, which is why this was
 invisible until the benchmark was widened.
 
+Once the preparation step retried those receptors — and refused any complex
+whose unparameterisable residues line the binding site — the widened benchmark
+gave 52.8% top-pose and 78.5% best-of-9 accuracy over the 447 complexes that
+produced a pose, against 41.0% and 76.0% on the 20 single-target structures it
+replaces. Reading that rate requires its denominator: of the 66 complexes with
+no pose, 61 were deliberately excluded on the binding-site rule and only 5 were
+genuine preparation failures. The exclusions are not docking misses, and
+whether they bias the rate is testable rather than a caveat — their ligands
+average 23.3 heavy atoms against 25.3 among those scored, while within the
+scored set larger ligands are measurably harder (24.2 for hits against 26.5 for
+misses, p = 0.024). The excluded complexes are therefore if anything slightly
+easier, so the exclusion pushes the rate down rather than up.
+
+The per-target spread is the part the 20-structure set could never have shown:
+Astex Diverse reaches 62.3% top-pose against PoseBusters' 50.8%, on the same
+protocol. A single number from one binding site would have hidden that entirely.
+
 **A "scientific" result that was an engineering artefact.** Configuration C (GIN
 shared between both tasks) scored 0.6820 macro ROC-AUC against 0.7689 for the
 single-task control — a 0.0869 penalty we initially read as task interference.
@@ -126,6 +143,27 @@ and was then validated on toxicity. The same sharing costs ChemBERTa nothing
 50× lower encoder learning rate, so it barely moves. Gradient conflict, the
 explanation we and the instructor both assumed, was not applicable — the two
 gradients never coexisted.
+
+The seven-arm experiment that followed confirmed the mechanism and, more
+usefully, bounded the repairs. Swapping only the task order recovers +0.1036
+macro ROC-AUC (Welch p = 0.014) and summing the two gradients into one step
+recovers +0.1110 (p = 0.011) — neither touches the architecture. All three
+techniques the instructor named then add nothing measurable on top of joint
+stepping: PCGrad −0.0242 (p = 0.34), soft sharing +0.0104 (p = 0.67),
+task-specific adapters −0.0118 (p = 0.62), every one inside the seed spread.
+
+Gradient conflict turns out to be real *and* beside the point. The mean cosine
+between the two task gradients is +0.0246 — near-orthogonal, marginally
+aligned rather than opposed — yet on 39.0% of individual steps the two do
+conflict. PCGrad projects exactly those steps and the result does not improve.
+Per-step conflict exists; removing it is not what repairs the penalty.
+
+The arms also have to be read on both axes or they mislead. Reordering restores
+toxicity to 0.7569 but drops affinity to 0.5563 from 0.7094: it moves the damage
+to the other task rather than removing it, which is what the mechanism predicts,
+since whichever task runs last owns the shared encoder. Only joint stepping
+holds both (0.7643 and 0.6780). Had we judged on toxicity alone, we would have
+reported reordering as the fix.
 
 **Infrastructure failures that destroyed work.** A full disk killed one
 multi-hour experiment outright and truncated another at 253 of 513 complexes.
@@ -178,7 +216,7 @@ Stated plainly, because the proposal committed to each of these.
 | --- | --- | --- |
 | Generative SMILES model for candidate molecules | **not built** | Abandoned deliberately. It is weakly coupled to the question the project actually answers (reliability under distribution shift), and evaluating generated molecules credibly needs a validation route we do not have. The time went to the application instead. |
 | DiffDock vs Vina comparison | **built, run pending** | Promised and never run in the original phases. `src/42_diffdock_compare.py` runs DiffDock in its official container, since it pins Python 3.9.18 / torch 1.13.1+cu117 against this project's 3.11.17 / 2.14.1+cu126. Scored with the same RMSD function as Vina. |
-| PoseBusters physical-validity checks | **built** | Integrated into `src/41_docking_scaleup.py`: 28 checks, reported separately from RMSD so a pose that is roughly in place but chemically impossible is not counted as a success. |
+| PoseBusters physical-validity checks | **done** | Integrated into `src/41_docking_scaleup.py` and run over all 513 complexes: 28 checks, reported separately from RMSD. 98.4% of top-ranked poses pass everything; 0.4% are within 2 Å yet fail a check — a pose roughly in the right place that a chemist would reject. |
 | PDBbind as a large structural database | **partly** | The refined-set affinity table (5,311 complexes, pKd/pKi) is mirrored and inventoried — this project's first binding data with a physical unit and its first external affinity validation set. The official structure archive requires registration, so coordinates for any docked subset come from RCSB. |
 | FastAPI + Redis-RQ + PostgreSQL + React stack | **simplified** | FastAPI and React were built. The queue and database were dropped: inference takes 0.16 s for eleven molecules, so neither changes any answer the tool gives, and the course grades functionality rather than architecture. |
 | Atom attribution in the 3D view | **2D only** | Per-atom attribution is computed and shown on the 2D depiction. The 3D panel shows the reference co-crystal, not a docked pose of the queried molecule, because docking takes tens of seconds per molecule and runs offline. The interface states this on screen. |
