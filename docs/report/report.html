@@ -32,22 +32,38 @@ li { margin: 0 0 2pt; }
             border-top: 0.6pt solid var(--rule); border-bottom: 0.6pt solid var(--rule); }
 .abstract b { font-variant: small-caps; }
 
+/* Tables and figures must not split across a page break: a header row on one
+   page with its data on the next, or a caption orphaned from its image, is
+   unreadable in print. Verified by measuring the rendered PDF, not by eye. */
 table { border-collapse: collapse; width: 100%; font-size: 9pt;
-        margin: 5pt 0 7pt; text-align: left; }
+        margin: 5pt 0 7pt; text-align: left;
+        page-break-inside: avoid; break-inside: avoid; }
+/* Tall tables are allowed to split: forcing them whole pushes them to the next
+   page and leaves a third of the previous one empty, which wastes more of the
+   page allowance than a split costs. `thead` repeats the header on the second
+   half, and individual rows still never split. */
+table.tall { page-break-inside: auto; break-inside: auto; }
+thead { display: table-header-group; }
+tr { page-break-inside: avoid; break-inside: avoid; }
 th, td { border-top: 0.5pt solid var(--rule); border-bottom: 0.5pt solid var(--rule);
          padding: 2.5pt 4pt; vertical-align: top; }
 th { font-weight: bold; }
 td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
 caption, .cap { caption-side: bottom; font-size: 8.5pt; color: var(--muted);
-                text-align: left; padding-top: 2pt; }
+                text-align: left; padding-top: 2pt;
+                page-break-before: avoid; break-before: avoid; }
 
-figure { margin: 6pt 0 8pt; page-break-inside: avoid; }
+figure { margin: 6pt 0 8pt; page-break-inside: avoid; break-inside: avoid; }
 figure img { width: 100%; border: 0.5pt solid var(--rule); }
 figcaption { font-size: 8.5pt; color: var(--muted); padding-top: 2.5pt;
              text-align: left; }
 
 code { font-family: Consolas, "Courier New", monospace; font-size: 9.5pt; }
 .small { font-size: 9.5pt; }
+.cmd { font-family: Consolas, "Courier New", monospace; font-size: 9pt;
+       line-height: 1.5; margin: 4pt 0 6pt; padding: 4pt 6pt;
+       border-left: 2pt solid var(--rule); text-align: left;
+       page-break-inside: avoid; break-inside: avoid; }
 .muted { color: var(--muted); }
 .refs { font-size: 9.5pt; }
 .refs li { margin-bottom: 2.5pt; }
@@ -113,8 +129,10 @@ consequences for how such a tool should present its own output.</p>
 <p>Molecules are supplied as SMILES strings, a text encoding of atoms and bonds.
 All datasets are public academic benchmarks.</p>
 
-<table class="keep">
+<table class="tall">
+<thead>
 <tr><th>Source</th><th class="n">Size</th><th>Role</th></tr>
+</thead>
 <tr><td>Tox21 [2], via Therapeutics Data Commons [3]</td>
     <td class="n">7,831 compounds → <b>6,143</b> after standardisation</td>
     <td>12 toxicity endpoints</td></tr>
@@ -128,10 +146,10 @@ All datasets are public academic benchmarks.</p>
 <tr><td>PDBbind refined set</td><td class="n">5,311 complexes</td>
     <td>first affinity data here with a physical unit</td></tr>
 <tr><td>Protein Data Bank [6]</td><td class="n">29 structures</td><td>3D view</td></tr>
-</table>
-<div class="cap">Table 1. Inputs. Tox21 labels are ~25% missing, because not every
+<caption>Table 1. Inputs. Tox21 labels are ~25% missing, because not every
 compound was assayed on every endpoint, and positive rates range from 3.1% to
-18.3% — the task is both incomplete and heavily imbalanced.</div>
+18.3% — the task is both incomplete and heavily imbalanced.</caption>
+</table>
 
 <p>Every dataset passes through one preprocessing pipeline: parsing, removal of
 unparseable entries, salt stripping, canonicalisation and deduplication by
@@ -219,10 +237,10 @@ immediately with no dataset download and no GPU.</p>
     <td class="n">0.7289</td><td class="n">0.0930</td></tr>
 <tr><td>KIBA, Pearson <i>r</i> (cold-target)</td><td class="n">0.8219</td>
     <td class="n">0.6438</td><td class="n">0.1781</td></tr>
-</table>
-<div class="cap">Table 2. The 95% interval on the Tox21 penalty, combining test-set
+<caption>Table 2. The 95% interval on the Tox21 penalty, combining test-set
 bootstrap with the spread across five committed splits, is [0.0413, 0.1013] and
-excludes zero. Affinity figures are the retuned random forest.</div>
+excludes zero. Affinity figures are the retuned random forest.</caption>
+</table>
 
 <h3>4.2 Complex models did not beat simple ones</h3>
 
@@ -245,8 +263,7 @@ effect and believed it.</p>
 <tr><td>Disagreement among forest trees</td><td class="n">0.2024</td></tr>
 <tr><td><i>Abstaining at random</i></td><td class="n"><i>0.3983</i></td></tr>
 <tr><td>Tanimoto distance to the training set</td><td class="n"><b>0.4904</b></td></tr>
-</table>
-<div class="cap">Table 3. The model's own confidence is a worse guide to its errors
+<caption>Table 3. The model's own confidence is a worse guide to its errors
 than chance. Only a signal computed without reference to the model works.</div>
 
 <p>This is the project's most consequential result. Isotonic calibration makes
@@ -282,12 +299,12 @@ suggested to us, was not applicable — the two gradients never coexisted.</p>
     <td class="n">0.7308</td><td class="n">n/a</td><td class="n">n/a</td></tr>
 <tr><td>task-specific adapters</td><td class="n">0.7525 ± 0.0204</td>
     <td class="n">0.6721</td><td class="n">+0.0294</td><td class="n">37.3%</td></tr>
-</table>
-<div class="cap">Table 4. Seven arms, three seeds each, against a single-task
+<caption>Table 4. Seven arms, three seeds each, against a single-task
 control of 0.7689. Swapping only the task order recovers +0.1036 (Welch p =
 0.014); joint stepping recovers +0.1110 (p = 0.011). All three suggested repairs
 add nothing measurable on top of joint stepping: PCGrad −0.0242 (p = 0.34), soft
-sharing +0.0104 (p = 0.67), adapters −0.0118 (p = 0.62).</div>
+sharing +0.0104 (p = 0.67), adapters −0.0118 (p = 0.62).</caption>
+</table>
 
 <p>Two readings matter here. First, gradient conflict is real but is not the
 mechanism: the mean cosine between task gradients is +0.0246 — near-orthogonal and
@@ -355,11 +372,11 @@ time). Seventy automated integrity checks over the committed artefacts pass.</p>
 <tr><td>DeepDTA, CNN + CNN [11]</td><td class="n">0.863</td><td class="n">0.194</td></tr>
 <tr><td>GraphDTA, GIN [12]</td><td class="n">0.891</td><td class="n">0.139</td></tr>
 <tr><td><b>Ours, tuned random forest</b></td><td class="n"><b>0.8420</b></td><td class="n"><b>0.2297</b></td></tr>
-</table>
-<div class="cap">Table 5. Both metrics are given deliberately: we pass SimBoost on
+<caption>Table 5. Both metrics are given deliberately: we pass SimBoost on
 the concordance index and trail it on mean squared error. Quoting only the first
 would be cherry-picking. Published figures use the authors' own splits and
-preprocessing, so this is not like-for-like.</div>
+preprocessing, so this is not like-for-like.</caption>
+</table>
 
 <p>Three of our negative results have since been reproduced independently, which
 changes how they should be read. A 25-model, 25-dataset benchmark under scaffold
@@ -498,10 +515,10 @@ harness and this report were joint work.</p>
 <a href="https://github.com/JiaxinLiu2000/Screening-Drug-Candidates-with-3D-Visualization">github.com/JiaxinLiu2000/Screening-Drug-Candidates-with-3D-Visualization</a></p>
 <p class="small">Predicting from a fresh clone requires no dataset download and no
 GPU; trained models and the 229 protein embeddings are committed.</p>
-<pre class="small"><code>pip install --no-deps -r requirements.txt
-python src/00_fetch_data.py            # only needed to reproduce training
-python -m uvicorn app.backend.main:app --port 8000
-cd app/frontend &amp;&amp; npm install &amp;&amp; npm run dev</code></pre>
+<div class="cmd">pip install --no-deps -r requirements.txt<br>
+python src/00_fetch_data.py &nbsp;<span class="muted"># only to reproduce training</span><br>
+python -m uvicorn app.backend.main:app --port 8000<br>
+cd app/frontend &amp;&amp; npm install &amp;&amp; npm run dev</div>
 <p class="small">Scripts <code>src/01</code>–<code>src/37</code> produce every
 measurement quoted above, in order; <code>src/38</code> exports the committed
 models and <code>src/39</code>–<code>src/42</code> are the later additions.
